@@ -10,7 +10,7 @@ public class CurrentReaderFactory {
 		File f = null;
 		
 		// xdandroid
-		if (Build.MODEL.equalsIgnoreCase("XDANDROID")) {
+		if (Build.MODEL.equalsIgnoreCase("MSM")) {
 			f = new File("/sys/devices/platform/i2c-adapter/i2c-0/0-0036/power_supply/battery/current_now");
 			if (f.exists())
 				return new OneLineReader(f, false);
