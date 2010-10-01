@@ -2,16 +2,19 @@ package com.manor.currentwidget.library;
 
 import java.io.File;
 
+import android.os.Build;
+
 public class CurrentReaderFactory {
 	static public ICurrentReader getCurrentReader() {
 		
 		File f = null;
 		
-		//android.os.Build.
 		// xdandroid
-		f = new File("/sys/devices/platform/i2c-adapter/i2c-0/0-0036/power_supply/battery/current_now");
-		if (f.exists())
-			return new OneLineReader(f, false);
+		if (Build.MODEL.equalsIgnoreCase("XDANDROID")) {
+			f = new File("/sys/devices/platform/i2c-adapter/i2c-0/0-0036/power_supply/battery/current_now");
+			if (f.exists())
+				return new OneLineReader(f, false);
+		}
 	
 		// droid eris
 		f = new File("/sys/class/power_supply/battery/smem_text");		
