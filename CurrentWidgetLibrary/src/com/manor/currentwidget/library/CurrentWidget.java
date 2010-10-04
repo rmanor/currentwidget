@@ -23,6 +23,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.RemoteViews;
 
 /**
@@ -128,11 +129,13 @@ public class CurrentWidget extends AppWidgetProvider {
 				if (value < 0)
 				{
 					value = value*(-1);
-					remoteViews.setTextColor(R.id.text, Color.rgb(117, 120, 118)); // drawing
+					//remoteViews.setTextColor(R.id.text, Color.rgb(117, 120, 118)); // drawing
+					remoteViews.setViewVisibility(R.id.charging_image, View.INVISIBLE);
 					isCharging = false;
 				}
 				else
-					remoteViews.setTextColor(R.id.text, Color.rgb(100, 168, 0)); // charging
+					remoteViews.setViewVisibility(R.id.charging_image, View.VISIBLE);
+					//remoteViews.setTextColor(R.id.text, Color.rgb(100, 168, 0)); // charging
 					
 				
 				text = value.toString() + "mA";
