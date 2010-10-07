@@ -14,4 +14,13 @@
 <string name="log_apps_checkbox">Log running applications</string>
 <string name="pref_general_category">General</string>
 <string name="pref_log_category">Log File</string>
+<string name="op_text">Preform on value</string>
+<string name="op_prompt">operation</string>
+<string-array name="op_array">
+<item>none</item>
+<item>*</item>
+<item>/</item>
+<item>+</item>
+<item>-</item>
+</string-array>
 </resources>
