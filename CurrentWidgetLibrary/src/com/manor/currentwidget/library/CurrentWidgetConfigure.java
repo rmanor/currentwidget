@@ -11,12 +11,14 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
 public class CurrentWidgetConfigure extends Activity {
@@ -28,6 +30,8 @@ public class CurrentWidgetConfigure extends Activity {
 	public final static String SECOND_INTERVAL_SETTING = "secondsInterval";
 	public final static String UNITS_SETTING = "units";
 	public final static String LOG_APPS_SETTING = "logApps";
+	public final static String OP = "op";
+	public final static String OP_VALUE ="opValue";
 	
 	public CurrentWidgetConfigure() {
 		super();
@@ -48,6 +52,11 @@ public class CurrentWidgetConfigure extends Activity {
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.units_array, android.R.layout.simple_spinner_item);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		unitsSpinner.setAdapter(adapter);
+		
+		Spinner opSpinner = (Spinner)findViewById(R.id.op_spinner);
+		adapter = ArrayAdapter.createFromResource(this, R.array.op_array, android.R.layout.simple_spinner_item);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		opSpinner.setAdapter(adapter);
 		
 		// get widget id
 		Intent intent = getIntent();
@@ -96,7 +105,28 @@ public class CurrentWidgetConfigure extends Activity {
 		
 		findViewById(R.id.view_log_button).setOnClickListener(mOnSaveClickListener);
 		
+		int op = settings.getInt(OP + mAppWidgetId, 0);
+		opSpinner.setSelection(op);
+		
+		((EditText)findViewById(R.id.op_value_edit)).setText(Float.toString(settings.getFloat(OP_VALUE + mAppWidgetId, 0)));
+		
+		findViewById(R.id.op_value_edit).setEnabled(op != 0);
+		
+		opSpinner.setOnItemSelectedListener(mOnItemSelectedListener);
+		
 	}
+	
+	AdapterView.OnItemSelectedListener mOnItemSelectedListener = new OnItemSelectedListener() {
+
+		public void onItemSelected(AdapterView<?> parent, View view, int position, long it) {
+			findViewById(R.id.op_value_edit).setEnabled(position != 0);			
+		}
+
+		public void onNothingSelected(AdapterView<?> arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+	};
 	
 	CompoundButton.OnCheckedChangeListener mOnCheckedChangeListener = new OnCheckedChangeListener() {
 		
@@ -151,6 +181,8 @@ public class CurrentWidgetConfigure extends Activity {
 					editor.putBoolean(LOG_ENABLED_SETTING + mAppWidgetId, ((CheckBox)findViewById(R.id.log_checkbox)).isChecked());
 					editor.putString(LOG_FILENAME_SETTING + mAppWidgetId, ((EditText)findViewById(R.id.log_filename)).getText().toString());
 					editor.putBoolean(LOG_APPS_SETTING + mAppWidgetId, ((CheckBox)findViewById(R.id.log_apps_checkbox)).isChecked());
+					editor.putInt(OP + mAppWidgetId, ((Spinner)findViewById(R.id.op_spinner)).getSelectedItemPosition());
+					editor.putFloat(OP_VALUE + mAppWidgetId, Float.parseFloat(((EditText)findViewById(R.id.op_value_edit)).getText().toString()));
 					
 					editor.commit();					
 					

@@ -130,12 +130,35 @@ public class CurrentWidget extends AppWidgetProvider {
 				{
 					value = value*(-1);
 					//remoteViews.setTextColor(R.id.text, Color.rgb(117, 120, 118)); // drawing
-					remoteViews.setViewVisibility(R.id.charging_image, View.INVISIBLE);
+					//remoteViews.setViewVisibility(R.id.charging_image, View.INVISIBLE);
+					remoteViews.setImageViewResource(R.id.status_image, R.drawable.drawing);
 					isCharging = false;
 				}
 				else
-					remoteViews.setViewVisibility(R.id.charging_image, View.VISIBLE);
+					remoteViews.setImageViewResource(R.id.status_image, R.drawable.charging);
+					//remoteViews.setViewVisibility(R.id.charging_image, View.VISIBLE);
 					//remoteViews.setTextColor(R.id.text, Color.rgb(100, 168, 0)); // charging
+				
+				int op = settings.getInt(CurrentWidgetConfigure.OP + appWidgetId, 0);
+				if (op > 0) {
+					float opValue = settings.getFloat(CurrentWidgetConfigure.OP_VALUE + appWidgetId, 0);
+					if (opValue > 0) {
+						switch(op) {
+						case 1:
+							value = (long)Math.round(value * opValue);
+							break;
+						case 2:
+							value = (long)Math.round(value / opValue);
+							break;
+						case 3:
+							value = (long)Math.round(value + opValue);
+							break;
+						case 4:
+							value = (long)Math.round(value - opValue);
+							break;
+						}
+					}
+				}
 					
 				
 				text = value.toString() + "mA";

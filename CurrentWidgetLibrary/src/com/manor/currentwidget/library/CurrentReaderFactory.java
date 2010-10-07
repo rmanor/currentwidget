@@ -10,11 +10,11 @@ public class CurrentReaderFactory {
 		File f = null;
 		
 		// xdandroid
-		if (Build.MODEL.equalsIgnoreCase("MSM")) {
+		/*if (Build.MODEL.equalsIgnoreCase("MSM")) {*/
 			f = new File("/sys/devices/platform/i2c-adapter/i2c-0/0-0036/power_supply/battery/current_now");
 			if (f.exists())
 				return new OneLineReader(f, false);
-		}
+		/*}*/
 	
 		// droid eris
 		f = new File("/sys/class/power_supply/battery/smem_text");		
@@ -34,7 +34,7 @@ public class CurrentReaderFactory {
 		// samsung galaxy vibrant		
 		f = new File("/sys/class/power_supply/battery/batt_chg_current");
 		if (f.exists())
-			return new VibrantReader(f); 
+			return new OneLineReader(f, false); 
 		
 		return null;
 	}
