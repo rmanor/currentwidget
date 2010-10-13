@@ -5,7 +5,6 @@ package com.manor.currentwidget.library;
 
 import java.io.DataOutputStream;
 import java.io.FileOutputStream;
-import java.nio.MappedByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -19,11 +18,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.RemoteViews;
 
 /**
@@ -198,7 +195,7 @@ public class CurrentWidget extends AppWidgetProvider {
 				
 				if (settings.getBoolean(CurrentWidgetConfigure.LOG_APPS_SETTING + appWidgetId, false)) {
 				
-					ActivityManager activityManager = (ActivityManager)context.getSystemService(context.ACTIVITY_SERVICE);
+					ActivityManager activityManager = (ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE);
 					List<ActivityManager.RunningAppProcessInfo> runningApps = activityManager.getRunningAppProcesses();
 					
 					if (runningApps != null)

@@ -2,8 +2,6 @@ package com.manor.currentwidget.library;
 
 import java.io.File;
 
-import android.os.Build;
-
 public class CurrentReaderFactory {
 	static public ICurrentReader getCurrentReader() {
 		
