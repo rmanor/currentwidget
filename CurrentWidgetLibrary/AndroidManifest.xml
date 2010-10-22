@@ -6,9 +6,9 @@
     <application>
 
 		<!--  broadcast receiver that will process widget updates -->
-		<receiver android:name=".CurrentWidget" />
+		<receiver android:name="com.manor.currentwidget.library.CurrentWidget" />
 		
-		<activity android:name=".CurrentWidgetConfigure"/>
+		<activity android:name="com.manor.currentwidget.library.CurrentWidgetConfigure"/>
 
 
     </application>

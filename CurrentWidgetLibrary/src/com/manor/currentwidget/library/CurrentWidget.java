@@ -38,14 +38,15 @@ public class CurrentWidget extends AppWidgetProvider {
 		
 		for (int appWidgetId : appWidgetIds) {
 			
-			//Log.i("CurrentWidget", String.format("onDeleted, id: %s", Integer.toString(appWidgetId)));
+			Log.i("CurrentWidget", String.format("onDeleted, id: %s", Integer.toString(appWidgetId)));
 
 			AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
 			
 			Intent widgetUpdate = new Intent(context, CurrentWidget.class);
 			widgetUpdate.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
 			widgetUpdate.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, new int[] { appWidgetId } );
-			
+	        widgetUpdate.setData(Uri.withAppendedPath(Uri.parse("droidrm://widget/id/"), String.valueOf(appWidgetId)));
+
 			PendingIntent sender = PendingIntent.getBroadcast(context, 0, widgetUpdate, PendingIntent.FLAG_UPDATE_CURRENT);			
 			
 			alarmManager.cancel(sender);
@@ -86,7 +87,7 @@ public class CurrentWidget extends AppWidgetProvider {
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {	
 		
 		 for (int appWidgetId : appWidgetIds) {
-			 //Log.i("CurrentWidget", String.format("onUpdate, id: %s", Integer.toString(appWidgetId))); 
+			 Log.i("CurrentWidget", String.format("onUpdate, id: %s", Integer.toString(appWidgetId))); 
 			 	
 			 updateAppWidget(context, AppWidgetManager.getInstance(context), appWidgetId);			 
 
