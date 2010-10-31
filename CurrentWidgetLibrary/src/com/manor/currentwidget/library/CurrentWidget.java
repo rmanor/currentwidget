@@ -42,7 +42,7 @@ public class CurrentWidget extends AppWidgetProvider {
 
 			AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
 			
-			Intent widgetUpdate = new Intent(context, CurrentWidget.class);
+			Intent widgetUpdate = new Intent(context.getApplicationContext(), CurrentWidget.class);
 			widgetUpdate.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
 			widgetUpdate.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, new int[] { appWidgetId } );
 	        widgetUpdate.setData(Uri.withAppendedPath(Uri.parse("droidrm://widget/id/"), String.valueOf(appWidgetId)));
@@ -223,7 +223,7 @@ public class CurrentWidget extends AppWidgetProvider {
 			
 		}
 
-        Intent widgetUpdate = new Intent(context, CurrentWidget.class);
+        Intent widgetUpdate = new Intent(context.getApplicationContext(), CurrentWidget.class);
         widgetUpdate.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, new int[] { appWidgetId } );
         widgetUpdate.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
         widgetUpdate.setData(Uri.withAppendedPath(Uri.parse("droidrm://widget/id/"), String.valueOf(appWidgetId)));
