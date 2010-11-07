@@ -38,7 +38,7 @@ public class CurrentWidget extends AppWidgetProvider {
 		
 		for (int appWidgetId : appWidgetIds) {
 			
-			Log.i("CurrentWidget", String.format("onDeleted, id: %s", Integer.toString(appWidgetId)));
+			Log.d("CurrentWidget", String.format("onDeleted, id: %s", Integer.toString(appWidgetId)));
 
 			AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
 			
@@ -87,7 +87,7 @@ public class CurrentWidget extends AppWidgetProvider {
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {	
 		
 		 for (int appWidgetId : appWidgetIds) {
-			 Log.i("CurrentWidget", String.format("onUpdate, id: %s", Integer.toString(appWidgetId))); 
+			 Log.d("CurrentWidget", String.format("onUpdate, id: %s", Integer.toString(appWidgetId))); 
 			 	
 			 updateAppWidget(context, AppWidgetManager.getInstance(context), appWidgetId);			 
 
