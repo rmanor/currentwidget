@@ -9,8 +9,9 @@ public class CurrentReaderFactory {
 		
 		File f = null;
 		
-		// htc desire hd
-		if (Build.MODEL.toLowerCase().contains("desire hd")) {
+		// htc desire hd / desire z?
+		if (Build.MODEL.toLowerCase().contains("desire hd") ||
+				Build.MODEL.toLowerCase().contains("desire z")) {
 			f = new File("/sys/class/power_supply/battery/batt_current");
 			if (f.exists())
 				return new OneLineReader(f, false);

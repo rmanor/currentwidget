@@ -165,13 +165,17 @@ public class CurrentWidgetConfigure extends Activity {
 					int selectedUnit = spinner.getSelectedItemPosition();
 					
 					Long interval = null;
+					float opValue = 0;
 					try {					
 						 interval = Long.valueOf(view.getText().toString());
 						 if (selectedUnit == 1) // if minutes
 							 interval*=60; // convert to seconds
+						 
+						 opValue = Float.parseFloat(((EditText)findViewById(R.id.op_value_edit)).getText().toString());
 					}
 					catch (NumberFormatException nfe) {
 						interval = 60l;
+						opValue = 0f;
 					}
 					
 					SharedPreferences settings = getSharedPreferences("currentWidgetPrefs", 0);
@@ -182,7 +186,7 @@ public class CurrentWidgetConfigure extends Activity {
 					editor.putString(LOG_FILENAME_SETTING + mAppWidgetId, ((EditText)findViewById(R.id.log_filename)).getText().toString());
 					editor.putBoolean(LOG_APPS_SETTING + mAppWidgetId, ((CheckBox)findViewById(R.id.log_apps_checkbox)).isChecked());
 					editor.putInt(OP + mAppWidgetId, ((Spinner)findViewById(R.id.op_spinner)).getSelectedItemPosition());
-					editor.putFloat(OP_VALUE + mAppWidgetId, Float.parseFloat(((EditText)findViewById(R.id.op_value_edit)).getText().toString()));
+					editor.putFloat(OP_VALUE + mAppWidgetId, opValue);
 					
 					editor.commit();					
 					

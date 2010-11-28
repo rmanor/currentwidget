@@ -18,6 +18,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -49,7 +50,7 @@ public class CurrentWidget extends AppWidgetProvider {
 
 			PendingIntent sender = PendingIntent.getBroadcast(context, 0, widgetUpdate, PendingIntent.FLAG_UPDATE_CURRENT);			
 			
-			alarmManager.cancel(sender);
+			alarmManager.cancel(sender);			
 
 		}
 
@@ -162,7 +163,6 @@ public class CurrentWidget extends AppWidgetProvider {
 				text = value.toString() + "mA";
 			}					
 		}	
-		
 		
 		remoteViews.setTextViewText(R.id.text, text);
 		
