@@ -97,9 +97,9 @@ public class CurrentWidget extends AppWidgetProvider {
 	
 	static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {		
 	
-		SharedPreferences settings = context.getSharedPreferences("currentWidgetPrefs", 0);
+		SharedPreferences settings = context.getSharedPreferences(CurrentWidgetConfigure.SHARED_PREFS_NAME, 0);
 		
-		long secondsInterval = settings.getLong(CurrentWidgetConfigure.SECOND_INTERVAL_SETTING + appWidgetId, 60);
+		long secondsInterval = Long.parseLong(settings.getString(context.getString(R.string.pref_interval_key), "60"));
 		 
 		
 		// set on click for whole layout to launch configuration
@@ -138,27 +138,29 @@ public class CurrentWidget extends AppWidgetProvider {
 					//remoteViews.setViewVisibility(R.id.charging_image, View.VISIBLE);
 					//remoteViews.setTextColor(R.id.text, Color.rgb(100, 168, 0)); // charging
 				
-				int op = settings.getInt(CurrentWidgetConfigure.OP + appWidgetId, 0);
-				if (op > 0) {
-					float opValue = settings.getFloat(CurrentWidgetConfigure.OP_VALUE + appWidgetId, 0);
-					if (opValue > 0) {
-						switch(op) {
-						case 1:
-							value = (long)Math.round(value * opValue);
-							break;
-						case 2:
-							value = (long)Math.round(value / opValue);
-							break;
-						case 3:
-							value = (long)Math.round(value + opValue);
-							break;
-						case 4:
-							value = (long)Math.round(value - opValue);
-							break;
+				
+				if (settings.getBoolean(context.getString(R.string.pref_op_enabled_key), false)) {
+					int op = Integer.parseInt(settings.getString(context.getString(R.string.pref_op_type_key), "0"));
+					if (op > 0) {
+						float opValue = Float.parseFloat(settings.getString(context.getString(R.string.pref_op_value_key), "0"));
+						if (opValue > 0) {
+							switch(op) {
+							case 1:
+								value = (long)Math.round(value * opValue);
+								break;
+							case 2:
+								value = (long)Math.round(value / opValue);
+								break;
+							case 3:
+								value = (long)Math.round(value + opValue);
+								break;
+							case 4:
+								value = (long)Math.round(value - opValue);
+								break;
+							}
 						}
 					}
-				}
-					
+				}					
 				
 				text = value.toString() + "mA";
 			}					
@@ -170,10 +172,10 @@ public class CurrentWidget extends AppWidgetProvider {
 		remoteViews.setTextViewText(R.id.last_updated_text, (new SimpleDateFormat("HH:mm:ss")).format(new Date()));
 		
 		// write to log file
-		if (settings.getBoolean(CurrentWidgetConfigure.LOG_ENABLED_SETTING + appWidgetId, false)) {
+		if (settings.getBoolean(context.getString(R.string.pref_log_enabled_key), false)) {
 			
 			try {
-				FileOutputStream logFile = new FileOutputStream(settings.getString(CurrentWidgetConfigure.LOG_FILENAME_SETTING + appWidgetId, "/sdcard/currentwidget.log"), true);
+				FileOutputStream logFile = new FileOutputStream(settings.getString(context.getString(R.string.pref_log_filename_key), "/sdcard/currentwidget.log"), true);
 				DataOutputStream logOutput = new DataOutputStream(logFile);
 				
 				String str = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date()) + ",";
@@ -194,7 +196,7 @@ public class CurrentWidget extends AppWidgetProvider {
 					str += ",000";
 				}
 				
-				if (settings.getBoolean(CurrentWidgetConfigure.LOG_APPS_SETTING + appWidgetId, false)) {
+				if (settings.getBoolean(context.getString(R.string.pref_log_apps_key), false)) {
 				
 					ActivityManager activityManager = (ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE);
 					List<ActivityManager.RunningAppProcessInfo> runningApps = activityManager.getRunningAppProcesses();
@@ -236,6 +238,8 @@ public class CurrentWidget extends AppWidgetProvider {
         
         // set on click for button
         remoteViews.setOnClickPendingIntent(R.id.update_now_button, newPending);
+        remoteViews.setOnClickPendingIntent(R.id.last_updated_text, newPending);
+        remoteViews.setOnClickPendingIntent(R.id.last_update_title, newPending);
         
         // schedule the new widget for updating
         AlarmManager alarms = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);

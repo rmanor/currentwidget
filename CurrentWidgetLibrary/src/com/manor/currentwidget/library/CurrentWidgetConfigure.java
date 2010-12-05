@@ -2,7 +2,6 @@ package com.manor.currentwidget.library;
 
 import java.io.File;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
@@ -10,6 +9,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.Preference;
+import android.preference.PreferenceActivity;
+import android.preference.PreferenceScreen;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -21,32 +24,47 @@ import android.widget.TextView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
-public class CurrentWidgetConfigure extends Activity {
+public class CurrentWidgetConfigure extends PreferenceActivity {
 
 	int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
 	
-	public final static String LOG_ENABLED_SETTING = "logEnabled";
+	/*public final static String LOG_ENABLED_SETTING = "logEnabled";
 	public final static String LOG_FILENAME_SETTING = "logFilename";
 	public final static String SECOND_INTERVAL_SETTING = "secondsInterval";
 	public final static String UNITS_SETTING = "units";
 	public final static String LOG_APPS_SETTING = "logApps";
 	public final static String OP = "op";
-	public final static String OP_VALUE ="opValue";
+	public final static String OP_VALUE ="opValue";*/
+	public final static String SHARED_PREFS_NAME = "currentWidgetPrefs";
 	
 	public CurrentWidgetConfigure() {
 		super();
+		
 	}
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+		super.onCreate(savedInstanceState);		
+	
+		getPreferenceManager().setSharedPreferencesName(SHARED_PREFS_NAME);
 		
-		// init result as canceled
-		setResult(RESULT_CANCELED);
+		//setContentView(R.layout.configure);
+		addPreferencesFromResource(R.xml.prefs);
+
+		// get widget id
+		Intent intent = getIntent();
+		Bundle extras = intent.getExtras();
+		if (extras != null) {
+			mAppWidgetId = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
+		}
+
+		Intent resultValue = new Intent();
+		resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
+
+		// init result as ok
+		setResult(RESULT_OK, resultValue);
 		
-		setContentView(R.layout.configure);
-		
-		findViewById(R.id.save_button).setOnClickListener(mOnSaveClickListener);
+		/*findViewById(R.id.save_button).setOnClickListener(mOnSaveClickListener);
 		
 		Spinner unitsSpinner = (Spinner)findViewById(R.id.units_spinner);
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.units_array, android.R.layout.simple_spinner_item);
@@ -58,17 +76,7 @@ public class CurrentWidgetConfigure extends Activity {
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		opSpinner.setAdapter(adapter);
 		
-		// get widget id
-		Intent intent = getIntent();
-		Bundle extras = intent.getExtras();
-		if (extras != null) {
-			mAppWidgetId = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
-		}
-		
-		if (mAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
-			finish();
-		}
-		
+	
 		SharedPreferences settings = getSharedPreferences("currentWidgetPrefs", 0);
 		
 		long interval = settings.getLong(SECOND_INTERVAL_SETTING + mAppWidgetId, 60);
@@ -112,11 +120,11 @@ public class CurrentWidgetConfigure extends Activity {
 		
 		findViewById(R.id.op_value_edit).setEnabled(op != 0);
 		
-		opSpinner.setOnItemSelectedListener(mOnItemSelectedListener);
+		opSpinner.setOnItemSelectedListener(mOnItemSelectedListener);*/
 		
 	}
 	
-	AdapterView.OnItemSelectedListener mOnItemSelectedListener = new OnItemSelectedListener() {
+	/*AdapterView.OnItemSelectedListener mOnItemSelectedListener = new OnItemSelectedListener() {
 
 		public void onItemSelected(AdapterView<?> parent, View view, int position, long it) {
 			findViewById(R.id.op_value_edit).setEnabled(position != 0);			
@@ -126,9 +134,9 @@ public class CurrentWidgetConfigure extends Activity {
 			// TODO Auto-generated method stub
 			
 		}
-	};
+	};*/
 	
-	CompoundButton.OnCheckedChangeListener mOnCheckedChangeListener = new OnCheckedChangeListener() {
+	/*CompoundButton.OnCheckedChangeListener mOnCheckedChangeListener = new OnCheckedChangeListener() {
 		
 		public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 			
@@ -140,9 +148,59 @@ public class CurrentWidgetConfigure extends Activity {
 			}
 			
 		}
+	};*/
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			if (mAppWidgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
+				Intent updateIntent = new Intent(this.getApplicationContext(), CurrentWidget.class);
+				updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
+				updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, new int[] { mAppWidgetId } );
+				updateIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+				updateIntent.setData(Uri.withAppendedPath(Uri.parse("droidrm://widget/id/"), String.valueOf(mAppWidgetId)));
+				
+				sendBroadcast(updateIntent);
+			}
+		}
+		return super.onKeyDown(keyCode, event);
+	}
+	
+	public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
+		
+		if (preference.getKey().equals("view_log")) {
+			String logFilename = getPreferenceManager().getSharedPreferences().getString(getString(R.string.pref_log_filename_key), "/sdcard/currentwidget.log");
+			File logFile = new File(logFilename);
+			if (logFile.exists()) {
+				Intent viewLogIntent = new Intent(Intent.ACTION_VIEW);					
+				viewLogIntent.setDataAndType(Uri.fromFile(logFile), "text/plain");
+				startActivity(Intent.createChooser(viewLogIntent, "CurrentWidget"));
+			}
+			else {
+				new AlertDialog.Builder(this).setMessage("Log file not found").setPositiveButton("OK", null).show();						
+			}
+			
+			return true;
+
+		} else if (preference.getKey().equals("donate")) {
+			
+			try {
+				Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.manor.currentwidgetpaid"));						
+				startActivity(intent);
+			}
+			catch (Exception ex) {
+				ex.printStackTrace();
+				// market not installed, send to browser
+				Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://market.android.com/details?id=com.manor.currentwidgetpaid"));						
+				startActivity(intent);
+			}
+			
+		}
+		
+		return false;
 	};
 	
-	View.OnClickListener mOnSaveClickListener = new View.OnClickListener() {	
+	/*View.OnClickListener mOnSaveClickListener = new View.OnClickListener() {	
 		
 		public void onClick(View v) {
 
@@ -201,5 +259,5 @@ public class CurrentWidgetConfigure extends Activity {
 				
 			}
 		}
-	};
+	};*/
 }
