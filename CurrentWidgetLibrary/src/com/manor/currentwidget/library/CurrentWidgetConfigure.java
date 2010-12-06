@@ -64,6 +64,10 @@ public class CurrentWidgetConfigure extends PreferenceActivity {
 		// init result as ok
 		setResult(RESULT_OK, resultValue);
 		
+		if (this.getApplicationContext().getPackageName().equals("com.manor.currentwidgetpaid")) {
+			findPreference("donate").setTitle("Thank you for donating!");
+		}
+		
 		/*findViewById(R.id.save_button).setOnClickListener(mOnSaveClickListener);
 		
 		Spinner unitsSpinner = (Spinner)findViewById(R.id.units_spinner);
