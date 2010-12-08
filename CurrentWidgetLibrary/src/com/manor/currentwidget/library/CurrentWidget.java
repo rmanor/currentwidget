@@ -99,7 +99,13 @@ public class CurrentWidget extends AppWidgetProvider {
 	
 		SharedPreferences settings = context.getSharedPreferences(CurrentWidgetConfigure.SHARED_PREFS_NAME, 0);
 		
-		long secondsInterval = Long.parseLong(settings.getString(context.getString(R.string.pref_interval_key), "60"));
+		long secondsInterval = 0;
+		try {
+			Long.parseLong(settings.getString(context.getString(R.string.pref_interval_key), "60"));
+		}
+		catch(Exception ex) {
+			secondsInterval = 60;
+		}
 		 
 		
 		// set on click for whole layout to launch configuration
