@@ -1,6 +1,22 @@
-/**
- * 
- */
+/*
+ *  Copyright (c) 2010-2011 Ran Manor
+ *  
+ *  This file is part of CurrentWidget.
+ *    
+ * 	CurrentWidget is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  CurrentWidget is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with CurrentWidget.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 package com.manor.currentwidget.library;
 
 import java.io.DataOutputStream;
@@ -18,7 +34,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -37,7 +52,16 @@ public class CurrentWidget extends AppWidgetProvider {
 	@Override
 	public void onDeleted(Context context, int[] appWidgetIds) {
 		
-		for (int appWidgetId : appWidgetIds) {
+		// dumb fix for my old bug
+		int maxId = 0;
+		for (int i=0;i<appWidgetIds.length;i++) {
+			if (appWidgetIds[i] > maxId)
+				maxId = appWidgetIds[i];
+		}	
+		
+		maxId = maxId * 2;
+		
+		for (int appWidgetId=1;appWidgetId<=maxId;appWidgetId++) {
 			
 			Log.d("CurrentWidget", String.format("onDeleted, id: %s", Integer.toString(appWidgetId)));
 
@@ -48,7 +72,7 @@ public class CurrentWidget extends AppWidgetProvider {
 			widgetUpdate.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, new int[] { appWidgetId } );
 	        widgetUpdate.setData(Uri.withAppendedPath(Uri.parse("droidrm://widget/id/"), String.valueOf(appWidgetId)));
 
-			PendingIntent sender = PendingIntent.getBroadcast(context, 0, widgetUpdate, PendingIntent.FLAG_UPDATE_CURRENT);			
+			PendingIntent sender = PendingIntent.getBroadcast(context.getApplicationContext(), 0, widgetUpdate, PendingIntent.FLAG_UPDATE_CURRENT);			
 			
 			alarmManager.cancel(sender);			
 
@@ -87,21 +111,26 @@ public class CurrentWidget extends AppWidgetProvider {
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {	
 		
+		boolean doLogFile = true;
+		
 		 for (int appWidgetId : appWidgetIds) {
 			 Log.d("CurrentWidget", String.format("onUpdate, id: %s", Integer.toString(appWidgetId))); 
 			 	
-			 updateAppWidget(context, AppWidgetManager.getInstance(context), appWidgetId);			 
+			 updateAppWidget(context.getApplicationContext(), AppWidgetManager.getInstance(context), appWidgetId, doLogFile);
+			 
+			 // write to logfile only from one instance
+			 doLogFile = false;
 
 		 }
 	}
 	
-	static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {		
+	static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId, boolean doLogFile) {		
 	
 		SharedPreferences settings = context.getSharedPreferences(CurrentWidgetConfigure.SHARED_PREFS_NAME, 0);
 		
-		long secondsInterval = 0;
+		long secondsInterval = 60;
 		try {
-			Long.parseLong(settings.getString(context.getString(R.string.pref_interval_key), "60"));
+			secondsInterval = Long.parseLong(settings.getString(context.getString(R.string.pref_interval_key), "60"));
 		}
 		catch(Exception ex) {
 			secondsInterval = 60;
@@ -178,7 +207,7 @@ public class CurrentWidget extends AppWidgetProvider {
 		remoteViews.setTextViewText(R.id.last_updated_text, (new SimpleDateFormat("HH:mm:ss")).format(new Date()));
 		
 		// write to log file
-		if (settings.getBoolean(context.getString(R.string.pref_log_enabled_key), false)) {
+		if (settings.getBoolean(context.getString(R.string.pref_log_enabled_key), false) && doLogFile) {
 			
 			try {
 				FileOutputStream logFile = new FileOutputStream(settings.getString(context.getString(R.string.pref_log_filename_key), "/sdcard/currentwidget.log"), true);
@@ -247,8 +276,10 @@ public class CurrentWidget extends AppWidgetProvider {
         remoteViews.setOnClickPendingIntent(R.id.last_updated_text, newPending);
         remoteViews.setOnClickPendingIntent(R.id.last_update_title, newPending);
         
+        //Log.d("CurrentWidget", "secondsInterval: " + Long.toString(secondsInterval));
+        
         // schedule the new widget for updating
-        AlarmManager alarms = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        AlarmManager alarms = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         //alarms.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + 5*60*1000, newPending);
         alarms.setRepeating(AlarmManager.RTC, System.currentTimeMillis() + (secondsInterval*1000),
                 secondsInterval * 1000, newPending);        
