@@ -14,13 +14,21 @@
 			android:title="Donate"
 			android:summary="Support the development of CurrentWidget"			
 			android:key="donate"/>
+			
+		<CheckBoxPreference
+			android:title="Hide Background"
+			android:key="@string/pref_hide_background_key"
+			android:defaultValue="false"
+			android:summaryOn="Don\'t show widget background"
+			android:summaryOff="Show widget background"/>			
 		
 	
 	</PreferenceCategory>	
 		
 	<PreferenceCategory android:title="Log">
 	
-		<CheckBoxPreference android:key="@string/pref_log_enabled_key" android:title="Log file"
+		<CheckBoxPreference 
+			android:key="@string/pref_log_enabled_key" android:title="Log file"
 			android:defaultValue="false" 
 			android:summaryOn="Log current values to file"
 			android:summaryOff="Don't log values to file"/>
@@ -41,7 +49,17 @@
 		<Preference 
 			android:title="View Log" 
 			android:summary="Open log file"
-			android:key="view_log">	
+			android:key="view_log">
+			
+		<Preference
+			android:title="View Log as Graph"
+			android:summary="Show logged values as graph"
+			android:key="view_graph"/>
+			
+		<Preference
+			android:title="Clear Log"
+			android:summary="Delete log file"
+			android:key="clear_log"/>
 			
 	</Preference>			
 								
