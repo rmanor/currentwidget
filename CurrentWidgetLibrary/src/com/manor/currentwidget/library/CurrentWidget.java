@@ -256,8 +256,7 @@ public class CurrentWidget extends AppWidgetProvider {
 			}
 			catch (Exception ex) {
 				Log.e("CurrentWidget", ex.getMessage());
-			}
-			
+			}			
 		}
 
         Intent widgetUpdate = new Intent(context.getApplicationContext(), CurrentWidget.class);
