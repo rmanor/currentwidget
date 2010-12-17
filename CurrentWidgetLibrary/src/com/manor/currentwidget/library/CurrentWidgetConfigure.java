@@ -74,92 +74,9 @@ public class CurrentWidgetConfigure extends PreferenceActivity {
 		if (this.getApplicationContext().getPackageName().equals("com.manor.currentwidgetpaid")) {
 			findPreference("donate").setTitle("Thank you for donating!");
 		}
-		
-		/*findViewById(R.id.save_button).setOnClickListener(mOnSaveClickListener);
-		
-		Spinner unitsSpinner = (Spinner)findViewById(R.id.units_spinner);
-		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.units_array, android.R.layout.simple_spinner_item);
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		unitsSpinner.setAdapter(adapter);
-		
-		Spinner opSpinner = (Spinner)findViewById(R.id.op_spinner);
-		adapter = ArrayAdapter.createFromResource(this, R.array.op_array, android.R.layout.simple_spinner_item);
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		opSpinner.setAdapter(adapter);
-		
 	
-		SharedPreferences settings = getSharedPreferences("currentWidgetPrefs", 0);
-		
-		long interval = settings.getLong(SECOND_INTERVAL_SETTING + mAppWidgetId, 60);
-		int unit = settings.getInt(UNITS_SETTING + mAppWidgetId, 1);
-		if (unit == 1)
-			interval/=60;
-		
-		unitsSpinner.setSelection(unit);
-		
-		EditText intervalEdit = (EditText)findViewById(R.id.interval_edit);
-		intervalEdit.setText(Long.toString(interval));
-		
-		boolean logEnabled = settings.getBoolean(LOG_ENABLED_SETTING + mAppWidgetId, false);
-		String logFilename = settings.getString(LOG_FILENAME_SETTING + mAppWidgetId, "/sdcard/currentwidget.log");
-		
-		CheckBox logCheckbox = (CheckBox) findViewById(R.id.log_checkbox);
-		logCheckbox.setChecked(logEnabled);
-		
-		EditText logFilenameEdit = (EditText)findViewById(R.id.log_filename);
-		
-		logFilenameEdit.setText(logFilename);
-		logFilenameEdit.setEnabled(logEnabled);
-		
-		logCheckbox.setOnCheckedChangeListener(mOnCheckedChangeListener);
-		
-		CheckBox logAppsCheckbox = (CheckBox)findViewById(R.id.log_apps_checkbox);
-		
-		boolean logApps = settings.getBoolean(LOG_APPS_SETTING + mAppWidgetId, false);
-		
-		logAppsCheckbox.setChecked(logApps);
-		logAppsCheckbox.setEnabled(logEnabled);
-		
-		logAppsCheckbox.setOnCheckedChangeListener(mOnCheckedChangeListener);
-		
-		findViewById(R.id.view_log_button).setOnClickListener(mOnSaveClickListener);
-		
-		int op = settings.getInt(OP + mAppWidgetId, 0);
-		opSpinner.setSelection(op);
-		
-		((EditText)findViewById(R.id.op_value_edit)).setText(Float.toString(settings.getFloat(OP_VALUE + mAppWidgetId, 0)));
-		
-		findViewById(R.id.op_value_edit).setEnabled(op != 0);
-		
-		opSpinner.setOnItemSelectedListener(mOnItemSelectedListener);*/
 		
 	}
-	
-	/*AdapterView.OnItemSelectedListener mOnItemSelectedListener = new OnItemSelectedListener() {
-
-		public void onItemSelected(AdapterView<?> parent, View view, int position, long it) {
-			findViewById(R.id.op_value_edit).setEnabled(position != 0);			
-		}
-
-		public void onNothingSelected(AdapterView<?> arg0) {
-			// TODO Auto-generated method stub
-			
-		}
-	};*/
-	
-	/*CompoundButton.OnCheckedChangeListener mOnCheckedChangeListener = new OnCheckedChangeListener() {
-		
-		public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-			
-			switch(buttonView.getId()) {
-				case R.id.log_checkbox:
-					findViewById(R.id.log_filename).setEnabled(isChecked);
-					findViewById(R.id.log_apps_checkbox).setEnabled(isChecked);
-					break;
-			}
-			
-		}
-	};*/
 	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -204,8 +121,17 @@ public class CurrentWidgetConfigure extends PreferenceActivity {
 				// market not installed, send to browser
 				Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://market.android.com/details?id=com.manor.currentwidgetpaid"));						
 				startActivity(intent);
-			}
+			}			
+			return true;
+		} else if (preference.getKey().equals("view_graph")) {
 			
+			Intent i = new Intent(getApplicationContext(), GraphActivity.class);
+			startActivity(i);
+			
+			return true;
+			
+		} else if (preference.getKey().equals("clear_log")) {
+			return true;
 		}
 		
 		return false;

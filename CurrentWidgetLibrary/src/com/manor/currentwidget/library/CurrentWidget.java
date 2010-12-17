@@ -149,10 +149,9 @@ public class CurrentWidget extends AppWidgetProvider {
 		String text = null;
 		boolean isCharging = true;
 		
-		// @@@ add /sys/class/power_supply/battery/batt_chg_current?
 		ICurrentReader currentReader =  CurrentReaderFactory.getCurrentReader();
 		if (currentReader == null)
-			text = "error1";	
+			text = "no data";	
 		else
 		{	
 			Long value = currentReader.getValue();
