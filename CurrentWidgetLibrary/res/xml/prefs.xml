@@ -49,7 +49,7 @@
 		<Preference 
 			android:title="View Log" 
 			android:summary="Open log file"
-			android:key="view_log">
+			android:key="view_log"/>
 			
 		<Preference
 			android:title="View Log as Graph"
@@ -59,10 +59,7 @@
 		<Preference
 			android:title="Clear Log"
 			android:summary="Delete log file"
-			android:key="clear_log"/>
-			
-	</Preference>			
-								
+			android:key="clear_log"/>		
 	
 	</PreferenceCategory>
 		
