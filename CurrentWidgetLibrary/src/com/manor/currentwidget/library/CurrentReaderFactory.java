@@ -24,6 +24,9 @@ import java.io.File;
 import android.os.Build;
 
 public class CurrentReaderFactory {
+	
+	// @@@ change all ICurentReader to static methods and return value here
+	// (better than returning an object)
 	static public ICurrentReader getCurrentReader() {
 		
 		File f = null;

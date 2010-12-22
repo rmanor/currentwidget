@@ -24,12 +24,14 @@ import java.io.File;
 import android.app.AlertDialog;
 import android.appwidget.AppWidgetManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
 import android.view.KeyEvent;
+import android.widget.Toast;
 
 public class CurrentWidgetConfigure extends PreferenceActivity {
 
@@ -131,6 +133,22 @@ public class CurrentWidgetConfigure extends PreferenceActivity {
 			return true;
 			
 		} else if (preference.getKey().equals("clear_log")) {
+
+			SharedPreferences settings = getSharedPreferences(SHARED_PREFS_NAME, 0);
+			File f = new File(settings.getString(getApplicationContext().getString(R.string.pref_log_filename_key), "/sdcard/currentwidget.log"));
+			Toast t = null;
+			if (f.exists()) {
+				if (f.delete())
+					t = Toast.makeText(getApplicationContext(), "Log file deleted", Toast.LENGTH_LONG);
+				else
+					t = Toast.makeText(getApplicationContext(), "Error deleting log file", Toast.LENGTH_LONG);
+			}
+			else {
+				t = Toast.makeText(getApplicationContext(), "No log file", Toast.LENGTH_LONG);
+			}
+			
+			t.show();
+			
 			return true;
 		}
 		

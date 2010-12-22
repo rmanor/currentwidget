@@ -33,6 +33,7 @@ import org.achartengine.renderer.XYSeriesRenderer;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
 
@@ -72,8 +73,11 @@ public class GraphActivity extends Activity {
 				
 				// add to graph series
 				//tokens[1]	
-				_series.add(x, Double.parseDouble(tokens[1]));
-				x = x + 1;				       
+				Log.d("CurrentWidget", line);
+				if (tokens.length > 1) {
+					_series.add(x, Double.parseDouble(tokens[1]));
+					x = x + 1;
+				}					
 				       
 			}
 			
