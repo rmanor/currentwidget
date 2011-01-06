@@ -25,6 +25,7 @@ import java.io.IOException;
 
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
+import org.achartengine.model.TimeSeries;
 import org.achartengine.model.XYMultipleSeriesDataset;
 import org.achartengine.model.XYSeries;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
@@ -32,6 +33,7 @@ import org.achartengine.renderer.XYSeriesRenderer;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ViewGroup.LayoutParams;
@@ -41,7 +43,7 @@ public class GraphActivity extends Activity {
 	
 	  private XYMultipleSeriesDataset _dataset = new XYMultipleSeriesDataset();
 	  private XYMultipleSeriesRenderer _renderer = new XYMultipleSeriesRenderer();
-	  private XYSeries _series;
+	  //private XYSeries _series;
 	  //private XYSeriesRenderer mCurrentRenderer;
 	  private GraphicalView _chartView;
 
@@ -57,7 +59,17 @@ public class GraphActivity extends Activity {
 		
 		XYSeries _series = new XYSeries("Electric Current");
 		_dataset.addSeries(_series);
-		_renderer.addSeriesRenderer(new XYSeriesRenderer());
+		XYSeriesRenderer r = new XYSeriesRenderer();
+		r.setColor(Color.rgb(150, 150, 250));
+		_renderer.addSeriesRenderer(r);
+		
+	
+		_renderer.setXTitle("time");
+		_renderer.setYTitle("mA");
+		
+		_renderer.setXLabels(0);
+		
+	
 		
 		FileInputStream logFile;
 		try {
@@ -65,7 +77,7 @@ public class GraphActivity extends Activity {
 			DataInputStream ds = new DataInputStream(logFile);
 			
 			String line = null;
-			int x = 0;
+			int x = 0;			
 			while ( ( line = ds.readLine() ) != null ) {
 				
 				// 0 is datetime , 1 is value, 3 all the rest
@@ -73,16 +85,25 @@ public class GraphActivity extends Activity {
 				
 				// add to graph series
 				//tokens[1]	
-				Log.d("CurrentWidget", line);
+				//Log.d("CurrentWidget", line);
 				if (tokens.length > 1) {
-					_series.add(x, Double.parseDouble(tokens[1]));
-					x = x + 1;
+					try {
+						
+						_series.add(x, Double.parseDouble(tokens[1].substring(0, tokens[1].length() - 2)));
+						if (x % 5 == 0)
+							_renderer.addTextLabel(x, tokens[0].substring(10, tokens[0].length()));
+						
+						x = x + 1;
+					}
+					catch (Exception ex) {
+						ex.printStackTrace();
+					}
 				}					
 				       
-			}
+			}			
 			
 			ds.close();
-			logFile.close();
+			logFile.close();			
 			
 			
 		} catch (IOException e) {

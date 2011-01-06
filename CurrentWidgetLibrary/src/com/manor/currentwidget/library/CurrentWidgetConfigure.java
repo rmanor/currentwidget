@@ -35,15 +35,8 @@ import android.widget.Toast;
 
 public class CurrentWidgetConfigure extends PreferenceActivity {
 
-	int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
+	int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;	
 	
-	/*public final static String LOG_ENABLED_SETTING = "logEnabled";
-	public final static String LOG_FILENAME_SETTING = "logFilename";
-	public final static String SECOND_INTERVAL_SETTING = "secondsInterval";
-	public final static String UNITS_SETTING = "units";
-	public final static String LOG_APPS_SETTING = "logApps";
-	public final static String OP = "op";
-	public final static String OP_VALUE ="opValue";*/
 	public final static String SHARED_PREFS_NAME = "currentWidgetPrefs";
 	
 	public CurrentWidgetConfigure() {
@@ -57,7 +50,6 @@ public class CurrentWidgetConfigure extends PreferenceActivity {
 	
 		getPreferenceManager().setSharedPreferencesName(SHARED_PREFS_NAME);
 		
-		//setContentView(R.layout.configure);
 		addPreferencesFromResource(R.xml.prefs);
 
 		// get widget id
@@ -127,8 +119,17 @@ public class CurrentWidgetConfigure extends PreferenceActivity {
 			return true;
 		} else if (preference.getKey().equals("view_graph")) {
 			
-			Intent i = new Intent(getApplicationContext(), GraphActivity.class);
-			startActivity(i);
+			SharedPreferences settings = getSharedPreferences(SHARED_PREFS_NAME, 0);
+			File f = new File(settings.getString(getApplicationContext().getString(R.string.pref_log_filename_key), "/sdcard/currentwidget.log"));
+			Toast t = null;
+			if (f.exists()) {
+				Intent i = new Intent(getApplicationContext(), GraphActivity.class);
+				startActivity(i);
+			}
+			else {
+				new AlertDialog.Builder(this).setMessage("Log file not found").setPositiveButton("OK", null).show();
+			}
+				
 			
 			return true;
 			
@@ -155,64 +156,4 @@ public class CurrentWidgetConfigure extends PreferenceActivity {
 		return false;
 	};
 	
-	/*View.OnClickListener mOnSaveClickListener = new View.OnClickListener() {	
-		
-		public void onClick(View v) {
-
-			switch(v.getId())	{
-				case R.id.view_log_button:
-					File logFile = new File(((EditText)findViewById(R.id.log_filename)).getText().toString());
-					if (logFile.exists()) {
-						Intent viewLogIntent = new Intent(Intent.ACTION_VIEW);					
-						viewLogIntent.setDataAndType(Uri.fromFile(logFile), "text/plain");
-						startActivity(Intent.createChooser(viewLogIntent, "CurrentWidget"));
-					}
-					else {
-						new AlertDialog.Builder(v.getContext()).setMessage("Log file not found").setPositiveButton("OK", null).show();						
-					}
-				break;
-				case R.id.save_button:
-					Context context = CurrentWidgetConfigure.this;
-					TextView view = (TextView)findViewById(R.id.interval_edit);
-					Spinner spinner = (Spinner)findViewById(R.id.units_spinner);
-					int selectedUnit = spinner.getSelectedItemPosition();
-					
-					Long interval = null;
-					float opValue = 0;
-					try {					
-						 interval = Long.valueOf(view.getText().toString());
-						 if (selectedUnit == 1) // if minutes
-							 interval*=60; // convert to seconds
-						 
-						 opValue = Float.parseFloat(((EditText)findViewById(R.id.op_value_edit)).getText().toString());
-					}
-					catch (NumberFormatException nfe) {
-						interval = 60l;
-						opValue = 0f;
-					}
-					
-					SharedPreferences settings = getSharedPreferences("currentWidgetPrefs", 0);
-					SharedPreferences.Editor editor = settings.edit();
-					editor.putLong(SECOND_INTERVAL_SETTING + mAppWidgetId, interval);
-					editor.putInt(UNITS_SETTING + mAppWidgetId, selectedUnit);
-					editor.putBoolean(LOG_ENABLED_SETTING + mAppWidgetId, ((CheckBox)findViewById(R.id.log_checkbox)).isChecked());
-					editor.putString(LOG_FILENAME_SETTING + mAppWidgetId, ((EditText)findViewById(R.id.log_filename)).getText().toString());
-					editor.putBoolean(LOG_APPS_SETTING + mAppWidgetId, ((CheckBox)findViewById(R.id.log_apps_checkbox)).isChecked());
-					editor.putInt(OP + mAppWidgetId, ((Spinner)findViewById(R.id.op_spinner)).getSelectedItemPosition());
-					editor.putFloat(OP_VALUE + mAppWidgetId, opValue);
-					
-					editor.commit();					
-					
-					CurrentWidget.updateAppWidget(context, AppWidgetManager.getInstance(context), 
-							mAppWidgetId);
-					
-					Intent resultValue = new Intent();
-					resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
-					setResult(RESULT_OK, resultValue);
-					finish();
-					break;
-				
-			}
-		}
-	};*/
 }

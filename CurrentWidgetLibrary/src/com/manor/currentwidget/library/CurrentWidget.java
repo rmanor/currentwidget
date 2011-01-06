@@ -37,6 +37,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.LinearLayout;
 import android.widget.RemoteViews;
 
 /**
@@ -139,13 +140,13 @@ public class CurrentWidget extends AppWidgetProvider {
 		
 		// set on click for whole layout to launch configuration
 		RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.main);
+		
 		Intent configIntent = new Intent(context, CurrentWidgetConfigure.class);		
 		configIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
 		configIntent.setData(Uri.withAppendedPath(Uri.parse("droidrm://widget/id/"), String.valueOf(appWidgetId)));
         PendingIntent configPendingIntent = PendingIntent.getActivity(context, appWidgetId, configIntent, 0);
-        remoteViews.setOnClickPendingIntent(R.id.linear_layout, configPendingIntent);        
-      
-		
+        remoteViews.setOnClickPendingIntent(R.id.linear_layout, configPendingIntent);      
+              
 		String text = null;
 		boolean isCharging = true;
 		
