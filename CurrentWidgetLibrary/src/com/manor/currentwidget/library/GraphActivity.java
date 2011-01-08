@@ -25,7 +25,6 @@ import java.io.IOException;
 
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
-import org.achartengine.model.TimeSeries;
 import org.achartengine.model.XYMultipleSeriesDataset;
 import org.achartengine.model.XYSeries;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
@@ -35,7 +34,6 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
 
@@ -90,9 +88,7 @@ public class GraphActivity extends Activity {
 					try {
 						
 						_series.add(x, Double.parseDouble(tokens[1].substring(0, tokens[1].length() - 2)));
-						if (x % 5 == 0)
-							_renderer.addTextLabel(x, tokens[0].substring(10, tokens[0].length()));
-						
+						_renderer.addTextLabel(x, tokens[0]);
 						x = x + 1;
 					}
 					catch (Exception ex) {
@@ -100,7 +96,9 @@ public class GraphActivity extends Activity {
 					}
 				}					
 				       
-			}			
+			}
+			
+			_renderer.setXLabels(5);
 			
 			ds.close();
 			logFile.close();			
