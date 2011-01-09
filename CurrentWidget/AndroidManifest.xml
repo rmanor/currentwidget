@@ -21,10 +21,8 @@
 		        <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />        		
     		</intent-filter>
-		</activity>
-		
-		<activity android:name="com.manor.currentwidget.library.GraphActivity"/>
-		
+		</activity>		
+	
 		<activity android:name="org.achartengine.GraphicalActivity" />
 		
     </application>
