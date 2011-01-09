@@ -153,12 +153,13 @@ public class CurrentWidgetConfigure extends PreferenceActivity {
 	    XYMultipleSeriesRenderer renderer = new XYMultipleSeriesRenderer();
 	    
 	    XYSeriesRenderer r = new XYSeriesRenderer();
-	    r.setColor(Color.BLUE);
-	    r.setPointStyle(PointStyle.SQUARE);
-	    r.setFillBelowLine(true);
-	    r.setFillBelowLineColor(Color.WHITE);
+	    r.setColor(Color.WHITE);
+	    /*r.setPointStyle(PointStyle.SQUARE);*/
+	    /*r.setFillBelowLine(true);
+	    r.setFillBelowLineColor(Color.WHITE);*/
 	    r.setFillPoints(true);
-	    renderer.addSeriesRenderer(r);
+	    renderer.addSeriesRenderer(r);	    
+	    renderer.setYTitle("mA");
 	    
 	    /*r = new XYSeriesRenderer();
 	    r.setPointStyle(PointStyle.CIRCLE);
