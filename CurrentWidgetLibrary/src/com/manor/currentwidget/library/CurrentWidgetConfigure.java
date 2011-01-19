@@ -103,6 +103,8 @@ public class CurrentWidgetConfigure extends PreferenceActivity {
 	
 	private void startGraphActivity() {
 		
+		// @@@ start a thread , show progress bar, allow cancel
+		
 		SharedPreferences settings = getSharedPreferences(SHARED_PREFS_NAME, 0);
 		
 		//Intent i = new Intent(getApplicationContext(), GraphActivity.class);
@@ -154,22 +156,12 @@ public class CurrentWidgetConfigure extends PreferenceActivity {
 	    
 	    XYSeriesRenderer r = new XYSeriesRenderer();
 	    r.setColor(Color.WHITE);
-	    /*r.setPointStyle(PointStyle.SQUARE);*/
-	    /*r.setFillBelowLine(true);
-	    r.setFillBelowLineColor(Color.WHITE);*/
 	    r.setFillPoints(true);
 	    renderer.addSeriesRenderer(r);	    
-	    renderer.setYTitle("mA");
-	    
-	    /*r = new XYSeriesRenderer();
-	    r.setPointStyle(PointStyle.CIRCLE);
-	    r.setColor(Color.GREEN);
-	    r.setFillPoints(true);
-	    renderer.addSeriesRenderer(r);*/
+	    renderer.setYTitle("mA");	    
 	    
 	    renderer.setAxesColor(Color.DKGRAY);
 	    renderer.setLabelsColor(Color.LTGRAY);
-
 		
 		Intent i = ChartFactory.getTimeChartIntent(this.getApplicationContext(), dataset, renderer, null);
 		startActivity(i);

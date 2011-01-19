@@ -22,9 +22,9 @@ package com.manor.currentwidget.library;
 import java.io.BufferedReader;
 import java.io.FileReader;
 
-public class SMemTextReader implements ICurrentReader {
+public class SMemTextReader {
 
-	public Long getValue() {
+	public static Long getValue() {
 
 		boolean success = false;
 		String text = null;

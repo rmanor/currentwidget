@@ -23,17 +23,17 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 
-public class OneLineReader implements ICurrentReader {
+public class OneLineReader {
 
-	private File _f = null;
+	/*private File _f = null;
 	private boolean _convertToMillis = false;
 	
 	public OneLineReader(File f, boolean convertToMillis) {
 		_f = f;
 		_convertToMillis = convertToMillis;
-	}
+	}*/
 	
-	public Long getValue() {
+	public static Long getValue(File _f, boolean _convertToMillis) {
 		
 		String text = null;
 		

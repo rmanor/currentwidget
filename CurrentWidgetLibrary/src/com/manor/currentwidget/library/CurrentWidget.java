@@ -149,55 +149,51 @@ public class CurrentWidget extends AppWidgetProvider {
 		String text = null;
 		boolean isCharging = true;
 		
-		ICurrentReader currentReader =  CurrentReaderFactory.getCurrentReader();
-		if (currentReader == null)
+		//ICurrentReader currentReader =  CurrentReaderFactory.getCurrentReader();
+		Long value = CurrentReaderFactory.getValue();
+		
+		if (value == null)
 			text = "no data";	
 		else
-		{	
-			Long value = currentReader.getValue();
-			if (value == null)
-				text = "error2";
-			else
+		{				
+			if (value < 0)
 			{
-				if (value < 0)
-				{
-					value = value*(-1);
-					//remoteViews.setTextColor(R.id.text, Color.rgb(117, 120, 118)); // drawing
-					//remoteViews.setViewVisibility(R.id.charging_image, View.INVISIBLE);
-					remoteViews.setImageViewResource(R.id.status_image, R.drawable.drawing);
-					isCharging = false;
-				}
-				else
-					remoteViews.setImageViewResource(R.id.status_image, R.drawable.charging);
-					//remoteViews.setViewVisibility(R.id.charging_image, View.VISIBLE);
-					//remoteViews.setTextColor(R.id.text, Color.rgb(100, 168, 0)); // charging
-				
-				
-				if (settings.getBoolean(context.getString(R.string.pref_op_enabled_key), false)) {
-					int op = Integer.parseInt(settings.getString(context.getString(R.string.pref_op_type_key), "0"));
-					if (op > 0) {
-						float opValue = Float.parseFloat(settings.getString(context.getString(R.string.pref_op_value_key), "0"));
-						if (opValue > 0) {
-							switch(op) {
-							case 1:
-								value = (long)Math.round(value * opValue);
-								break;
-							case 2:
-								value = (long)Math.round(value / opValue);
-								break;
-							case 3:
-								value = (long)Math.round(value + opValue);
-								break;
-							case 4:
-								value = (long)Math.round(value - opValue);
-								break;
-							}
+				value = value*(-1);
+				//remoteViews.setTextColor(R.id.text, Color.rgb(117, 120, 118)); // drawing
+				//remoteViews.setViewVisibility(R.id.charging_image, View.INVISIBLE);
+				remoteViews.setImageViewResource(R.id.status_image, R.drawable.drawing);
+				isCharging = false;
+			}
+			else
+				remoteViews.setImageViewResource(R.id.status_image, R.drawable.charging);
+				//remoteViews.setViewVisibility(R.id.charging_image, View.VISIBLE);
+				//remoteViews.setTextColor(R.id.text, Color.rgb(100, 168, 0)); // charging
+			
+			
+			if (settings.getBoolean(context.getString(R.string.pref_op_enabled_key), false)) {
+				int op = Integer.parseInt(settings.getString(context.getString(R.string.pref_op_type_key), "0"));
+				if (op > 0) {
+					float opValue = Float.parseFloat(settings.getString(context.getString(R.string.pref_op_value_key), "0"));
+					if (opValue > 0) {
+						switch(op) {
+						case 1:
+							value = (long)Math.round(value * opValue);
+							break;
+						case 2:
+							value = (long)Math.round(value / opValue);
+							break;
+						case 3:
+							value = (long)Math.round(value + opValue);
+							break;
+						case 4:
+							value = (long)Math.round(value - opValue);
+							break;
 						}
 					}
-				}					
-				
-				text = value.toString() + "mA";
+				}
 			}					
+			
+			text = value.toString() + "mA";
 		}	
 		
 		remoteViews.setTextViewText(R.id.text, text);
@@ -277,10 +273,15 @@ public class CurrentWidget extends AppWidgetProvider {
         //Log.d("CurrentWidget", "secondsInterval: " + Long.toString(secondsInterval));
         
         // schedule the new widget for updating
-        AlarmManager alarms = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
-        //alarms.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + 5*60*1000, newPending);
-        alarms.setRepeating(AlarmManager.RTC, System.currentTimeMillis() + (secondsInterval*1000),
-                secondsInterval * 1000, newPending);        
+        if (secondsInterval > 0) {        	
+        
+	        AlarmManager alarms = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+	        //alarms.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + 5*60*1000, newPending);
+	        alarms.setRepeating(AlarmManager.RTC, System.currentTimeMillis() + (secondsInterval*1000),
+	                secondsInterval * 1000, newPending);
+	        
+        }
+	
        
         appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
 
