@@ -272,14 +272,17 @@ public class CurrentWidget extends AppWidgetProvider {
         
         //Log.d("CurrentWidget", "secondsInterval: " + Long.toString(secondsInterval));
         
-        // schedule the new widget for updating
-        if (secondsInterval > 0) {        	
+        AlarmManager alarms = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         
-	        AlarmManager alarms = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+        // schedule the new widget for updating
+        // @@@ enough? I think I need to cancel previous one as well!
+        if (secondsInterval > 0) {       	    
 	        //alarms.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + 5*60*1000, newPending);
 	        alarms.setRepeating(AlarmManager.RTC, System.currentTimeMillis() + (secondsInterval*1000),
-	                secondsInterval * 1000, newPending);
-	        
+	                secondsInterval * 1000, newPending);	        
+        }
+        else {
+        	alarms.cancel(newPending);
         }
 	
        
