@@ -15,7 +15,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with CurrentWidget.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package com.manor.currentwidget.library;
 
@@ -26,15 +26,15 @@ import java.io.IOException;
 import java.util.Date;
 
 import org.achartengine.ChartFactory;
-import org.achartengine.chart.PointStyle;
-import org.achartengine.chart.TimeChart;
 import org.achartengine.model.TimeSeries;
 import org.achartengine.model.XYMultipleSeriesDataset;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.appwidget.AppWidgetManager;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -49,20 +49,25 @@ import android.widget.Toast;
 public class CurrentWidgetConfigure extends PreferenceActivity {
 
 	int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;	
-	
+
 	public final static String SHARED_PREFS_NAME = "currentWidgetPrefs";
+	
+	private XYMultipleSeriesDataset _dataset = null;
+	private XYMultipleSeriesRenderer _renderer = null;
+	private ProgressDialog _progressDialog = null;
+	private boolean _graphLoadingCancelled = false;
 	
 	public CurrentWidgetConfigure() {
 		super();
-		
+
 	}
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);		
-	
+
 		getPreferenceManager().setSharedPreferencesName(SHARED_PREFS_NAME);
-		
+
 		addPreferencesFromResource(R.xml.prefs);
 
 		// get widget id
@@ -77,14 +82,14 @@ public class CurrentWidgetConfigure extends PreferenceActivity {
 
 		// init result as ok
 		setResult(RESULT_OK, resultValue);
-		
+
 		if (this.getApplicationContext().getPackageName().equals("com.manor.currentwidgetpaid")) {
 			findPreference("donate").setTitle("Thank you for donating!");
 		}
-	
-		
+
+
 	}
-	
+
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -94,82 +99,111 @@ public class CurrentWidgetConfigure extends PreferenceActivity {
 				updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, new int[] { mAppWidgetId } );
 				updateIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
 				updateIntent.setData(Uri.withAppendedPath(Uri.parse("droidrm://widget/id/"), String.valueOf(mAppWidgetId)));
-				
+
 				sendBroadcast(updateIntent);
 			}
 		}
 		return super.onKeyDown(keyCode, event);
 	}
-	
-	private void startGraphActivity() {
-		
-		// @@@ start a thread , show progress bar, allow cancel
-		
-		SharedPreferences settings = getSharedPreferences(SHARED_PREFS_NAME, 0);
-		
-		//Intent i = new Intent(getApplicationContext(), GraphActivity.class);
-		XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();
-		TimeSeries series = new TimeSeries("Electric Current");
-		
-		FileInputStream logFile = null;
-		
-		try {
-			logFile = new FileInputStream(settings.getString(getApplicationContext().getString(R.string.pref_log_filename_key), "/sdcard/currentwidget.log"));
-			DataInputStream ds = new DataInputStream(logFile);
-			
-			String line = null;
-			int x = 0;			
-			while ( ( line = ds.readLine() ) != null ) {
-				
-				// 0 is datetime , 1 is value, 3 all the rest
-				String[] tokens = line.split(",", 3);
-				
-				// add to graph series
-				//tokens[1]	
-				//Log.d("CurrentWidget", line);
-				if (tokens.length > 1) {
-					try {
-						
-						series.add(new Date(tokens[0]), Double.parseDouble(tokens[1].substring(0, tokens[1].length() - 2)));
-						
-						x = x + 1;
-					}
-					catch (Exception ex) {
-						ex.printStackTrace();
-					}
-				}					
-				       
-			}		
-			
-			ds.close();
-			logFile.close();			
-			
-			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 
-		dataset.addSeries(series);
+	private void startGraphActivity() {
+	
+		// start a thread , show progress bar, allow cancel
 		
-	    XYMultipleSeriesRenderer renderer = new XYMultipleSeriesRenderer();
-	    
-	    XYSeriesRenderer r = new XYSeriesRenderer();
-	    r.setColor(Color.WHITE);
-	    r.setFillPoints(true);
-	    renderer.addSeriesRenderer(r);	    
-	    renderer.setYTitle("mA");	    
-	    
-	    renderer.setAxesColor(Color.DKGRAY);
-	    renderer.setLabelsColor(Color.LTGRAY);
-		
-		Intent i = ChartFactory.getTimeChartIntent(this.getApplicationContext(), dataset, renderer, null);
-		startActivity(i);
+		Thread t = new Thread() {
+			public void run() {
+				
+				SharedPreferences settings = getSharedPreferences(SHARED_PREFS_NAME, 0);
+
+				//Intent i = new Intent(getApplicationContext(), GraphActivity.class);
+				_dataset = new XYMultipleSeriesDataset();
+				TimeSeries series = new TimeSeries("Electric Current");
+
+				FileInputStream logFile = null;
+
+				try {
+					logFile = new FileInputStream(settings.getString(getApplicationContext().getString(R.string.pref_log_filename_key), "/sdcard/currentwidget.log"));
+					DataInputStream ds = new DataInputStream(logFile);
+
+					String line = null;
+					int x = 0;			
+					while ( ( line = ds.readLine() ) != null && !_graphLoadingCancelled) {
+
+						// 0 is datetime , 1 is value, 3 all the rest
+						String[] tokens = line.split(",", 3);						
+						
+						// add to graph series
+						//tokens[1]	
+						//Log.d("CurrentWidget", line);
+						if (tokens.length > 1) {
+							try {
+
+								series.add(new Date(tokens[0]), Double.parseDouble(tokens[1].substring(0, tokens[1].length() - 2)));
+
+								x = x + 1;
+							}
+							catch (Exception ex) {
+								ex.printStackTrace();
+							}
+						}					
+
+					}		
+
+					ds.close();
+					logFile.close();			
+
+
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				_dataset.addSeries(series);
+
+				_renderer = new XYMultipleSeriesRenderer();
+
+				XYSeriesRenderer r = new XYSeriesRenderer();
+				r.setColor(Color.WHITE);
+				r.setFillPoints(true);
+				_renderer.addSeriesRenderer(r);	    
+				_renderer.setYTitle("mA");	    
+
+				_renderer.setAxesColor(Color.DKGRAY);
+				_renderer.setLabelsColor(Color.LTGRAY);
+				
+				runOnUiThread(_fininshedLoadingGraphRunnable);
+
+			}
+		};
+
+		_graphLoadingCancelled = false;
+		_progressDialog = ProgressDialog.show(this, "", "Loading. Please wait...", true, true, new DialogInterface.OnCancelListener() {
+			
+			public void onCancel(DialogInterface dialog) {
+				_graphLoadingCancelled = true;
+			}
+		});
+
+		t.start();
+
+
 
 	}
 	
-	public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
+	private final Runnable _fininshedLoadingGraphRunnable = new Runnable() {
 		
+		public void run() {
+			if (!_graphLoadingCancelled) {
+				Intent i = ChartFactory.getTimeChartIntent(getApplicationContext(), _dataset, _renderer, null);
+				startActivity(i);
+			}
+			_progressDialog.dismiss();
+		};
+	};
+
+
+	public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
+
 		if (preference.getKey().equals("view_log")) {
 			String logFilename = getPreferenceManager().getSharedPreferences().getString(getString(R.string.pref_log_filename_key), "/sdcard/currentwidget.log");
 			File logFile = new File(logFilename);
@@ -181,11 +215,11 @@ public class CurrentWidgetConfigure extends PreferenceActivity {
 			else {
 				new AlertDialog.Builder(this).setMessage("Log file not found").setPositiveButton("OK", null).show();						
 			}
-			
+
 			return true;
 
 		} else if (preference.getKey().equals("donate")) {
-			
+
 			try {
 				Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.manor.currentwidgetpaid"));						
 				startActivity(intent);
@@ -198,20 +232,20 @@ public class CurrentWidgetConfigure extends PreferenceActivity {
 			}			
 			return true;
 		} else if (preference.getKey().equals("view_graph")) {
-			
+
 			SharedPreferences settings = getSharedPreferences(SHARED_PREFS_NAME, 0);
 			File f = new File(settings.getString(getApplicationContext().getString(R.string.pref_log_filename_key), "/sdcard/currentwidget.log"));
-			
+
 			if (f.exists()) {
 				startGraphActivity();
 			}
 			else {
 				new AlertDialog.Builder(this).setMessage("Log file not found").setPositiveButton("OK", null).show();
 			}
-				
-			
+
+
 			return true;
-			
+
 		} else if (preference.getKey().equals("clear_log")) {
 
 			SharedPreferences settings = getSharedPreferences(SHARED_PREFS_NAME, 0);
@@ -226,13 +260,13 @@ public class CurrentWidgetConfigure extends PreferenceActivity {
 			else {
 				t = Toast.makeText(getApplicationContext(), "No log file", Toast.LENGTH_LONG);
 			}
-			
+
 			t.show();
-			
+
 			return true;
 		}
-		
+
 		return false;
 	};
-	
+
 }
