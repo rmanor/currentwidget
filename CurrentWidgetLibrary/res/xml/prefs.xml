@@ -5,7 +5,7 @@
 	<PreferenceCategory android:title="General">
 	
 		<EditTextPreference android:key="@string/pref_interval_key" android:title="Update Interval"
-			android:summary="Number of seconds between widget updates"
+			android:summary="Number of seconds between widget updates (0 = no auto update)"
 			android:defaultValue="60"
 			android:inputType="number"
 			/>
@@ -15,12 +15,12 @@
 			android:summary="Support the development of CurrentWidget"			
 			android:key="donate"/>
 			
-		<CheckBoxPreference
+		<!-- <CheckBoxPreference
 			android:title="Hide Background"
 			android:key="@string/pref_hide_background_key"
 			android:defaultValue="false"
 			android:summaryOn="Don\'t show widget background"
-			android:summaryOff="Show widget background"/>			
+			android:summaryOff="Show widget background"/>  -->			
 		
 	
 	</PreferenceCategory>	
