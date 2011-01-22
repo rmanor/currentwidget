@@ -126,11 +126,12 @@ public class CurrentWidgetConfigure extends PreferenceActivity {
 					DataInputStream ds = new DataInputStream(logFile);
 
 					String line = null;
+					String[] tokens = null;
 					int x = 0;			
 					while ( ( line = ds.readLine() ) != null && !_graphLoadingCancelled) {
 
 						// 0 is datetime , 1 is value, 3 all the rest
-						String[] tokens = line.split(",", 3);						
+						tokens = line.split(",", 3);						
 						
 						// add to graph series
 						//tokens[1]	

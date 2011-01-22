@@ -114,7 +114,7 @@ public class CurrentWidget extends AppWidgetProvider {
 		boolean doLogFile = true;
 		
 		 for (int appWidgetId : appWidgetIds) {
-			 Log.d("CurrentWidget", String.format("onUpdate, id: %s", Integer.toString(appWidgetId))); 
+			 //Log.d("CurrentWidget", String.format("onUpdate, id: %s", Integer.toString(appWidgetId))); 
 			 	
 			 updateAppWidget(context.getApplicationContext(), AppWidgetManager.getInstance(context), appWidgetId, doLogFile);
 			 
@@ -137,15 +137,8 @@ public class CurrentWidget extends AppWidgetProvider {
 		}
 		 
 		
-		// set on click for whole layout to launch configuration
-		RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.main);
-		
-		Intent configIntent = new Intent(context, CurrentWidgetConfigure.class);		
-		configIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-		configIntent.setData(Uri.withAppendedPath(Uri.parse("droidrm://widget/id/"), String.valueOf(appWidgetId)));
-        PendingIntent configPendingIntent = PendingIntent.getActivity(context, appWidgetId, configIntent, 0);
-        remoteViews.setOnClickPendingIntent(R.id.linear_layout, configPendingIntent);      
-              
+		RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.main);		
+             
 		String text = null;
 		boolean isCharging = true;
 		
@@ -253,6 +246,14 @@ public class CurrentWidget extends AppWidgetProvider {
 				Log.e("CurrentWidget", ex.getMessage());
 			}			
 		}
+		
+		Intent configIntent = new Intent(context, CurrentWidgetConfigure.class);		
+		configIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+		configIntent.setData(Uri.withAppendedPath(Uri.parse("droidrm://widget/id/"), String.valueOf(appWidgetId)));
+        PendingIntent configPi = PendingIntent.getActivity(context, appWidgetId, configIntent, 0);
+        
+        remoteViews.setOnClickPendingIntent(R.id.text, configPi);
+
 
         Intent widgetUpdate = new Intent(context.getApplicationContext(), CurrentWidget.class);
         widgetUpdate.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, new int[] { appWidgetId } );
@@ -262,13 +263,14 @@ public class CurrentWidget extends AppWidgetProvider {
         // make this pending intent unique
         //widgetUpdate.setData(Uri.withAppendedPath(Uri.parse(CurrentWidget.URI_SCHEME + "://widget/id/"), String.valueOf(mAppWidgetId)));
         
-        PendingIntent newPending = PendingIntent.getBroadcast(context, 0, widgetUpdate,
+        PendingIntent widgetUpdatePi = PendingIntent.getBroadcast(context, 0, widgetUpdate,
                 PendingIntent.FLAG_UPDATE_CURRENT);
         
-        // set on click for button
-        remoteViews.setOnClickPendingIntent(R.id.update_now_button, newPending);
-        remoteViews.setOnClickPendingIntent(R.id.last_updated_text, newPending);
-        remoteViews.setOnClickPendingIntent(R.id.last_update_title, newPending);
+        // update widget
+        remoteViews.setOnClickPendingIntent(R.id.update_now_button, widgetUpdatePi);
+        remoteViews.setOnClickPendingIntent(R.id.last_updated_text, widgetUpdatePi);
+        remoteViews.setOnClickPendingIntent(R.id.last_update_title, widgetUpdatePi);
+        remoteViews.setOnClickPendingIntent(R.id.linear_layout, widgetUpdatePi);
         
         //Log.d("CurrentWidget", "secondsInterval: " + Long.toString(secondsInterval));
         
@@ -279,10 +281,10 @@ public class CurrentWidget extends AppWidgetProvider {
         if (secondsInterval > 0) {       	    
 	        //alarms.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + 5*60*1000, newPending);
 	        alarms.setRepeating(AlarmManager.RTC, System.currentTimeMillis() + (secondsInterval*1000),
-	                secondsInterval * 1000, newPending);	        
+	                secondsInterval * 1000, widgetUpdatePi);	        
         }
         else {
-        	alarms.cancel(newPending);
+        	alarms.cancel(widgetUpdatePi);
         }
 	
        
