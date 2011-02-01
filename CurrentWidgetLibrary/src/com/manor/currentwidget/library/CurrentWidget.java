@@ -45,6 +45,9 @@ import android.widget.RemoteViews;
  */
 public class CurrentWidget extends AppWidgetProvider {
 	
+	private static final int NUMBER_OF_VIEWS = 2;
+	private static final String SWITCH_VIEW_ACTION = "CURRENT_WIDGET_SWITCH_VIEW";
+	
 	@Override
 	public void onEnabled(Context context) {
 	}
@@ -85,17 +88,19 @@ public class CurrentWidget extends AppWidgetProvider {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		final String action = intent.getAction();
-		/*if (action == null) {
-	    	Bundle extras = intent.getExtras();
+		Bundle extras = null;
+		if (SWITCH_VIEW_ACTION.equals(action)) {
+	    	extras = intent.getExtras();
 	    	if (extras != null) {
 	    		final int appWidgetId = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, 
 	    				AppWidgetManager.INVALID_APPWIDGET_ID); 
 	    		if (appWidgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
-	    			
+	    			this.onSwitchView(context, appWidgetId);
 	    		}
+	    	}
 		}
-		else*/ if (AppWidgetManager.ACTION_APPWIDGET_DELETED.equals(action)) {
-	    	Bundle extras = intent.getExtras();
+		else if (AppWidgetManager.ACTION_APPWIDGET_DELETED.equals(action)) {
+	    	extras = intent.getExtras();
 	    	if (extras != null) {
 	    		final int appWidgetId = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, 
 	    				AppWidgetManager.INVALID_APPWIDGET_ID); 
@@ -108,10 +113,33 @@ public class CurrentWidget extends AppWidgetProvider {
 	    } 	
 	}
 	
+	private void onSwitchView(Context context, int appWidgetId) {
+		
+		SharedPreferences settings = context.getSharedPreferences(CurrentWidgetConfigure.SHARED_PREFS_NAME, 0);
+		
+		int currentView = settings.getInt("current_view", 0);
+		++currentView;
+		if (currentView >= NUMBER_OF_VIEWS)
+			currentView = 0;
+		
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putInt("current_view", currentView);
+		editor.commit();
+		
+		String text = settings.getString(Integer.toString(currentView) + "_text", "no data"); 
+		
+		RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.main);
+		remoteViews.setTextViewText(R.id.text, text);
+		
+		AppWidgetManager.getInstance(context.getApplicationContext()).updateAppWidget(appWidgetId, remoteViews);
+		
+	}
+	
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {	
 		
 		boolean doLogFile = true;
+		
 		
 		 for (int appWidgetId : appWidgetIds) {
 			 //Log.d("CurrentWidget", String.format("onUpdate, id: %s", Integer.toString(appWidgetId))); 
@@ -122,8 +150,8 @@ public class CurrentWidget extends AppWidgetProvider {
 			 doLogFile = false;
 
 		 }
-	}
-	
+	}	
+
 	static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId, boolean doLogFile) {		
 	
 		SharedPreferences settings = context.getSharedPreferences(CurrentWidgetConfigure.SHARED_PREFS_NAME, 0);
@@ -139,14 +167,14 @@ public class CurrentWidget extends AppWidgetProvider {
 		
 		RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.main);		
              
-		String text = null;
+		String currentText = null;
 		boolean isCharging = true;
 		
 		//ICurrentReader currentReader =  CurrentReaderFactory.getCurrentReader();
 		Long value = CurrentReaderFactory.getValue();
 		
 		if (value == null)
-			text = "no data";	
+			currentText = "no data";	
 		else
 		{				
 			if (value < 0)
@@ -186,10 +214,32 @@ public class CurrentWidget extends AppWidgetProvider {
 				}
 			}					
 			
-			text = value.toString() + "mA";
+			currentText = value.toString() + "mA";
 		}	
 		
-		remoteViews.setTextViewText(R.id.text, text);
+		String batteryLevelText = "no data";
+		
+		// get battery level
+		try {
+			Intent batteryIntent = context.getApplicationContext().registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+			if (batteryIntent != null) {
+				batteryLevelText = String.valueOf(batteryIntent.getIntExtra("level", 0)) + "%";
+			}
+		}
+		catch (Exception ex) {
+			// can't register service
+		}
+
+		
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putString("0_text", currentText);
+		editor.putString("1_text", batteryLevelText);
+		editor.commit();
+		
+		int currentView = settings.getInt("current_view", 0);	
+		
+		remoteViews.setTextViewText(R.id.text, 
+				settings.getString(Integer.toString(currentView) + "_text", "no data"));
 		
 		// set last update
 		remoteViews.setTextViewText(R.id.last_updated_text, (new SimpleDateFormat("HH:mm:ss")).format(new Date()));
@@ -205,19 +255,10 @@ public class CurrentWidget extends AppWidgetProvider {
 				if (!isCharging)
 					str += "-";
 				
-				str += text;
+				str += currentText;
 				
-				// get battery level
-				try {
-					Intent batteryIntent = context.getApplicationContext().registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-					if (batteryIntent != null) {
-						str += "," + String.valueOf(batteryIntent.getIntExtra("level", 0)) + "%";
-					}
-				}
-				catch (Exception ex) {
-					// can't register service
-					str += ",000";
-				}
+				// add battery level
+				str += "," + batteryLevelText;
 				
 				if (settings.getBoolean(context.getString(R.string.pref_log_apps_key), false)) {
 				
@@ -247,12 +288,20 @@ public class CurrentWidget extends AppWidgetProvider {
 			}			
 		}
 		
-		Intent configIntent = new Intent(context, CurrentWidgetConfigure.class);		
+		/*Intent configIntent = new Intent(context.getApplicationContext(), CurrentWidgetConfigure.class);
+		configIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, new int[] { appWidgetId } );
 		configIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
 		configIntent.setData(Uri.withAppendedPath(Uri.parse("droidrm://widget/id/"), String.valueOf(appWidgetId)));
-        PendingIntent configPi = PendingIntent.getActivity(context, appWidgetId, configIntent, 0);
+        PendingIntent configPi = PendingIntent.getActivity(context, appWidgetId, configIntent, 0);*/
+		
+		Intent switchViewIntent = new Intent(context.getApplicationContext(), CurrentWidget.class);
+		switchViewIntent.setAction(SWITCH_VIEW_ACTION);
+		switchViewIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, new int[] { appWidgetId } );
+		switchViewIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+		PendingIntent switchViewPi = PendingIntent.getBroadcast(context, 0, switchViewIntent, 
+				PendingIntent.FLAG_UPDATE_CURRENT);
         
-        remoteViews.setOnClickPendingIntent(R.id.text, configPi);
+        remoteViews.setOnClickPendingIntent(R.id.text, switchViewPi);
 
 
         Intent widgetUpdate = new Intent(context.getApplicationContext(), CurrentWidget.class);
