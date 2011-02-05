@@ -115,24 +115,22 @@ public class CurrentWidget extends AppWidgetProvider {
 	
 	private void onSwitchView(Context context, int appWidgetId) {
 		
-		SharedPreferences settings = context.getSharedPreferences(CurrentWidgetConfigure.SHARED_PREFS_NAME, 0);
+		SharedPreferences settings = context.getApplicationContext().getSharedPreferences(CurrentWidgetConfigure.SHARED_PREFS_NAME, 0);
 		
 		int currentView = settings.getInt("current_view", 0);
 		++currentView;
 		if (currentView >= NUMBER_OF_VIEWS)
 			currentView = 0;
 		
+		RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.main);
+		remoteViews.setTextViewText(R.id.text, settings.getString(Integer.toString(currentView) + "_text", "no data"));
+		
+		AppWidgetManager.getInstance(context.getApplicationContext()).updateAppWidget(appWidgetId, remoteViews);
+	
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putInt("current_view", currentView);
 		editor.commit();
-		
-		String text = settings.getString(Integer.toString(currentView) + "_text", "no data"); 
-		
-		RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.main);
-		remoteViews.setTextViewText(R.id.text, text);
-		
-		AppWidgetManager.getInstance(context.getApplicationContext()).updateAppWidget(appWidgetId, remoteViews);
-		
+
 	}
 	
 	@Override
@@ -302,6 +300,7 @@ public class CurrentWidget extends AppWidgetProvider {
 				PendingIntent.FLAG_UPDATE_CURRENT);
         
         remoteViews.setOnClickPendingIntent(R.id.text, switchViewPi);
+        remoteViews.setOnClickPendingIntent(R.id.status_image, switchViewPi);
 
 
         Intent widgetUpdate = new Intent(context.getApplicationContext(), CurrentWidget.class);

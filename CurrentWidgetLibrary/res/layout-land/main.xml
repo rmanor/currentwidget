@@ -9,7 +9,7 @@
     android:paddingBottom="5dp"    
     >
     
-    	    <LinearLayout android:id="@+id/LinearLayout01" 
+    	    <LinearLayout android:id="@+id/linear_layout_top" 
     	    android:layout_width="fill_parent" 
     	    android:layout_height="wrap_content"
     	    android:background="@android:color/transparent"
