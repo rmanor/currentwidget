@@ -22,6 +22,7 @@ package com.manor.currentwidget.library;
 import java.io.DataOutputStream;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -45,7 +46,7 @@ import android.widget.RemoteViews;
  */
 public class CurrentWidget extends AppWidgetProvider {
 	
-	private static final int NUMBER_OF_VIEWS = 2;
+	private static final int MAX_NUMBER_OF_VIEWS = 2;
 	private static final String SWITCH_VIEW_ACTION = "CURRENT_WIDGET_SWITCH_VIEW";
 	
 	@Override
@@ -113,14 +114,60 @@ public class CurrentWidget extends AppWidgetProvider {
 	    } 	
 	}
 	
-	private void onSwitchView(Context context, int appWidgetId) {
+	private void onSwitchView(Context context, int appWidgetId) {	
+	
+		//Log.d("CurrentWidget", "onSwitchView");
 		
 		SharedPreferences settings = context.getApplicationContext().getSharedPreferences(CurrentWidgetConfigure.SHARED_PREFS_NAME, 0);
 		
 		int currentView = settings.getInt("current_view", 0);
-		++currentView;
+		
+		// look for next enabled view
+		int nextView = -1;
+		
+		// to look forward?
+		if (currentView < (MAX_NUMBER_OF_VIEWS - 1)) {
+			// look forward 
+			for (int i=currentView+1;i<MAX_NUMBER_OF_VIEWS;i++) {
+				if (settings.getBoolean("view_" + Integer.toString(i), true)) {
+					nextView = i;
+					break;
+				}					
+			}			
+		}
+		
+		// didn't find, look from beginning
+		if (nextView < 0 && currentView > 0) {
+			for (int i=0;i<currentView;i++) {
+				if (settings.getBoolean("view_" + Integer.toString(i), true)) {
+					nextView = i;
+					break;
+				}
+			}				
+		}
+
+		
+		/*++currentView;
 		if (currentView >= NUMBER_OF_VIEWS)
-			currentView = 0;
+			currentView = 0;*/
+		
+		if (nextView == -1) {
+			// didn't find next views
+			// meaning only one view is enabled
+			// go to configuration
+			
+			Intent configIntent = new Intent(context.getApplicationContext(), CurrentWidgetConfigure.class);
+			configIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, new int[] { appWidgetId } );
+			configIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+			configIntent.setData(Uri.withAppendedPath(Uri.parse("droidrm://widget/id/"), String.valueOf(appWidgetId)));
+			configIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			context.startActivity(configIntent);
+			
+		}
+		else {
+			// found next view
+			currentView = nextView;
+		}
 		
 		RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.main);
 		remoteViews.setTextViewText(R.id.text, settings.getString(Integer.toString(currentView) + "_text", "no data"));
@@ -133,8 +180,28 @@ public class CurrentWidget extends AppWidgetProvider {
 
 	}
 	
+	/*private int getEnabledViews(Context context) {
+		
+		int enabledViews = 0;
+		
+		SharedPreferences settings = context.getApplicationContext().getSharedPreferences(CurrentWidgetConfigure.SHARED_PREFS_NAME, 0);
+		for (int i=0;i<MAX_NUMBER_OF_VIEWS;i++) {
+			if (settings.getBoolean("view_" + Integer.toString(i), true)) {
+				enabledViews |= i;
+				count++;
+			}
+		}
+		
+		if (enabledViews == 0)
+			enabledViews = 1;
+		
+		return enabledViews;
+	}*/
+	
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {	
+		
+		//Log.d("CurrentWidget", "onUpdate");
 		
 		boolean doLogFile = true;
 		
@@ -283,6 +350,7 @@ public class CurrentWidget extends AppWidgetProvider {
 			}
 			catch (Exception ex) {
 				Log.e("CurrentWidget", ex.getMessage());
+				ex.printStackTrace();
 			}			
 		}
 		
