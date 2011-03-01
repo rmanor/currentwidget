@@ -29,6 +29,7 @@
 				    android:textStyle="bold"
 				    android:paddingLeft="8dp"
 				    android:textColorHighlight="#ff0000"
+				    android:gravity="center"
 				    />
 		
 			    <ImageView android:id="@+id/status_image" 
