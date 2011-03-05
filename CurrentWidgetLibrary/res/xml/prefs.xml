@@ -25,6 +25,14 @@
 
 
 		</PreferenceScreen>
+		
+		<ListPreference android:title="Widget Type"
+				android:summary="Change widget appearance"
+				android:defaultValue="0"
+				android:key="@string/pref_widget_type_key"
+				android:entries="@array/pref_widget_types"
+				android:entryValues="@array/pref_widget_types_values"
+			/>
 
 		<!--
 			<CheckBoxPreference android:title="Hide Background"
