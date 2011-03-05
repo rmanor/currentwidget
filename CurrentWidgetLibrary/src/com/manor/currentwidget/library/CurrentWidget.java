@@ -22,9 +22,9 @@ package com.manor.currentwidget.library;
 import java.io.DataOutputStream;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import android.app.ActivityManager;
 import android.app.AlarmManager;
@@ -154,8 +154,8 @@ public class CurrentWidget extends AppWidgetProvider {
 		if (nextView == -1) {
 			// didn't find next views
 			// meaning only one view is enabled
-			// go to configuration
-			
+			// go to configuration			
+		
 			Intent configIntent = new Intent(context.getApplicationContext(), CurrentWidgetConfigure.class);
 			configIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, new int[] { appWidgetId } );
 			configIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
@@ -169,7 +169,9 @@ public class CurrentWidget extends AppWidgetProvider {
 			currentView = nextView;
 		}
 		
-		RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.main);
+		RemoteViews remoteViews = new RemoteViews(context.getPackageName(), 
+							convertPrefValueToLayout(settings.getString(context.getString(R.string.pref_widget_type_key), "0")));
+		
 		remoteViews.setTextViewText(R.id.text, settings.getString(Integer.toString(currentView) + "_text", "no data"));
 		
 		AppWidgetManager.getInstance(context.getApplicationContext()).updateAppWidget(appWidgetId, remoteViews);
@@ -178,7 +180,7 @@ public class CurrentWidget extends AppWidgetProvider {
 		editor.putInt("current_view", currentView);
 		editor.commit();
 
-	}
+	}	
 	
 	/*private int getEnabledViews(Context context) {
 		
@@ -215,7 +217,23 @@ public class CurrentWidget extends AppWidgetProvider {
 			 doLogFile = false;
 
 		 }
-	}	
+	}
+	
+	static private int convertPrefValueToLayout(String selectedLayoutValue) {
+		int v;
+		try {
+			v = Integer.parseInt(selectedLayoutValue);
+		}
+		catch (NumberFormatException nfe) {
+			v = 0;
+		}
+		switch(v) {
+			case 1:
+				return R.layout.main_text;				
+			default:				
+				return R.layout.main;
+		}
+	}
 
 	static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId, boolean doLogFile) {		
 	
@@ -229,8 +247,9 @@ public class CurrentWidget extends AppWidgetProvider {
 			secondsInterval = 60;
 		}
 		 
+		int layoutId = convertPrefValueToLayout(settings.getString(context.getString(R.string.pref_widget_type_key), "0"));
 		
-		RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.main);		
+		RemoteViews remoteViews = new RemoteViews(context.getPackageName(), layoutId);		
              
 		String currentText = null;
 		boolean isCharging = true;
@@ -293,6 +312,7 @@ public class CurrentWidget extends AppWidgetProvider {
 		}
 		catch (Exception ex) {
 			// can't register service
+			ex.printStackTrace();
 		}
 
 		
@@ -369,8 +389,7 @@ public class CurrentWidget extends AppWidgetProvider {
         
         remoteViews.setOnClickPendingIntent(R.id.text, switchViewPi);
         remoteViews.setOnClickPendingIntent(R.id.status_image, switchViewPi);
-
-
+        
         Intent widgetUpdate = new Intent(context.getApplicationContext(), CurrentWidget.class);
         widgetUpdate.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, new int[] { appWidgetId } );
         widgetUpdate.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);

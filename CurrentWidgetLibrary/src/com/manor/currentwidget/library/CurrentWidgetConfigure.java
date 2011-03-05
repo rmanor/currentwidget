@@ -43,12 +43,13 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.Toast;
 
 public class CurrentWidgetConfigure extends PreferenceActivity {
 
-	int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;	
+	private int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;	
 
 	public final static String SHARED_PREFS_NAME = "currentWidgetPrefs";
 	
@@ -71,7 +72,7 @@ public class CurrentWidgetConfigure extends PreferenceActivity {
 		addPreferencesFromResource(R.xml.prefs);
 
 		// get widget id
-		Intent intent = getIntent();
+		Intent intent = getIntent();		
 		Bundle extras = intent.getExtras();
 		if (extras != null) {
 			mAppWidgetId = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
@@ -101,6 +102,8 @@ public class CurrentWidgetConfigure extends PreferenceActivity {
 				updateIntent.setData(Uri.withAppendedPath(Uri.parse("droidrm://widget/id/"), String.valueOf(mAppWidgetId)));
 
 				sendBroadcast(updateIntent);
+				
+				// @@@ try calling the static function instead
 			}
 		}
 		return super.onKeyDown(keyCode, event);
