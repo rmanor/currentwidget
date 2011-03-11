@@ -266,11 +266,19 @@ public class CurrentWidget extends AppWidgetProvider {
 				value = value*(-1);
 				//remoteViews.setTextColor(R.id.text, Color.rgb(117, 120, 118)); // drawing
 				//remoteViews.setViewVisibility(R.id.charging_image, View.INVISIBLE);
-				remoteViews.setImageViewResource(R.id.status_image, R.drawable.drawing);
+				
+				if (layoutId == R.layout.main)
+					remoteViews.setImageViewResource(R.id.status_image, R.drawable.drawing);
+				else
+					remoteViews.setImageViewResource(R.id.status_image, R.drawable.lightning);
+				
 				isCharging = false;
 			}
 			else
-				remoteViews.setImageViewResource(R.id.status_image, R.drawable.charging);
+				if (layoutId == R.layout.main)
+					remoteViews.setImageViewResource(R.id.status_image, R.drawable.charging);
+				else
+					remoteViews.setImageViewResource(R.id.status_image, R.drawable.lightning_green);
 				//remoteViews.setViewVisibility(R.id.charging_image, View.VISIBLE);
 				//remoteViews.setTextColor(R.id.text, Color.rgb(100, 168, 0)); // charging
 			
