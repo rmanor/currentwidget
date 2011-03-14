@@ -43,7 +43,6 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.Toast;
 
@@ -158,7 +157,6 @@ public class CurrentWidgetConfigure extends PreferenceActivity {
 
 
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 

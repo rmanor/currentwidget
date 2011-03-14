@@ -257,8 +257,13 @@ public class CurrentWidget extends AppWidgetProvider {
 		//ICurrentReader currentReader =  CurrentReaderFactory.getCurrentReader();
 		Long value = CurrentReaderFactory.getValue();
 		
-		if (value == null)
-			currentText = "no data";	
+		if (value == null) {
+			currentText = "no data";
+			if (layoutId == R.layout.main)
+				remoteViews.setImageViewResource(R.id.status_image, R.drawable.drawing);
+			else
+				remoteViews.setImageViewResource(R.id.status_image, R.drawable.lightning);
+		}
 		else
 		{				
 			if (value < 0)
