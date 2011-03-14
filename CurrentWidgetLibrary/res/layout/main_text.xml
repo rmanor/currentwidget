@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:layout_width="76dp"
-    android:layout_height="97dp"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
     android:gravity="top|center_horizontal"
     android:background="@android:color/transparent"
     android:id="@+id/linear_layout"
@@ -13,30 +13,31 @@
 		<TextView
 			android:id="@+id/text"  
 		    android:layout_width="fill_parent" 
-		    android:layout_height="wrap_content"
-		    android:gravity="center" 
+		    android:layout_height="35dp"
+		    android:gravity="bottom|center_horizontal" 
 		    android:text="0mA"
 		    android:background="@android:color/transparent"
 		    android:textColor="#ffffff"
 		    android:textSize="20sp"
 		    android:textStyle="bold"
+		    android:paddingLeft="5dp"
 		    />		    
 		    
 		    
 	    <LinearLayout
 	    	android:orientation="horizontal"
-	    	android:layout_width="wrap_content"
+	    	android:layout_width="fill_parent"
 	    	android:layout_height="wrap_content"
 	    	android:gravity="center">		
         
 		    <ImageView android:id="@+id/status_image" 
 		    	android:layout_width="20dp" 
 		    	android:layout_height="12dp"
-		    	android:src="@drawable/drawing"	    	
+		    	android:src="@drawable/drawing"	    		  
 		    	/>	    	
 		    	
 			    
-		    <TextView 
+		    <TextView
 		    	android:id="@+id/last_updated_text"
 			    android:layout_width="wrap_content" 
 			    android:layout_height="wrap_content"
@@ -56,14 +57,15 @@
 		android:textColor="#ffffff"
 		android:background="@android:color/transparent" 
 		android:id="@+id/update_now_button" 
-		android:layout_width="wrap_content" 
-		android:gravity="center"
+		android:layout_width="fill_parent" 
+		android:gravity="center_horizontal|top"
 		android:textStyle="bold"
-		android:layout_height="wrap_content" 
+		android:layout_height="20dp" 
 		android:textSize="10sp"
 		android:shadowDy="1"
 		android:shadowColor="#000000"
 		android:shadowRadius="0.5"
+		android:paddingLeft="5dp"
 		/>   	
 
 
