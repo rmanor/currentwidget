@@ -250,20 +250,40 @@ public class CurrentWidgetConfigure extends PreferenceActivity {
 
 		} else if (preference.getKey().equals("clear_log")) {
 
-			SharedPreferences settings = getSharedPreferences(SHARED_PREFS_NAME, 0);
-			File f = new File(settings.getString(getApplicationContext().getString(R.string.pref_log_filename_key), "/sdcard/currentwidget.log"));
-			Toast t = null;
-			if (f.exists()) {
-				if (f.delete())
-					t = Toast.makeText(getApplicationContext(), "Log file deleted", Toast.LENGTH_LONG);
-				else
-					t = Toast.makeText(getApplicationContext(), "Error deleting log file", Toast.LENGTH_LONG);
-			}
-			else {
-				t = Toast.makeText(getApplicationContext(), "No log file", Toast.LENGTH_LONG);
-			}
+			new AlertDialog.Builder(this).setMessage("Are you sure you want to delete the log file?")
+						.setCancelable(false)
+						.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+							
+							
+							public void onClick(DialogInterface dialog, int which) {
+								
+								SharedPreferences settings = getSharedPreferences(SHARED_PREFS_NAME, 0);
+								File f = new File(settings.getString(getApplicationContext().getString(R.string.pref_log_filename_key), "/sdcard/currentwidget.log"));
+								Toast t = null;
+								if (f.exists()) {
+									if (f.delete())
+										t = Toast.makeText(getApplicationContext(), "Log file deleted", Toast.LENGTH_LONG);
+									else
+										t = Toast.makeText(getApplicationContext(), "Error deleting log file", Toast.LENGTH_LONG);
+								}
+								else {
+									t = Toast.makeText(getApplicationContext(), "No log file", Toast.LENGTH_LONG);
+								}
 
-			t.show();
+								t.show();
+								
+							}
+						})
+						.setNegativeButton("No", new DialogInterface.OnClickListener() {
+							
+							
+							public void onClick(DialogInterface dialog, int which) {
+								
+								dialog.dismiss();
+								
+							}
+						}).show();
+			
 
 			return true;
 		}
