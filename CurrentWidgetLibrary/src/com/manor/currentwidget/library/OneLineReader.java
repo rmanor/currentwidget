@@ -67,7 +67,7 @@ public class OneLineReader {
 				value = null;
 			}
 			
-			if (_convertToMillis)
+			if (_convertToMillis && value != null)
 				value = value/1000; // convert to milliampere
 
 		}
