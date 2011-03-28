@@ -74,6 +74,11 @@ public class CurrentReaderFactory {
 		if (f.exists())
 			return OneLineReader.getValue(f, false);
 		
+		// Nook Color
+		f = new File("/sys/class/power_supply/max17042-0/current_now");
+		if (f.exists())
+			return OneLineReader.getValue(f, false);
+		
 		return null;
 	}
 }
