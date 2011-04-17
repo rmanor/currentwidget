@@ -23,6 +23,8 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 
+import android.util.Log;
+
 public class OneLineReader {
 
 	/*private File _f = null;
@@ -51,6 +53,7 @@ public class OneLineReader {
 			
 		}
 		catch (Exception ex) {
+			Log.e("CurrentWidget", ex.getMessage());
 			ex.printStackTrace();
 		}
 		
@@ -64,6 +67,7 @@ public class OneLineReader {
 			}
 			catch (NumberFormatException nfe)
 			{
+				Log.e("CurrentWidget", nfe.getMessage());
 				value = null;
 			}
 			

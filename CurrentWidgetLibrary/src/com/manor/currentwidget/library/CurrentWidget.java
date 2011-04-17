@@ -226,6 +226,8 @@ public class CurrentWidget extends AppWidgetProvider {
 		}
 		catch (NumberFormatException nfe) {
 			v = 0;
+			Log.e("CurrentWidget", nfe.getMessage());
+			nfe.printStackTrace();			
 		}
 		switch(v) {
 			case 1:
@@ -245,6 +247,8 @@ public class CurrentWidget extends AppWidgetProvider {
 		}
 		catch(Exception ex) {
 			secondsInterval = 60;
+			Log.e("CurrentWidget", ex.getMessage());
+			ex.printStackTrace();
 		}
 		 
 		int layoutId = convertPrefValueToLayout(settings.getString(context.getString(R.string.pref_widget_type_key), "0"));
@@ -325,6 +329,7 @@ public class CurrentWidget extends AppWidgetProvider {
 		}
 		catch (Exception ex) {
 			// can't register service
+			Log.e("CurrentWidget", ex.getMessage());
 			ex.printStackTrace();
 		}
 

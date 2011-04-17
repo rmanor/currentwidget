@@ -188,8 +188,6 @@ public class CurrentWidgetConfigure extends PreferenceActivity {
 
 		t.start();
 
-
-
 	}
 	
 	private final Runnable _fininshedLoadingGraphRunnable = new Runnable() {

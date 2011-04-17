@@ -22,37 +22,50 @@ package com.manor.currentwidget.library;
 import java.io.File;
 
 import android.os.Build;
+import android.util.Log;
 
 public class CurrentReaderFactory {
 	
 	static public Long getValue() {
 		
-		File f = null;
+		File f = null;	
 		
-		// htc desire hd / desire z?
+		// htc desire hd / desire z / inspire?
 		if (Build.MODEL.toLowerCase().contains("desire hd") ||
-				Build.MODEL.toLowerCase().contains("desire z")) {
+				Build.MODEL.toLowerCase().contains("desire z") ||
+				Build.MODEL.toLowerCase().contains("inspire")) {
+			
 			f = new File("/sys/class/power_supply/battery/batt_current");
-			if (f.exists())
+			if (f.exists()) {
 				return OneLineReader.getValue(f, false);
+			}
 		}
-		
+
+		// nexus one cyangoenmod
+		f = new File("/sys/devices/platform/ds2784-battery/getcurrent");
+		if (f.exists()) {
+			return OneLineReader.getValue(f, true);
+		}
+
 		// sony ericsson xperia x1
 		f = new File("/sys/devices/platform/i2c-adapter/i2c-0/0-0036/power_supply/ds2746-battery/current_now");
-		if (f.exists())
+		if (f.exists()) {
 			return OneLineReader.getValue(f, false);
+		}
 		
 		// xdandroid
 		/*if (Build.MODEL.equalsIgnoreCase("MSM")) {*/
 			f = new File("/sys/devices/platform/i2c-adapter/i2c-0/0-0036/power_supply/battery/current_now");
-			if (f.exists())
+			if (f.exists()) {
 				return OneLineReader.getValue(f, false);
+			}
 		/*}*/
 	
 		// droid eris
 		f = new File("/sys/class/power_supply/battery/smem_text");		
-		if (f.exists())
+		if (f.exists()) {
 			return SMemTextReader.getValue();
+		}
 		
 		// some htc devices
 		f = new File("/sys/class/power_supply/battery/batt_current");

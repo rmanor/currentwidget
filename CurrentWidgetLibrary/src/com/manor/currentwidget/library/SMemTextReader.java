@@ -22,6 +22,8 @@ package com.manor.currentwidget.library;
 import java.io.BufferedReader;
 import java.io.FileReader;
 
+import android.util.Log;
+
 public class SMemTextReader {
 
 	public static Long getValue() {
@@ -52,6 +54,7 @@ public class SMemTextReader {
 			fr.close();
 		}
 		catch (Exception ex) {
+			Log.e("CurrentWidget", ex.getMessage());
 			ex.printStackTrace();
 		}
 		
@@ -65,6 +68,7 @@ public class SMemTextReader {
 			}
 			catch (NumberFormatException nfe)
 			{
+				Log.e("CurrentWidget", nfe.getMessage());
 				value = null;
 			}
 
