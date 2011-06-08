@@ -46,7 +46,7 @@ import android.widget.RemoteViews;
  */
 public class CurrentWidget extends AppWidgetProvider {
 	
-	private static final int MAX_NUMBER_OF_VIEWS = 2;
+	private static final int MAX_NUMBER_OF_VIEWS = 3;
 	private static final String SWITCH_VIEW_ACTION = "CURRENT_WIDGET_SWITCH_VIEW";
 	
 	@Override
@@ -67,7 +67,7 @@ public class CurrentWidget extends AppWidgetProvider {
 		
 		for (int appWidgetId=1;appWidgetId<=maxId;appWidgetId++) {
 			
-			Log.d("CurrentWidget", String.format("onDeleted, id: %s", Integer.toString(appWidgetId)));
+			//Log.d("CurrentWidget", String.format("onDeleted, id: %s", Integer.toString(appWidgetId)));
 
 			AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
 			
@@ -319,24 +319,28 @@ public class CurrentWidget extends AppWidgetProvider {
 		}	
 		
 		String batteryLevelText = "no data";
+		String voltageText = "no data";
 		
-		// get battery level
+		// get battery level & voltage
 		try {
 			Intent batteryIntent = context.getApplicationContext().registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
 			if (batteryIntent != null) {
 				batteryLevelText = String.valueOf(batteryIntent.getIntExtra("level", 0)) + "%";
+				voltageText = Float.toString((float)batteryIntent.getIntExtra("voltage", 0)/1000) + "V";
+				
 			}
 		}
 		catch (Exception ex) {
 			// can't register service
 			Log.e("CurrentWidget", ex.getMessage());
 			ex.printStackTrace();
-		}
+		}	
 
-		
+
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putString("0_text", currentText);
 		editor.putString("1_text", batteryLevelText);
+		editor.putString("2_text", voltageText);
 		editor.commit();
 		
 		int currentView = settings.getInt("current_view", 0);	
@@ -378,6 +382,8 @@ public class CurrentWidget extends AppWidgetProvider {
 					}
 					
 				}
+				
+				str += "," + voltageText;
 				 
 				 str += "\r\n";
 				
@@ -433,8 +439,12 @@ public class CurrentWidget extends AppWidgetProvider {
         // @@@ enough? I think I need to cancel previous one as well!
         if (secondsInterval > 0) {       	    
 	        //alarms.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + 5*60*1000, newPending);
-	        alarms.setRepeating(AlarmManager.RTC, System.currentTimeMillis() + (secondsInterval*1000),
-	                secondsInterval * 1000, widgetUpdatePi);	        
+        	if (settings.getBoolean(context.getString(R.string.pref_force_sleep_log), false))
+        		alarms.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + (secondsInterval*1000),
+        				secondsInterval * 1000, widgetUpdatePi);       
+        	else
+        		alarms.setRepeating(AlarmManager.RTC, System.currentTimeMillis() + (secondsInterval*1000),
+        				secondsInterval * 1000, widgetUpdatePi);	        
         }
         else {
         	alarms.cancel(widgetUpdatePi);

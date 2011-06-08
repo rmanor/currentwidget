@@ -24,12 +24,16 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
 
 import org.achartengine.ChartFactory;
 import org.achartengine.model.TimeSeries;
 import org.achartengine.model.XYMultipleSeriesDataset;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
+
+import com.manor.currentwidget.library.analyze.LogAnalyzer;
+import com.manor.currentwidget.library.analyze.ProcessInfo;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -283,6 +287,29 @@ public class CurrentWidgetConfigure extends PreferenceActivity {
 						}).show();
 			
 
+			return true;
+		} else if (preference.getKey().equals("analyze_help")) {
+
+			new AlertDialog.Builder(this).setTitle("Analyze Help").
+			setMessage(getString(R.string.pref_analyze_help)).
+			setPositiveButton("OK", new DialogInterface.OnClickListener() {
+				
+				public void onClick(DialogInterface dialog, int which) {
+					dialog.dismiss();					
+				}
+			}).show();
+			
+			return true;
+		} else if (preference.getKey().equals("analyze_top_processes")) {
+			
+			HashMap<String, ProcessInfo> processesData = LogAnalyzer.getProcessesSortedByAverageCurrent(getApplicationContext());
+			
+			// @@@ send to new activity?
+			
+			if (processesData.isEmpty()) {
+				// show alert @@@
+			}
+			
 			return true;
 		}
 
