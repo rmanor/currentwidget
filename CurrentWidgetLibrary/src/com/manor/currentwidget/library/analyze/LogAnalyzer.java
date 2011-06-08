@@ -3,6 +3,7 @@ package com.manor.currentwidget.library.analyze;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import android.content.Context;
@@ -13,7 +14,7 @@ import com.manor.currentwidget.library.R;
 
 public class LogAnalyzer {
 
-	public static HashMap<String, ProcessInfo> getProcessesSortedByAverageCurrent(Context context) {		
+	public static ProcessInfo[] getProcessesSortedByAverageCurrent(Context context) {		
 		
 		SharedPreferences settings = context.getSharedPreferences(CurrentWidgetConfigure.SHARED_PREFS_NAME, 0);
 		
@@ -34,7 +35,7 @@ public class LogAnalyzer {
 				// 0 is date/time , 1 is value, 2 battery level, 3 running processes separated by semicolons
 				tokens = line.split(",", 4);	
 				
-				// @@@ TAKE ONLY WHEN DRAWING! ADD TO HELP
+				// @@@ TAKE ONLY WHEN DRAWING! ADD TO HELP , yes?
 				
 				// remove mA at the end
 				value = Long.parseLong(tokens[1].substring(0, tokens[1].length()-2));
@@ -56,14 +57,26 @@ public class LogAnalyzer {
 			}		
 
 			ds.close();
-			logFile.close();			
+			logFile.close();	
 			
+			// copy to array and merge sort
+			ProcessInfo[] result = new ProcessInfo[processesData.size()];
+			int i = 0;
+			for (String k : processesData.keySet())
+			{
+				result[i++] = processesData.get(k);
+			}
+			
+			Arrays.sort(result);	
+					
+			return result;			
 
 		} catch (IOException e) {
 			e.printStackTrace();
+			// @@@ show error message
 		}
 		
-		return processesData;
+		return null;
 
 	}
 }

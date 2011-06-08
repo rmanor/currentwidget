@@ -34,6 +34,7 @@ import org.achartengine.renderer.XYSeriesRenderer;
 
 import com.manor.currentwidget.library.analyze.LogAnalyzer;
 import com.manor.currentwidget.library.analyze.ProcessInfo;
+import com.manor.currentwidget.library.analyze.ResultsActivity;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -44,6 +45,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
@@ -60,6 +62,9 @@ public class CurrentWidgetConfigure extends PreferenceActivity {
 	private XYMultipleSeriesRenderer _renderer = null;
 	private ProgressDialog _progressDialog = null;
 	private boolean _graphLoadingCancelled = false;
+	
+	// @@@ when you'll have more results, move it to a resultsDataHolder singleton class
+	public static ProcessInfo[] p = null;
 	
 	public CurrentWidgetConfigure() {
 		super();
@@ -302,13 +307,18 @@ public class CurrentWidgetConfigure extends PreferenceActivity {
 			return true;
 		} else if (preference.getKey().equals("analyze_top_processes")) {
 			
-			HashMap<String, ProcessInfo> processesData = LogAnalyzer.getProcessesSortedByAverageCurrent(getApplicationContext());
+			ProcessInfo[] p = LogAnalyzer.getProcessesSortedByAverageCurrent(getApplicationContext());			
 			
-			// @@@ send to new activity?
-			
-			if (processesData.isEmpty()) {
+			if (p == null || p.length == 0) {
 				// show alert @@@
+				
+				return true;
 			}
+			
+			CurrentWidgetConfigure.p = p;
+			
+			Intent i = new Intent(this, ResultsActivity.class);
+			startActivity(i);
 			
 			return true;
 		}

@@ -11,6 +11,8 @@
 		<activity android:name="com.manor.currentwidget.library.CurrentWidgetConfigure"/>
 		
 		<activity android:name="org.achartengine.GraphicalActivity" />
+		
+		<activity android:name="com.manor.currentwidget.library.analyze.ResultsActivity" />
 
 
     </application>
