@@ -22,6 +22,10 @@
 			<CheckBoxPreference android:key="@string/pref_view_1_key"
 				android:title="Battery Level (%)" 
 				android:defaultValue="true"/>
+
+			<CheckBoxPreference android:key="@string/pref_view_2_key"
+				android:title="Voltage (V)" 
+				android:defaultValue="true"/>
 				
 			<Preference android:title="Help"
 				android:summary="Touch value on widget to switch views"
@@ -48,27 +52,28 @@
 
 		<EditTextPreference android:key="@string/pref_log_filename_key"
 			android:title="Log filename" android:summary="Where to save the log file"
-			android:defaultValue="/sdcard/currentwidget.log" android:dependency="log_enabled" />
+			android:defaultValue="/sdcard/currentwidget.log" 
+			android:dependency="log_enabled" />
 
 		<CheckBoxPreference android:key="@string/pref_log_apps_key"
 			android:title="Log Applications" android:dependency="log_enabled"
 			android:defaultValue="false" android:summaryOn="Log running applications to logfile"
 			android:summaryOff="Don't log running applications" />
 			
-		<!--  <PreferenceScreen android:key="prefAnalyze"
+	  	<PreferenceScreen android:key="prefAnalyze"
 				android:title="Analyze Log" 
 				android:summary="Get more data from your log">
 				
-				<Preference android:title="Top Using Processes"
+				<Preference android:title="Top Processes"
 					android:summary="List all processes order by their average current usage"
-					android:key="" />
+					android:key="analyze_top_processes" />
 
 				<Preference android:title="Help"
 					android:summary="Description of analyze options"
-					android:key="" />
+					android:key="analyze_help" />
 				
 		
-		</PreferenceScreen> -->
+		</PreferenceScreen>
 
 		<Preference android:title="View Log" android:summary="Open log file"
 			android:key="view_log" />
@@ -78,6 +83,11 @@
 
 		<Preference android:title="Clear Log" android:summary="Delete log file"
 			android:key="clear_log" />
+			
+		<CheckBoxPreference android:key="@string/pref_force_sleep_log"
+			android:title="Force Log In Sleep Mode"
+			android:defaultValue="false"
+			android:summary="Force log when device is sleeping"/>
 
 	</PreferenceCategory>
 
