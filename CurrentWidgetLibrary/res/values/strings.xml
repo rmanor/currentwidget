@@ -43,8 +43,10 @@
 <string name="pref_hide_background_key">hide_background</string>
 <string name="pref_view_0_key">view_0</string>
 <string name="pref_view_1_key">view_1</string>
+<string name="pref_view_2_key">view_2</string>
 <string name="current_widget_text_name">CurrentWidget (Text)</string>
 <string name="pref_widget_type_key">widget_type</string>
+<string name="pref_force_sleep_log">force_sleep_log</string>
 <string-array name="pref_widget_types">
     <item>Classic</item>
     <item>Clear Text</item>
@@ -53,4 +55,5 @@
     <item>0</item>
     <item>1</item>
 </string-array>
+<string name="pref_analyze_help">- Top Processes - Scans log for current usage of processes and displays them ordered by average usage. Requires log file and log applications enabled. </string>
 </resources>
