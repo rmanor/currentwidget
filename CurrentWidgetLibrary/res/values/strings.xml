@@ -55,5 +55,5 @@
     <item>0</item>
     <item>1</item>
 </string-array>
-<string name="pref_analyze_help">- Top Processes - Scans log for current usage of processes and displays them ordered by average usage. Requires log file and log applications enabled. </string>
+<string name="pref_analyze_help">- Top Processes - Scans log for current usage of processes and displays them ordered by average usage (only when phone is NOT charging). Requires log file and log applications enabled. </string>
 </resources>
