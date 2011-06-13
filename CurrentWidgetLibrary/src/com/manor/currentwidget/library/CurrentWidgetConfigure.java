@@ -23,6 +23,7 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -42,8 +43,10 @@ import android.appwidget.AppWidgetManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.DialogInterface.OnCancelListener;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.Preference;
@@ -307,23 +310,143 @@ public class CurrentWidgetConfigure extends PreferenceActivity {
 			return true;
 		} else if (preference.getKey().equals("analyze_top_processes")) {
 			
-			ProcessInfo[] p = LogAnalyzer.getProcessesSortedByAverageCurrent(getApplicationContext());			
+			LogAnalyzer.getInstance(getApplicationContext()).getProcessesSortedByAverageCurrent();			
 			
-			if (p == null || p.length == 0) {
-				// show alert @@@
-				
-				return true;
-			}
+			new getProcessesSortedByAverageCurrentAsyncTask().execute((Void[])null);
+			//CurrentWidgetConfigure.p = p;
 			
-			CurrentWidgetConfigure.p = p;
-			
-			Intent i = new Intent(this, ResultsActivity.class);
-			startActivity(i);
+			/*Intent i = new Intent(this, ResultsActivity.class);
+			startActivity(i);*/
 			
 			return true;
 		}
 
 		return false;
 	};
+	
+	private class getProcessesSortedByAverageCurrentAsyncTask extends AsyncTask<Void, Integer, ProcessInfo[]> {
+		
+		private ProgressDialog dialog = null;
+
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+			
+			dialog = ProgressDialog.show(CurrentWidgetConfigure.this, "", "Loading. Please Wait...", true, true, new OnCancelListener() {
+				
+				public void onCancel(DialogInterface dialog) {
+					cancel(true);					
+				}
+			});
+			
+			dialog.setProgress(0);
+					
+		}
+		
+		@Override
+		protected ProcessInfo[] doInBackground(Void... params) {
+			
+			SharedPreferences settings = getApplicationContext().getSharedPreferences(CurrentWidgetConfigure.SHARED_PREFS_NAME, 0);
+			
+			FileInputStream logFile = null;
+			
+			HashMap<String, ProcessInfo> processesData = new HashMap<String, ProcessInfo>();
+
+			try {
+				logFile = new FileInputStream(settings.getString(getApplicationContext().getString(R.string.pref_log_filename_key), "/sdcard/currentwidget.log"));
+				int fileSize = logFile.available();
+				int bytesRead = 0;
+				
+				DataInputStream ds = new DataInputStream(logFile);
+
+				String line = null;
+				String[] tokens = null;
+				String[] processes = null;			
+				long value = 0;
+				while ( ( line = ds.readLine() ) != null && !isCancelled()) {
+
+					bytesRead += line.length();
+					publishProgress(bytesRead/fileSize);
+					// 0 is date/time , 1 is value, 2 battery level, 3 running processes separated by semicolons, 4 all the rest
+					tokens = line.split(",", 5);					
+				
+					// remove mA at the end
+					value = Long.parseLong(tokens[1].substring(0, tokens[1].length()-2));
+						
+					// if there is apps info & drawing value
+					if (tokens.length >= 4 && value  < 0) {
+						value = Math.abs(value);
+						processes = tokens[3].split(";");
+						for (int i=0;i<processes.length;i++) {
+							processes[i] = processes[i].trim();
+							if (!processesData.containsKey(processes[i])) {
+								processesData.put(processes[i], new ProcessInfo(processes[i], value));
+							}
+							else {
+								processesData.get(processes[i]).addElectricCurrent(value);
+							}
+						}
+					}					
+
+				}		
+
+				ds.close();
+				logFile.close();	
+				
+				// copy to array and merge sort
+				ProcessInfo[] result = new ProcessInfo[processesData.size()];
+				int i = 0;
+				for (String k : processesData.keySet())
+				{
+					result[i++] = processesData.get(k);
+				}
+				
+				Arrays.sort(result);	
+						
+				return result;			
+
+			} catch (IOException e) {
+				e.printStackTrace();
+				// @@@ show error message
+			}			
+		
+			return null;
+		}
+		
+		@Override
+		protected void onProgressUpdate(Integer... values) {
+			super.onProgressUpdate(values);
+			dialog.setProgress(values[0]);
+		}
+		
+		@Override
+		protected void onPostExecute(ProcessInfo[] result) {
+			super.onPostExecute(result);
+			
+			CurrentWidgetConfigure.p = result;
+			dialog.dismiss();
+			
+			if (result == null || result.length == 0) {
+				
+				new AlertDialog.Builder(CurrentWidgetConfigure.this).setMessage("No log data").setPositiveButton("OK", null).show();
+				
+				
+				return;
+			}
+
+			Intent i = new Intent(getApplicationContext(), ResultsActivity.class);
+			startActivity(i);			
+			
+		}
+		
+		@Override
+		protected void onCancelled() {
+			super.onCancelled();
+			
+			dialog.dismiss();
+			
+		}
+	};
+
 
 }

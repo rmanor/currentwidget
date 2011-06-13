@@ -40,11 +40,12 @@ public class ProcessInfo implements Comparable<ProcessInfo>, Parcelable  {
 		float thisMean = getMean();
 		float anotherMean = another.getMean();
 		
+		// for descending sort..
 		if (thisMean < anotherMean)
-			return -1;
+			return 1;
 		else {
 			if (thisMean > anotherMean)		
-				return 1;
+				return -1;
 			else
 				return 0;
 		}
