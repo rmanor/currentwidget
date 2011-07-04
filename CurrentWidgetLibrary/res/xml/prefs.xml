@@ -45,21 +45,38 @@
 	</PreferenceCategory>
 
 	<PreferenceCategory android:title="Log">
+			
 
 		<CheckBoxPreference android:key="@string/pref_log_enabled_key"
 			android:title="Log file" android:defaultValue="false"
-			android:summaryOn="Log current values to file" android:summaryOff="Don't log values to file" />
-
-		<EditTextPreference android:key="@string/pref_log_filename_key"
-			android:title="Log filename" android:summary="Where to save the log file"
-			android:defaultValue="/sdcard/currentwidget.log" 
-			android:dependency="log_enabled" />
-
-		<CheckBoxPreference android:key="@string/pref_log_apps_key"
-			android:title="Log Applications" android:dependency="log_enabled"
-			android:defaultValue="false" android:summaryOn="Log running applications to logfile"
-			android:summaryOff="Don't log running applications" />
+			android:summaryOn="Log values to file" android:summaryOff="Don't log values to file" />
 			
+		<PreferenceScreen android:title="Log Options"
+				android:key="prefLogOptions" android:summary="Advanced Options">
+				 
+			<EditTextPreference android:key="@string/pref_log_filename_key"
+				android:title="Log filename" android:summary="Where to save the log file"
+				android:defaultValue="/sdcard/currentwidget.log" 
+				android:dependency="log_enabled" />
+	
+			<CheckBoxPreference android:key="@string/pref_log_apps_key"
+				android:title="Log Applications" android:dependency="log_enabled"
+				android:defaultValue="false" android:summaryOn="Log running applications to logfile"
+				android:summaryOff="Don't log running applications" />
+				
+			<CheckBoxPreference android:key="@string/pref_force_sleep_log"
+				android:title="Force Log In Sleep Mode"
+				android:defaultValue="false"
+				android:summary="Force log when device is sleeping"/>
+
+			<CheckBoxPreference android:key="@string/pref_no_log_in_charge"
+				android:title="No Log in Charge"
+				android:defaultValue="false"
+				android:summary="Prevents logs when phone is connected to power"/>
+	
+
+		</PreferenceScreen>
+	
 	  	<PreferenceScreen android:key="prefAnalyze"
 				android:title="Analyze Log" 
 				android:summary="Get more data from your log">
@@ -82,12 +99,7 @@
 			android:summary="Show logged values as graph" android:key="view_graph" />
 
 		<Preference android:title="Clear Log" android:summary="Delete log file"
-			android:key="clear_log" />
-			
-		<CheckBoxPreference android:key="@string/pref_force_sleep_log"
-			android:title="Force Log In Sleep Mode"
-			android:defaultValue="false"
-			android:summary="Force log when device is sleeping"/>
+			android:key="clear_log" />			
 
 	</PreferenceCategory>
 
