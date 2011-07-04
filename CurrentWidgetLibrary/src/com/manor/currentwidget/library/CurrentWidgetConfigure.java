@@ -370,8 +370,15 @@ public class CurrentWidgetConfigure extends PreferenceActivity {
 					// 0 is date/time , 1 is value, 2 battery level, 3 running processes separated by semicolons, 4 all the rest
 					tokens = line.split(",", 5);					
 				
-					// remove mA at the end
-					value = Long.parseLong(tokens[1].substring(0, tokens[1].length()-2));
+					try
+					{
+						// remove mA at the end
+						value = Long.parseLong(tokens[1].substring(0, tokens[1].length()-2));
+					}
+					catch (NumberFormatException nfe)
+					{
+						value = 0;
+					}
 						
 					// if there is apps info & drawing value
 					if (tokens.length >= 4 && value  < 0) {
@@ -428,8 +435,7 @@ public class CurrentWidgetConfigure extends PreferenceActivity {
 			
 			if (result == null || result.length == 0) {
 				
-				new AlertDialog.Builder(CurrentWidgetConfigure.this).setMessage("No log data").setPositiveButton("OK", null).show();
-				
+				new AlertDialog.Builder(CurrentWidgetConfigure.this).setMessage("No log data").setPositiveButton("OK", null).show();				
 				
 				return;
 			}
