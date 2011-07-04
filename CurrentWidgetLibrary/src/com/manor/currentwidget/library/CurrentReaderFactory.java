@@ -28,7 +28,12 @@ public class CurrentReaderFactory {
 	
 	static public Long getValue() {
 		
-		File f = null;	
+		File f = null;
+		
+		// htc sensation / evo 3d
+		f = new File("/sys/class/power_supply/battery/batt_attr_text");
+		if (f.exists())
+			return BattAttrTextReader.getValue();
 		
 		// htc desire hd / desire z / inspire?
 		if (Build.MODEL.toLowerCase().contains("desire hd") ||

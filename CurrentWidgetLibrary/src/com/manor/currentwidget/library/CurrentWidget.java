@@ -24,7 +24,6 @@ import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 
 import android.app.ActivityManager;
 import android.app.AlarmManager;
@@ -284,12 +283,16 @@ public class CurrentWidget extends AppWidgetProvider {
 				isCharging = false;
 			}
 			else
+			{
 				if (layoutId == R.layout.main)
 					remoteViews.setImageViewResource(R.id.status_image, R.drawable.charging);
 				else
 					remoteViews.setImageViewResource(R.id.status_image, R.drawable.lightning_green);
-				//remoteViews.setViewVisibility(R.id.charging_image, View.VISIBLE);
-				//remoteViews.setTextColor(R.id.text, Color.rgb(100, 168, 0)); // charging
+				
+				if (settings.getBoolean(context.getString(R.string.pref_no_log_in_charge), false))
+					doLogFile = false;
+							
+			}
 			
 			
 			if (settings.getBoolean(context.getString(R.string.pref_op_enabled_key), false)) {
@@ -350,6 +353,8 @@ public class CurrentWidget extends AppWidgetProvider {
 		
 		// set last update
 		remoteViews.setTextViewText(R.id.last_updated_text, (new SimpleDateFormat("HH:mm:ss")).format(new Date()));
+		
+		
 		
 		// write to log file
 		if (settings.getBoolean(context.getString(R.string.pref_log_enabled_key), false) && doLogFile) {
