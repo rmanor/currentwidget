@@ -28,13 +28,8 @@ public class CurrentReaderFactory {
 	
 	static public Long getValue() {
 		
-		File f = null;
-		
-		// htc sensation / evo 3d
-		f = new File("/sys/class/power_supply/battery/batt_attr_text");
-		if (f.exists())
-			return BattAttrTextReader.getValue();
-		
+		File f = null;		
+
 		// htc desire hd / desire z / inspire?
 		if (Build.MODEL.toLowerCase().contains("desire hd") ||
 				Build.MODEL.toLowerCase().contains("desire z") ||
@@ -70,6 +65,15 @@ public class CurrentReaderFactory {
 		f = new File("/sys/class/power_supply/battery/smem_text");		
 		if (f.exists()) {
 			return SMemTextReader.getValue();
+		}
+		
+		// htc sensation / evo 3d
+		f = new File("/sys/class/power_supply/battery/batt_attr_text");
+		if (f.exists())
+		{
+			Long value = BattAttrTextReader.getValue();
+			if (value != null)
+				return value;
 		}
 		
 		// some htc devices
