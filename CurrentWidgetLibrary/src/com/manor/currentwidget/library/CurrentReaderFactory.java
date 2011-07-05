@@ -64,7 +64,9 @@ public class CurrentReaderFactory {
 		// droid eris
 		f = new File("/sys/class/power_supply/battery/smem_text");		
 		if (f.exists()) {
-			return SMemTextReader.getValue();
+			Long value = SMemTextReader.getValue();
+			if (value != null)
+				return value;
 		}
 		
 		// htc sensation / evo 3d
