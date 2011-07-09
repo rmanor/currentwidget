@@ -384,13 +384,13 @@ public class CurrentWidgetConfigure extends PreferenceActivity {
 					if (tokens.length >= 4 && value  < 0) {
 						value = Math.abs(value);
 						processes = tokens[3].split(";");
-						for (int i=0;i<processes.length;i++) {
-							processes[i] = processes[i].trim();
-							if (!processesData.containsKey(processes[i])) {
-								processesData.put(processes[i], new ProcessInfo(processes[i], value));
+						for (String process : processes) {
+							process = process.trim();
+							if (!processesData.containsKey(process)) {
+								processesData.put(process, new ProcessInfo(process, value));
 							}
 							else {
-								processesData.get(processes[i]).addElectricCurrent(value);
+								processesData.get(process).addElectricCurrent(value);
 							}
 						}
 					}					
@@ -402,10 +402,10 @@ public class CurrentWidgetConfigure extends PreferenceActivity {
 				
 				// copy to array and merge sort
 				ProcessInfo[] result = new ProcessInfo[processesData.size()];
-				int i = 0;
+				int i = -1;
 				for (String k : processesData.keySet())
 				{
-					result[i++] = processesData.get(k);
+					result[++i] = processesData.get(k);
 				}
 				
 				Arrays.sort(result);	

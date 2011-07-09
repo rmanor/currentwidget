@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.List;
 
 import android.app.ActivityManager;
+import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
@@ -127,7 +128,7 @@ public class CurrentWidget extends AppWidgetProvider {
 		// to look forward?
 		if (currentView < (MAX_NUMBER_OF_VIEWS - 1)) {
 			// look forward 
-			for (int i=currentView+1;i<MAX_NUMBER_OF_VIEWS;i++) {
+			for (int i=currentView+1;i<MAX_NUMBER_OF_VIEWS;++i) {
 				if (settings.getBoolean("view_" + Integer.toString(i), true)) {
 					nextView = i;
 					break;
@@ -137,7 +138,7 @@ public class CurrentWidget extends AppWidgetProvider {
 		
 		// didn't find, look from beginning
 		if (nextView < 0 && currentView > 0) {
-			for (int i=0;i<currentView;i++) {
+			for (int i=0;i<currentView;++i) {
 				if (settings.getBoolean("view_" + Integer.toString(i), true)) {
 					nextView = i;
 					break;
@@ -381,9 +382,9 @@ public class CurrentWidget extends AppWidgetProvider {
 					{
 						str += ",";
 						
-						for (int i=0;i<runningApps.size();i++) {
-							str += runningApps.get(i).processName + ";";
-						}				
+						for (RunningAppProcessInfo processInfo : runningApps) {
+							str += processInfo.processName + ";";
+						}
 					}
 					
 				}
