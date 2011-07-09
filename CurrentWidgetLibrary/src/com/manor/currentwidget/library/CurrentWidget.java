@@ -399,8 +399,7 @@ public class CurrentWidget extends AppWidgetProvider {
 				logFile.close();
 			}
 			catch (Exception ex) {
-				Log.e("CurrentWidget", ex.getMessage());
-				ex.printStackTrace();
+				Log.e("CurrentWidget", ex.getMessage(), ex);				
 			}			
 		}
 		

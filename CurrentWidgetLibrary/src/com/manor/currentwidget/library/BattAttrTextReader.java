@@ -23,18 +23,28 @@ public class BattAttrTextReader {
 			
 			while (line != null) 
 			{
-				if (line.contains("batt_current"))
+				if (line.contains("batt_current:"))
 				{
 					text = line.substring(line.indexOf("batt_current: ") + 14);
-					value = Long.parseLong(text);
-					if (value != 0)				
-						break;
+					try {					
+						value = Long.parseLong(text);
+						if (value != 0)				
+							break;
+					}
+					catch (NumberFormatException nfe) {
+						Log.e("CurrentWidget", nfe.getMessage(), nfe);
+					}
 				}
 				
-				if (line.contains("batt_discharge_current"))
+				if (line.contains("batt_discharge_current:"))
 				{
 					text = line.substring(line.indexOf("batt_discharge_current: ") + 24);
-					value = (-1)*Long.parseLong(text);									
+					try {
+						value = (-1)*Long.parseLong(text);
+					}
+					catch (NumberFormatException nfe) {
+						Log.e("CurrentWidget", nfe.getMessage(), nfe);
+					}
 					break;
 				}
 				
@@ -46,8 +56,7 @@ public class BattAttrTextReader {
 			fr.close();
 		}
 		catch (Exception ex) {
-			Log.e("CurrentWidget", ex.getMessage());
-			ex.printStackTrace();
+			Log.e("CurrentWidget", ex.getMessage(), ex);
 		}		
 				
 	
