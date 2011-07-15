@@ -368,7 +368,11 @@ public class CurrentWidgetConfigure extends PreferenceActivity {
 					bytesRead += line.length();
 					publishProgress(bytesRead/fileSize);
 					// 0 is date/time , 1 is value, 2 battery level, 3 running processes separated by semicolons, 4 all the rest
-					tokens = line.split(",", 5);					
+					tokens = line.split(",", 5);
+					
+					// if there is apps info
+					if (tokens.length < 4)
+						continue;
 				
 					try
 					{
@@ -380,8 +384,8 @@ public class CurrentWidgetConfigure extends PreferenceActivity {
 						value = 0;
 					}
 						
-					// if there is apps info & drawing value
-					if (tokens.length >= 4 && value  < 0) {
+					// drawing value
+					if (value  < 0) {
 						value = Math.abs(value);
 						processes = tokens[3].split(";");
 						for (String process : processes) {
