@@ -59,6 +59,7 @@ import com.manor.currentwidget.library.analyze.LogAnalyzer;
 import com.manor.currentwidget.library.analyze.ProcessInfo;
 import com.manor.currentwidget.library.analyze.ResultsActivity;
 import com.manor.currentwidget.library.analyze.TopProcessesLineProcessor;
+import com.manor.currentwidget.library.analyze.ValuesCountLineProcessor;
 
 public class CurrentWidgetConfigure extends PreferenceActivity  {
 
@@ -329,9 +330,9 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 			return true;
 		} else if (preference.getKey().equals("analyze_top_processes")) {
 			
-			LogAnalyzer.getInstance(getApplicationContext()).getProcessesSortedByAverageCurrent();			
+			//LogAnalyzer.getInstance(getApplicationContext()).getProcessesSortedByAverageCurrent();			
 			
-			new logLineProcessorAsyncTask().execute((Void[])null);
+			new logLineProcessorAsyncTask().execute(new TopProcessesLineProcessor());
 			//CurrentWidgetConfigure.p = p;
 			
 			/*Intent i = new Intent(this, ResultsActivity.class);
@@ -339,7 +340,9 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 			
 			return true;
 		} else if (preference.getKey().equals("analyze_values_count")) {
-			//new getValuesCountAsyncTask().execute((Void[])null);
+			
+			new logLineProcessorAsyncTask().execute(new ValuesCountLineProcessor());
+			
 		} else if (preference.getKey().equals("text_textColor")) {
 			
 			SharedPreferences settings = getSharedPreferences(SHARED_PREFS_NAME, 0);
@@ -370,7 +373,7 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 		return false;
 	};
 	
-	private class logLineProcessorAsyncTask extends AsyncTask<Void, Integer, ITwoValuesResult[]> {
+	private class logLineProcessorAsyncTask extends AsyncTask<ILogLineProcessor, Integer, ITwoValuesResult[]> {
 		
 		private ProgressDialog dialog = null;
 
@@ -402,7 +405,7 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 		}
 		
 		@Override
-		protected ITwoValuesResult[] doInBackground(Void... params) {
+		protected ITwoValuesResult[] doInBackground(ILogLineProcessor... params) {
 			
 			SharedPreferences settings = getApplicationContext().getSharedPreferences(CurrentWidgetConfigure.SHARED_PREFS_NAME, 0);
 			
@@ -417,7 +420,7 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 
 				String line = null;
 				
-				ILogLineProcessor logLineProcessor = new TopProcessesLineProcessor();
+				ILogLineProcessor logLineProcessor = params[0];
 
 				while ( ( line = ds.readLine() ) != null && !isCancelled()) {
 

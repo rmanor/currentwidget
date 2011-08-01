@@ -54,6 +54,8 @@ public class TopProcessesLineProcessor implements ILogLineProcessor {
 			result[++i] = processesData.get(k);
 		}
 		
+		//Object[] result = processesData.values().toArray();
+		
 		Arrays.sort(result);
 		
 		return result;
