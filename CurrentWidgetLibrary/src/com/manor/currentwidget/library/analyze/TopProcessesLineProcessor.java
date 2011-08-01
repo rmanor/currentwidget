@@ -47,14 +47,14 @@ public class TopProcessesLineProcessor implements ILogLineProcessor {
 	public Object[] getResult() {
 		
 		// copy to array and merge sort
-		ProcessInfo[] result = new ProcessInfo[processesData.size()];
-		int i = -1;
+		
+		/*int i = -1;
 		for (String k : processesData.keySet())
 		{
 			result[++i] = processesData.get(k);
-		}
+		}*/
 		
-		//Object[] result = processesData.values().toArray();
+		ProcessInfo[] result = processesData.values().toArray(new ProcessInfo[processesData.size()]);
 		
 		Arrays.sort(result);
 		

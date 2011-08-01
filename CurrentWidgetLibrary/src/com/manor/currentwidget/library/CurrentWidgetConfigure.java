@@ -425,7 +425,7 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 				while ( ( line = ds.readLine() ) != null && !isCancelled()) {
 
 					bytesRead += line.length();
-					publishProgress((bytesRead*100)/fileSize);
+					publishProgress(fileSize, bytesRead);
 				
 					logLineProcessor.process(line);
 
@@ -447,7 +447,8 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 		@Override
 		protected void onProgressUpdate(Integer... values) {
 			super.onProgressUpdate(values);
-			dialog.setProgress(values[0]);
+			dialog.setMax(values[0]);
+			dialog.setProgress(values[1]);
 		}
 		
 		@Override
