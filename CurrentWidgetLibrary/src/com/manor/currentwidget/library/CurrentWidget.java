@@ -253,7 +253,14 @@ public class CurrentWidget extends AppWidgetProvider {
 		 
 		int layoutId = convertPrefValueToLayout(settings.getString(context.getString(R.string.pref_widget_type_key), "0"));
 		
-		RemoteViews remoteViews = new RemoteViews(context.getPackageName(), layoutId);		
+		RemoteViews remoteViews = new RemoteViews(context.getPackageName(), layoutId);
+		
+		if (layoutId == R.layout.main_text) {
+			int color = settings.getInt(context.getString(R.string.pref_text_text_color), 0xFFFFFFFF);
+			remoteViews.setTextColor(R.id.text, color);
+			remoteViews.setTextColor(R.id.last_updated_text, color);
+			remoteViews.setTextColor(R.id.update_now_button, color);
+		}
              
 		String currentText = null;
 		boolean isCharging = true;

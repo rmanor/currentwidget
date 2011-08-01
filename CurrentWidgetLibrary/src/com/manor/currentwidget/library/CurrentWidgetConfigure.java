@@ -33,29 +33,31 @@ import org.achartengine.model.XYMultipleSeriesDataset;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
 
-import com.manor.currentwidget.library.analyze.LogAnalyzer;
-import com.manor.currentwidget.library.analyze.ProcessInfo;
-import com.manor.currentwidget.library.analyze.ResultsActivity;
-
+import yuku.ambilwarna.AmbilWarnaDialog;
+import yuku.ambilwarna.AmbilWarnaDialog.OnAmbilWarnaListener;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.appwidget.AppWidgetManager;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.DialogInterface.OnCancelListener;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.preference.Preference;
+import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
 import android.view.KeyEvent;
 import android.widget.Toast;
 
-public class CurrentWidgetConfigure extends PreferenceActivity {
+import com.manor.currentwidget.library.analyze.LogAnalyzer;
+import com.manor.currentwidget.library.analyze.ProcessInfo;
+import com.manor.currentwidget.library.analyze.ResultsActivity;
+
+public class CurrentWidgetConfigure extends PreferenceActivity  {
 
 	private int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;	
 
@@ -98,6 +100,21 @@ public class CurrentWidgetConfigure extends PreferenceActivity {
 		if (this.getApplicationContext().getPackageName().equals("com.manor.currentwidgetpaid")) {
 			findPreference("donate").setTitle("Thank you for donating!");
 		}
+		
+		SharedPreferences settings = getSharedPreferences(SHARED_PREFS_NAME, 0);
+		
+		findPreference("text_textColor").setEnabled(settings.getString(getString(R.string.pref_widget_type_key), "0").equals("1"));
+		
+		findPreference(getString(R.string.pref_widget_type_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				
+				Preference p = findPreference("text_textColor");
+				p.setEnabled(Integer.parseInt(newValue.toString()) == 1);
+				
+				return true;
+			}
+		});
 
 
 	}
@@ -213,7 +230,6 @@ public class CurrentWidgetConfigure extends PreferenceActivity {
 		};
 	};
 
-
 	public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
 
 		if (preference.getKey().equals("view_log")) {
@@ -319,6 +335,33 @@ public class CurrentWidgetConfigure extends PreferenceActivity {
 			startActivity(i);*/
 			
 			return true;
+		} else if (preference.getKey().equals("analyze_values_count")) {
+			//new getValuesCountAsyncTask().execute((Void[])null);
+		} else if (preference.getKey().equals("text_textColor")) {
+			
+			SharedPreferences settings = getSharedPreferences(SHARED_PREFS_NAME, 0);
+			
+			
+			AmbilWarnaDialog dialog = new AmbilWarnaDialog(this, 
+					settings.getInt(getString(R.string.pref_text_text_color), 0xFFFFFFFF),
+					new OnAmbilWarnaListener() {
+		        public void onOk(AmbilWarnaDialog dialog, int color) {
+		                // color is the color selected by the user.
+			    		SharedPreferences settings = getSharedPreferences(SHARED_PREFS_NAME, 0);
+			    		SharedPreferences.Editor editor = settings.edit();
+			    		editor.putInt(getString(R.string.pref_text_text_color), color);
+			    		editor.commit();
+		        }
+		                
+		        public void onCancel(AmbilWarnaDialog dialog) {
+		                // cancel was selected by the user
+		        }
+			});
+
+			dialog.show();
+			
+			
+			return true;
 		}
 
 		return false;
@@ -332,7 +375,18 @@ public class CurrentWidgetConfigure extends PreferenceActivity {
 		protected void onPreExecute() {
 			super.onPreExecute();
 			
-			dialog = ProgressDialog.show(CurrentWidgetConfigure.this, "", "Loading. Please Wait...", true, true, new OnCancelListener() {
+			/*dialog = ProgressDialog.show(CurrentWidgetConfigure.this, "", "Loading. Please Wait...", true, true, new OnCancelListener() {
+				
+				public void onCancel(DialogInterface dialog) {
+					cancel(true);					
+				}
+			});*/
+			
+			dialog = new ProgressDialog(CurrentWidgetConfigure.this);
+			dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+			dialog.setMessage("Loading. Please Wait...");
+			dialog.setCancelable(true);
+			dialog.setOnCancelListener(new OnCancelListener() {
 				
 				public void onCancel(DialogInterface dialog) {
 					cancel(true);					
@@ -340,6 +394,7 @@ public class CurrentWidgetConfigure extends PreferenceActivity {
 			});
 			
 			dialog.setProgress(0);
+			dialog.show();
 					
 		}
 		
@@ -366,7 +421,7 @@ public class CurrentWidgetConfigure extends PreferenceActivity {
 				while ( ( line = ds.readLine() ) != null && !isCancelled()) {
 
 					bytesRead += line.length();
-					publishProgress(bytesRead/fileSize);
+					publishProgress((bytesRead*100)/fileSize);
 					// 0 is date/time , 1 is value, 2 battery level, 3 running processes separated by semicolons, 4 all the rest
 					tokens = line.split(",", 5);
 					
@@ -456,7 +511,7 @@ public class CurrentWidgetConfigure extends PreferenceActivity {
 			dialog.dismiss();
 			
 		}
-	};
+	}
 
 
 }
