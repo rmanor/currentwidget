@@ -1,9 +1,7 @@
 package com.manor.currentwidget.library.analyze;
 
-import android.os.Parcel;
-import android.os.Parcelable;
 
-public class ProcessInfo implements Comparable<ProcessInfo>, Parcelable  {
+public class ProcessInfo implements Comparable<ProcessInfo>, ITwoValuesResult  {
 
 	private int numberOfTimes;
 	private long electricCurrentSum;
@@ -13,14 +11,8 @@ public class ProcessInfo implements Comparable<ProcessInfo>, Parcelable  {
 		numberOfTimes = 1;
 		electricCurrentSum = electricCurrent;
 		processName = name;
-	}
-	
-	public ProcessInfo(Parcel in) {
-		numberOfTimes = in.readInt();
-		electricCurrentSum = in.readLong();
-		processName = in.readString();
-	}
-	
+	}	
+
 	@Override
 	public String toString() {
 		return processName;
@@ -55,22 +47,12 @@ public class ProcessInfo implements Comparable<ProcessInfo>, Parcelable  {
 		return 0;
 	}
 
-	public void writeToParcel(Parcel out, int arg1) {
-		out.writeInt(numberOfTimes);
-		out.writeLong(electricCurrentSum);
-		out.writeString(processName);
+	public String getValue1() {
+		return processName;
 	}
-	
-	
-	
-	  public static final Parcelable.Creator<ProcessInfo> CREATOR
-      		= new Parcelable.Creator<ProcessInfo>() {
-		  		public ProcessInfo createFromParcel(Parcel in) {
-		  			return new ProcessInfo(in);
-		  		}
-		  		
-		  		public ProcessInfo[] newArray(int size) {
-	  				return new ProcessInfo[size];
-  				}
-	  };
+
+	public String getValue2() {
+		return Float.toString(getMean());
+	}
+
 }

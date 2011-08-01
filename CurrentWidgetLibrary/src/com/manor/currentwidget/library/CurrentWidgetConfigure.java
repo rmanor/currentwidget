@@ -53,9 +53,12 @@ import android.preference.PreferenceScreen;
 import android.view.KeyEvent;
 import android.widget.Toast;
 
+import com.manor.currentwidget.library.analyze.ILogLineProcessor;
+import com.manor.currentwidget.library.analyze.ITwoValuesResult;
 import com.manor.currentwidget.library.analyze.LogAnalyzer;
 import com.manor.currentwidget.library.analyze.ProcessInfo;
 import com.manor.currentwidget.library.analyze.ResultsActivity;
+import com.manor.currentwidget.library.analyze.TopProcessesLineProcessor;
 
 public class CurrentWidgetConfigure extends PreferenceActivity  {
 
@@ -68,8 +71,8 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 	private ProgressDialog _progressDialog = null;
 	private boolean _graphLoadingCancelled = false;
 	
-	// @@@ when you'll have more results, move it to a resultsDataHolder singleton class
-	public static ProcessInfo[] p = null;
+	// @@@ when you'll have more results types, move it to a resultsDataHolder singleton class
+	public static ITwoValuesResult[] p = null;
 	
 	public CurrentWidgetConfigure() {
 		super();
@@ -328,7 +331,7 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 			
 			LogAnalyzer.getInstance(getApplicationContext()).getProcessesSortedByAverageCurrent();			
 			
-			new getProcessesSortedByAverageCurrentAsyncTask().execute((Void[])null);
+			new logLineProcessorAsyncTask().execute((Void[])null);
 			//CurrentWidgetConfigure.p = p;
 			
 			/*Intent i = new Intent(this, ResultsActivity.class);
@@ -367,7 +370,7 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 		return false;
 	};
 	
-	private class getProcessesSortedByAverageCurrentAsyncTask extends AsyncTask<Void, Integer, ProcessInfo[]> {
+	private class logLineProcessorAsyncTask extends AsyncTask<Void, Integer, ITwoValuesResult[]> {
 		
 		private ProgressDialog dialog = null;
 
@@ -399,14 +402,12 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 		}
 		
 		@Override
-		protected ProcessInfo[] doInBackground(Void... params) {
+		protected ITwoValuesResult[] doInBackground(Void... params) {
 			
 			SharedPreferences settings = getApplicationContext().getSharedPreferences(CurrentWidgetConfigure.SHARED_PREFS_NAME, 0);
 			
 			FileInputStream logFile = null;
 			
-			HashMap<String, ProcessInfo> processesData = new HashMap<String, ProcessInfo>();
-
 			try {
 				logFile = new FileInputStream(settings.getString(getApplicationContext().getString(R.string.pref_log_filename_key), "/sdcard/currentwidget.log"));
 				int fileSize = logFile.available();
@@ -415,61 +416,22 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 				DataInputStream ds = new DataInputStream(logFile);
 
 				String line = null;
-				String[] tokens = null;
-				String[] processes = null;			
-				long value = 0;
+				
+				ILogLineProcessor logLineProcessor = new TopProcessesLineProcessor();
+
 				while ( ( line = ds.readLine() ) != null && !isCancelled()) {
 
 					bytesRead += line.length();
 					publishProgress((bytesRead*100)/fileSize);
-					// 0 is date/time , 1 is value, 2 battery level, 3 running processes separated by semicolons, 4 all the rest
-					tokens = line.split(",", 5);
-					
-					// if there is apps info
-					if (tokens.length < 4)
-						continue;
 				
-					try
-					{
-						// remove mA at the end
-						value = Long.parseLong(tokens[1].substring(0, tokens[1].length()-2));
-					}
-					catch (NumberFormatException nfe)
-					{
-						value = 0;
-					}
-						
-					// drawing value
-					if (value  < 0) {
-						value = Math.abs(value);
-						processes = tokens[3].split(";");
-						for (String process : processes) {
-							process = process.trim();
-							if (!processesData.containsKey(process)) {
-								processesData.put(process, new ProcessInfo(process, value));
-							}
-							else {
-								processesData.get(process).addElectricCurrent(value);
-							}
-						}
-					}					
+					logLineProcessor.process(line);
 
 				}		
 
 				ds.close();
-				logFile.close();	
-				
-				// copy to array and merge sort
-				ProcessInfo[] result = new ProcessInfo[processesData.size()];
-				int i = -1;
-				for (String k : processesData.keySet())
-				{
-					result[++i] = processesData.get(k);
-				}
-				
-				Arrays.sort(result);	
+				logFile.close();				
 						
-				return result;			
+				return (ITwoValuesResult[])logLineProcessor.getResult();			
 
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -486,7 +448,7 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 		}
 		
 		@Override
-		protected void onPostExecute(ProcessInfo[] result) {
+		protected void onPostExecute(ITwoValuesResult[] result) {
 			super.onPostExecute(result);
 			
 			CurrentWidgetConfigure.p = result;

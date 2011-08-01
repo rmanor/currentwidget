@@ -9,9 +9,9 @@ import android.widget.TextView;
 
 import com.manor.currentwidget.library.R;
 
-public class ProcessInfoAdapter extends ArrayAdapter<ProcessInfo> {
+public class TwoValuesResultAdapter extends ArrayAdapter<ITwoValuesResult> {
 
-	public ProcessInfoAdapter(Context context, int textViewReousrceId, ProcessInfo[] items)
+	public TwoValuesResultAdapter(Context context, int textViewReousrceId, ITwoValuesResult[] items)
 	{
 		super(context, textViewReousrceId, items);
 	}
@@ -21,17 +21,17 @@ public class ProcessInfoAdapter extends ArrayAdapter<ProcessInfo> {
 		View v = convertView;
 		 if (v == null) {
              LayoutInflater vi = (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-             v = vi.inflate(R.layout.process_info_row, null);
+             v = vi.inflate(R.layout.process_info_row, parent, false);
          }
-         ProcessInfo p = getItem(position);
+         ITwoValuesResult p = getItem(position);
          if (p != null) {
                  TextView tt = (TextView) v.findViewById(R.id.processName);
                  TextView bt = (TextView) v.findViewById(R.id.meanCurrent);
                  if (tt != null) {
-                       tt.setText(p.processName);             
+                       tt.setText(p.getValue1());             
                        }
                  if(bt != null){
-                       bt.setText(Float.toString(p.getMean()));
+                       bt.setText(p.getValue2());
                  }
          }
          return v;
