@@ -19,13 +19,13 @@
 
 package com.manor.currentwidget.library;
 
+import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 
 import org.achartengine.ChartFactory;
 import org.achartengine.model.TimeSeries;
@@ -55,8 +55,6 @@ import android.widget.Toast;
 
 import com.manor.currentwidget.library.analyze.ILogLineProcessor;
 import com.manor.currentwidget.library.analyze.ITwoValuesResult;
-import com.manor.currentwidget.library.analyze.LogAnalyzer;
-import com.manor.currentwidget.library.analyze.ProcessInfo;
 import com.manor.currentwidget.library.analyze.ResultsActivity;
 import com.manor.currentwidget.library.analyze.TopProcessesLineProcessor;
 import com.manor.currentwidget.library.analyze.ValuesCountLineProcessor;
@@ -409,14 +407,21 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 			
 			SharedPreferences settings = getApplicationContext().getSharedPreferences(CurrentWidgetConfigure.SHARED_PREFS_NAME, 0);
 			
-			FileInputStream logFile = null;
+			//FileInputStream logFile = null;
+			FileReader logFile = null;
 			
 			try {
-				logFile = new FileInputStream(settings.getString(getApplicationContext().getString(R.string.pref_log_filename_key), "/sdcard/currentwidget.log"));
-				int fileSize = logFile.available();
+				//logFile = new FileInputStream(settings.getString(getApplicationContext().getString(R.string.pref_log_filename_key), "/sdcard/currentwidget.log"));
+				logFile = new FileReader(settings.getString(getApplicationContext().getString(R.string.pref_log_filename_key), "/sdcard/currentwidget.log"));
+				File f = new File(settings.getString(getApplicationContext().getString(R.string.pref_log_filename_key), "/sdcard/currentwidget.log"));
+				int fileSize = (int)f.length();
+
+				//int fileSize = logFile.available();
+				//int fileSize = 1;
 				int bytesRead = 0;
 				
-				DataInputStream ds = new DataInputStream(logFile);
+				//DataInputStream ds = new DataInputStream(logFile);
+				BufferedReader ds = new BufferedReader(logFile);				
 
 				String line = null;
 				
