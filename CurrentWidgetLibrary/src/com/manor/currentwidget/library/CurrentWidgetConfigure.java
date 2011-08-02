@@ -152,17 +152,26 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 				_dataset = new XYMultipleSeriesDataset();
 				TimeSeries series = new TimeSeries("Electric Current");
 
-				FileInputStream logFile = null;
+				FileReader logFile = null;
 
 				try {
-					logFile = new FileInputStream(settings.getString(getApplicationContext().getString(R.string.pref_log_filename_key), "/sdcard/currentwidget.log"));
-					DataInputStream ds = new DataInputStream(logFile);
+					File f = new File(settings.getString(getApplicationContext().getString(R.string.pref_log_filename_key), "/sdcard/currentwidget.log"));
+					logFile = new FileReader(f);
+					//DataInputStream ds = new DataInputStream(logFile);
+					BufferedReader ds = new BufferedReader(logFile);
 
+					_progressDialog.setMax((int)f.length());
+					
 					String line = null;
 					String[] tokens = null;
-					int x = 0;			
+					int x = 0;
+					int bytesRead = 0;
+					
 					while ( ( line = ds.readLine() ) != null && !_graphLoadingCancelled) {
 
+						bytesRead += line.length();
+						_progressDialog.setProgress(bytesRead);
+						
 						// 0 is datetime , 1 is value, 3 all the rest
 						tokens = line.split(",", 3);						
 						
@@ -210,12 +219,27 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 		};
 
 		_graphLoadingCancelled = false;
-		_progressDialog = ProgressDialog.show(this, "", "Loading. Please wait...", true, true, new DialogInterface.OnCancelListener() {
+		/*_progressDialog = ProgressDialog.show(this, "", "Loading. Please wait...", true, true, new DialogInterface.OnCancelListener() {
 			
 			public void onCancel(DialogInterface dialog) {
 				_graphLoadingCancelled = true;
 			}
+		});*/
+		
+		_progressDialog = new ProgressDialog(CurrentWidgetConfigure.this);
+		_progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+		_progressDialog.setMessage("Loading. Please Wait...");
+		_progressDialog.setCancelable(true);
+		_progressDialog.setOnCancelListener(new OnCancelListener() {
+			
+			public void onCancel(DialogInterface dialog) {
+				_graphLoadingCancelled = true;					
+			}
 		});
+		
+		_progressDialog.setProgress(0);
+		_progressDialog.show();
+
 
 		t.start();
 
