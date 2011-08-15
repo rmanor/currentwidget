@@ -103,6 +103,11 @@ public class CurrentReaderFactory {
 		if (f.exists())
 			return OneLineReader.getValue(f, false);
 		
+		// Xperia Arc
+		f = new File("/sys/class/power_supply/bq27520/current_now");
+		if (f.exists())
+			return OneLineReader.getValue(f, true);
+		
 		return null;
 	}
 }
