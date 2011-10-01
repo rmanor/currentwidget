@@ -30,6 +30,14 @@ public class CurrentReaderFactory {
 		
 		File f = null;		
 
+		// trimuph with cm7
+		if (Build.MODEL.toLowerCase().contains("triumph")) {
+			f = new File("/sys/class/power_supply/battery/current_now");
+			if (f.exists()) {
+				return OneLineReader.getValue(f, false);
+			}
+		}
+		
 		// htc desire hd / desire z / inspire?
 		if (Build.MODEL.toLowerCase().contains("desire hd") ||
 				Build.MODEL.toLowerCase().contains("desire z") ||
@@ -107,6 +115,16 @@ public class CurrentReaderFactory {
 		f = new File("/sys/class/power_supply/bq27520/current_now");
 		if (f.exists())
 			return OneLineReader.getValue(f, true);
+		
+		// Motorola Atrix
+		f = new File("/sys/devices/platform/cpcap_battery/power_supply/usb/current_now");
+		if (f.exists()) 
+			return OneLineReader.getValue(f, false);
+		
+		// Acer Iconia Tab A500
+		f = new File("/sys/EcControl/BatCurrent");
+		if (f.exists())
+			return OneLineReader.getValue(f, false);
 		
 		return null;
 	}
