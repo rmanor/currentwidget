@@ -63,4 +63,6 @@
 <string name="pref_notification_number_of_updates_key">notification_number_of_updates</string>
 <string name="pref_notification_screen_off_key">notification_screen_off</string>
 <string name="pref_notification_sound_key">notification_sound</string>
+<string name="pref_notification_led_key">notification_led</string>
+<string name="pref_notification_vibrate_key">notification_vibrate</string>
 </resources>

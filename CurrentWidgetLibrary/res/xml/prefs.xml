@@ -65,11 +65,14 @@
 		    
 		        <EditTextPreference android:key="@string/pref_notification_threshold_key"
 		            android:title="Threshold"
-		            android:summary="Minimum current value to consider as 'high'"/>
+		            android:summary="Minimum current value to consider as 'high'"
+		            android:inputType="number"
+		            />
 		        
 		    	<EditTextPreference android:key="@string/pref_notification_number_of_updates_key"
 		    	    android:title="Number of updates"
-		    	    android:summary="Number of 'high' updates to alert on"/>
+		    	    android:summary="Number of consecutive 'high' updates to alert on"
+		    	    android:inputType="number"/>
 		    	
 		       	<CheckBoxPreference android:key="@string/pref_notification_screen_off_key" 
 		       	    	android:title="Only when screen is off"
