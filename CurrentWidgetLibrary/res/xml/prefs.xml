@@ -50,6 +50,51 @@
 				android:summary="Change text color in ClearText type"/>
 			
 		</PreferenceScreen>
+		
+		<PreferenceScreen android:title="Notification"
+				android:key="prefNotifications" 
+				android:summary="Alert on high current usage">
+			
+		    <CheckBoxPreference android:key="@string/pref_notification_enabled_key" 
+		        	android:title="Enabled" 
+		        	android:defaultValue="false"
+		        	android:summaryOn="Show notification on high usage"
+		        	android:summaryOff="Don't show notification on high usage"/>
+		    
+		    <PreferenceCategory android:title="Conditions">
+		    
+		        <EditTextPreference android:key="@string/pref_notification_threshold_key"
+		            android:title="Threshold"
+		            android:summary="Minimum current value to consider as 'high'"/>
+		        
+		    	<EditTextPreference android:key="@string/pref_notification_number_of_updates_key"
+		    	    android:title="Number of updates"
+		    	    android:summary="Number of 'high' updates to alert on"/>
+		    	
+		       	<CheckBoxPreference android:key="@string/pref_notification_screen_off_key" 
+		       	    	android:title="Only when screen is off"
+		       	    	android:summary="Alert only when screen is off"/>
+		    
+		    </PreferenceCategory>
+		    
+		    <PreferenceCategory android:title="Alerts">
+		        
+		        <RingtonePreference android:title="Sound"
+		            	android:key="@string/pref_notification_sound_key"
+		            	android:summary="Ring on notification"/>
+		    
+		    	<CheckBoxPreference android:title="LED"
+		    	    	android:key="@string/pref_notification_led_key"
+		    	    	android:summary="Flash LED light on notification"/>
+		    
+		    	<CheckBoxPreference android:title="Vibrate"
+		    	    	android:key="@string/pref_notification_vibrate_key"
+		    	    	android:summary="Vibrate on notification"/>		    	
+		    
+		    </PreferenceCategory>
+			
+		</PreferenceScreen>
+		    
 
 	</PreferenceCategory>
 
