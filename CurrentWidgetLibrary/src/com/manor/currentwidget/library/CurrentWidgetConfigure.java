@@ -20,9 +20,7 @@
 package com.manor.currentwidget.library;
 
 import java.io.BufferedReader;
-import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Date;
@@ -41,11 +39,14 @@ import android.appwidget.AppWidgetManager;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceActivity;
@@ -86,6 +87,7 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 
 		addPreferencesFromResource(R.xml.prefs);
 
+		
 		// get widget id
 		Intent intent = getIntent();		
 		Bundle extras = intent.getExtras();
@@ -101,6 +103,13 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 
 		if (this.getApplicationContext().getPackageName().equals("com.manor.currentwidgetpaid")) {
 			findPreference("donate").setTitle("Thank you for donating!");
+		}
+		
+		if (Integer.parseInt(Build.VERSION.SDK) < 7) {
+			Preference p = findPreference(getString(R.string.pref_notification_screen_off_key));
+			p.setEnabled(false);
+			p.setSummary("Requires Android 2.1+");
+			((CheckBoxPreference)p).setChecked(false);
 		}
 		
 		SharedPreferences settings = getSharedPreferences(SHARED_PREFS_NAME, 0);
@@ -123,6 +132,10 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		/*SharedPreferences settings = getSharedPreferences(SHARED_PREFS_NAME, 0);
+		Log.d("CurrentWidget",
+				"sound: " + settings.getString(getString(R.string.pref_notification_sound_key), ""));*/
+		
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			if (mAppWidgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
 				Intent updateIntent = new Intent(this.getApplicationContext(), CurrentWidget.class);

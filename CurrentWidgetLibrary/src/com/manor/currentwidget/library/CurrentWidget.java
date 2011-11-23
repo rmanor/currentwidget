@@ -28,6 +28,8 @@ import java.util.List;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
@@ -36,6 +38,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.RemoteViews;
@@ -51,6 +54,7 @@ public class CurrentWidget extends AppWidgetProvider {
 	
 	@Override
 	public void onEnabled(Context context) {
+		Log.d("CurrentWidget", "on enabled");
 	}
 	
 	@Override
@@ -83,6 +87,12 @@ public class CurrentWidget extends AppWidgetProvider {
 		}
 
 	}	
+	
+	@Override
+	public void onDisabled(Context context) {
+		super.onDisabled(context);
+		
+	}
 
 	
 	// fix for 1.5 SDK bug
@@ -331,13 +341,23 @@ public class CurrentWidget extends AppWidgetProvider {
 		
 		String batteryLevelText = "no data";
 		String voltageText = "no data";
-		
+		int batteryLevel = -1;
 		// get battery level & voltage
 		try {
 			Intent batteryIntent = context.getApplicationContext().registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
 			if (batteryIntent != null) {
-				batteryLevelText = String.valueOf(batteryIntent.getIntExtra("level", 0)) + "%";
+				int scale = batteryIntent.getIntExtra("scale", 100);
+				batteryLevel = (int)((float)batteryIntent.getIntExtra("level", 0)*100/scale);
+				batteryLevelText = String.valueOf(batteryLevel) + "%";
 				voltageText = Float.toString((float)batteryIntent.getIntExtra("voltage", 0)/1000) + "V";
+				/*int lastBatteryLevel = settings.getInt("lastBatteryLevel", -1);
+				if (lastBatteryLevel >= 0) {
+					int diff = lastBatteryLevel - batteryLevel;
+					float lostCharge = 5040*diff/100;
+					float estimatedCurrent = lostCharge/secondsInterval; // in A
+					Log.d("CurrentWidget", "Estimated: " + Float.toString(estimatedCurrent*1000));
+				}*/
+				//Log.d("CurrentWidget", )
 				
 			}
 		}
@@ -345,10 +365,79 @@ public class CurrentWidget extends AppWidgetProvider {
 			// can't register service
 			Log.e("CurrentWidget", ex.getMessage());
 			ex.printStackTrace();
-		}	
+		}
+		
+		int numberOfHighValueTimes = 0;
+		
+		// if not charging and notification is enabled in settings
+		if (value != null && !isCharging &&
+				settings.getBoolean(context.getString(R.string.pref_notification_enabled_key), false)) {
 
+			boolean onlyIfScreenOff = settings.getBoolean(context.getString(R.string.pref_notification_screen_off_key), false);
+			
+			boolean isOk = false;
+			if (Integer.parseInt(Build.VERSION.SDK) < 7)
+				isOk = true;
+			else {
+				isOk = !onlyIfScreenOff || (onlyIfScreenOff && !Compatibility.isScreenOn(context));
+			}
+			
+			// only if don't check for screen off
+			// or if check and screen is off
+			if (isOk) {
 
+				numberOfHighValueTimes = settings.getInt("numberOfHighValueTimes", 0);
+				
+				if (value >= Long.parseLong(settings.getString(context.getString(R.string.pref_notification_threshold_key), "200"))) {
+					++numberOfHighValueTimes;
+				}
+				else {
+					numberOfHighValueTimes = 0;
+				}
+				
+				if (numberOfHighValueTimes >= Integer.parseInt(settings.getString(context.getString(R.string.pref_notification_number_of_updates_key), "3"))) {
+					
+					Notification notification = new Notification(R.drawable.icon,
+							"CurrentWidget detected a high current usage",
+							System.currentTimeMillis());
+					
+					notification.flags |= Notification.FLAG_AUTO_CANCEL;
+					
+					Intent notificationIntent = new Intent(context.getApplicationContext(), CurrentWidgetConfigure.class);
+					notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+					PendingIntent contentIntent = PendingIntent.getActivity(context.getApplicationContext(), 0, notificationIntent, 0);
+					
+					notification.setLatestEventInfo(context.getApplicationContext(), 
+							"CurrentWidget", "High current usage was detected", contentIntent);
+					
+					String sound = settings.getString(context.getString(R.string.pref_notification_sound_key), "");
+					if (sound.length() > 0)
+						notification.sound = Uri.parse(sound);
+					
+					if (settings.getBoolean(context.getString(R.string.pref_notification_vibrate_key), false))
+						notification.defaults |= Notification.DEFAULT_VIBRATE;
+					
+					if (settings.getBoolean(context.getString(R.string.pref_notification_led_key), false))
+					{
+						notification.ledARGB = 0xffffffff;
+						notification.ledOnMS = 300;
+						notification.ledOffMS = 1000;
+						notification.flags |= Notification.FLAG_SHOW_LIGHTS;						
+					}
+									
+					NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+					notificationManager.notify(1, notification);					
+					
+					numberOfHighValueTimes = 0;
+				}
+
+			}		
+			
+		}
+		
 		SharedPreferences.Editor editor = settings.edit();
+		//editor.putInt("lastBatteryLevel", batteryLevel);
+		editor.putInt("numberOfHighValueTimes", numberOfHighValueTimes);
 		editor.putString("0_text", currentText);
 		editor.putString("1_text", batteryLevelText);
 		editor.putString("2_text", voltageText);
