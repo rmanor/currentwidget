@@ -67,16 +67,20 @@
 		            android:title="Threshold"
 		            android:summary="Minimum current value to consider as 'high'"
 		            android:inputType="number"
+		            android:defaultValue="200"
 		            />
 		        
 		    	<EditTextPreference android:key="@string/pref_notification_number_of_updates_key"
 		    	    android:title="Number of updates"
 		    	    android:summary="Number of consecutive 'high' updates to alert on"
-		    	    android:inputType="number"/>
+		    	    android:inputType="number"
+		    	    android:defaultValue="3"/>
 		    	
 		       	<CheckBoxPreference android:key="@string/pref_notification_screen_off_key" 
 		       	    	android:title="Only when screen is off"
-		       	    	android:summary="Alert only when screen is off"/>
+		       	    	android:summaryOn="Alert only when screen is off"
+		       	    	android:summaryOff="Alert whether screen is off or on"
+		       	    	android:defaultValue="false"/>
 		    
 		    </PreferenceCategory>
 		    
@@ -84,16 +88,24 @@
 		        
 		        <RingtonePreference android:title="Sound"
 		            	android:key="@string/pref_notification_sound_key"
-		            	android:summary="Ring on notification"/>
-		    
-		    	<CheckBoxPreference android:title="LED"
-		    	    	android:key="@string/pref_notification_led_key"
-		    	    	android:summary="Flash LED light on notification"/>
-		    
+		            	android:summary="Ring on notification"
+		            	android:ringtoneType="all"
+		            	android:showSilent="true"
+		            	android:showDefault="true"
+		            	android:defaultValue=""/>
+		    	    
 		    	<CheckBoxPreference android:title="Vibrate"
 		    	    	android:key="@string/pref_notification_vibrate_key"
-		    	    	android:summary="Vibrate on notification"/>		    	
+		    	    	android:summaryOn="Vibrate on notification"
+		    	    	android:summaryOff="Don't Vibrate on notification"
+		    	    	android:defaultValue="false"/>		    	
 		    
+ 			    <CheckBoxPreference android:title="LED"
+		    	    	android:key="@string/pref_notification_led_key"
+		    	    	android:summaryOn="Flash LED light on notification"
+		    	    	android:summaryOff="Don't Flash LED light on notification"
+		    	    	android:defaultValue="false"/>
+		    	
 		    </PreferenceCategory>
 			
 		</PreferenceScreen>
