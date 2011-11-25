@@ -53,13 +53,13 @@
 		
 		<PreferenceScreen android:title="Notification"
 				android:key="prefNotifications" 
-				android:summary="Alert on high current usage">
+				android:summary="Alert on high current values">
 			
 		    <CheckBoxPreference android:key="@string/pref_notification_enabled_key" 
 		        	android:title="Enabled" 
 		        	android:defaultValue="false"
-		        	android:summaryOn="Show notification on high usage"
-		        	android:summaryOff="Don't show notification on high usage"/>
+		        	android:summaryOn="Show notification on high current values"
+		        	android:summaryOff="Don't show notification on high current values"/>
 		    
 		    <PreferenceCategory android:title="Conditions">
 		    
@@ -71,8 +71,8 @@
 		            />
 		        
 		    	<EditTextPreference android:key="@string/pref_notification_number_of_updates_key"
-		    	    android:title="Number of updates"
-		    	    android:summary="Number of consecutive 'high' updates to alert on"
+		    	    android:title="Consecutive High Values Required"
+		    	    android:summary="Number of consecutive high current values required to trigger alert"
 		    	    android:inputType="number"
 		    	    android:defaultValue="3"/>
 		    	
