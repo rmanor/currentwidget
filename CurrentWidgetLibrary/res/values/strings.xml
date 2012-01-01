@@ -65,4 +65,7 @@
 <string name="pref_notification_sound_key">notification_sound</string>
 <string name="pref_notification_led_key">notification_led</string>
 <string name="pref_notification_vibrate_key">notification_vibrate</string>
+<string name="pref_customize_text_showtime">customize_text_showtime</string>
+<string name="pref_customize_text_showupdate">customize_text_showupdate</string>
+<string name="pref_customize_text_showall">customize_text_showall</string>
 </resources>

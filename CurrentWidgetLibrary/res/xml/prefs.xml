@@ -44,11 +44,30 @@
 			
 
 		<PreferenceScreen android:key="customize" android:title="Customize"
-					android:summary="Customize appearance">
+					android:summary="Customize appearance (ClearText only)">
 			
 			<Preference android:key="text_textColor" android:title="Text Color"
 				android:summary="Change text color in ClearText type"/>
 			
+			<CheckBoxPreference android:key="@string/pref_customize_text_showtime" 
+			    android:title="Show Last Update Time"
+			    android:summaryOn="Show last update time in ClearText type"
+			    android:summaryOff="Don't show last update time in ClearText type"
+			    android:defaultValue="true"/>
+
+			<CheckBoxPreference android:key="@string/pref_customize_text_showupdate" 
+			    android:title="Show Update Now Button"
+			    android:summaryOn="Show update now button in ClearText type"
+			    android:summaryOff="Don't show update now in ClearText type"
+			    android:defaultValue="true"/>
+			
+			<CheckBoxPreference android:key="@string/pref_customize_text_showall" 
+			    android:title="Show All Selected Views"
+			    android:summaryOn="Show all selected views on widget"
+			    android:summaryOff="Show one view and switch on touch"
+			    android:defaultValue="false"/>
+						
+						
 		</PreferenceScreen>
 		
 		<PreferenceScreen android:title="Notification"
