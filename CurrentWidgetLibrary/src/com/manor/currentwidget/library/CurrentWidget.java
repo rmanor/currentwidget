@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2010-2011 Ran Manor
+ *  Copyright (c) 2010-2012 Ran Manor
  *  
  *  This file is part of CurrentWidget.
  *    
@@ -40,7 +40,9 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
+import android.view.View;
 import android.widget.RemoteViews;
 
 /**
@@ -129,6 +131,12 @@ public class CurrentWidget extends AppWidgetProvider {
 		//Log.d("CurrentWidget", "onSwitchView");
 		
 		SharedPreferences settings = context.getApplicationContext().getSharedPreferences(CurrentWidgetConfigure.SHARED_PREFS_NAME, 0);
+		
+		int layoutId = convertPrefValueToLayout(settings.getString(context.getString(R.string.pref_widget_type_key), "0"));
+		if (layoutId == R.layout.main_text &&
+				settings.getBoolean(context.getString(R.string.pref_customize_text_showall), false)) {
+			return;
+		}
 		
 		int currentView = settings.getInt("current_view", 0);
 		
@@ -266,10 +274,22 @@ public class CurrentWidget extends AppWidgetProvider {
 		RemoteViews remoteViews = new RemoteViews(context.getPackageName(), layoutId);
 		
 		if (layoutId == R.layout.main_text) {
+			
+			// text color
+			
 			int color = settings.getInt(context.getString(R.string.pref_text_text_color), 0xFFFFFFFF);
 			remoteViews.setTextColor(R.id.text, color);
 			remoteViews.setTextColor(R.id.last_updated_text, color);
 			remoteViews.setTextColor(R.id.update_now_button, color);
+			
+			// show time
+			remoteViews.setViewVisibility(R.id.last_updated_text, 
+					settings.getBoolean(context.getString(R.string.pref_customize_text_showtime), true)?View.VISIBLE:View.GONE);
+			
+			// show update now button
+			remoteViews.setViewVisibility(R.id.update_now_button, 
+					settings.getBoolean(context.getString(R.string.pref_customize_text_showupdate), true)?View.VISIBLE:View.GONE);
+
 		}
              
 		String currentText = null;
@@ -342,6 +362,8 @@ public class CurrentWidget extends AppWidgetProvider {
 		String batteryLevelText = "no data";
 		String voltageText = "no data";
 		int batteryLevel = -1;
+		float currentVoltage = 0;
+		//float currentTime = 0;
 		// get battery level & voltage
 		try {
 			Intent batteryIntent = context.getApplicationContext().registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
@@ -349,15 +371,22 @@ public class CurrentWidget extends AppWidgetProvider {
 				int scale = batteryIntent.getIntExtra("scale", 100);
 				batteryLevel = (int)((float)batteryIntent.getIntExtra("level", 0)*100/scale);
 				batteryLevelText = String.valueOf(batteryLevel) + "%";
-				voltageText = Float.toString((float)batteryIntent.getIntExtra("voltage", 0)/1000) + "V";
-				/*int lastBatteryLevel = settings.getInt("lastBatteryLevel", -1);
-				if (lastBatteryLevel >= 0) {
-					int diff = lastBatteryLevel - batteryLevel;
-					float lostCharge = 5040*diff/100;
-					float estimatedCurrent = lostCharge/secondsInterval; // in A
-					Log.d("CurrentWidget", "Estimated: " + Float.toString(estimatedCurrent*1000));
-				}*/
-				//Log.d("CurrentWidget", )
+				currentVoltage = (float)batteryIntent.getIntExtra("voltage", 0) / 1000;
+				//currentTime = (float)SystemClock.elapsedRealtime() / 1000;
+				voltageText = Float.toString(currentVoltage) + "V";
+				/*float lastVoltage = settings.getFloat("lastVoltage", 0);
+				float lastTime = settings.getFloat("lastTime", 0);
+				if (lastVoltage > 0 && lastTime > 0) {
+					float voltageDiff = currentVoltage - lastVoltage;
+					float timeDiff = currentTime - lastTime;
+					float C = 5040*(float)batteryLevel/(float)scale;
+					C = C / currentVoltage;
+					float estimated = voltageDiff*C/timeDiff;
+					Log.d("CurrentWidget", 
+							String.format("Current Voltage: %.8f ; Last Voltage: %.8f ; Estimated= %.4f ; C=%.2f ; voltageDiff=%.2f ; timeDiff = %.2f ;",
+							currentVoltage, lastVoltage, estimated, C, voltageDiff, timeDiff));
+				}*/		
+		
 				
 			}
 		}
@@ -441,12 +470,28 @@ public class CurrentWidget extends AppWidgetProvider {
 		editor.putString("0_text", currentText);
 		editor.putString("1_text", batteryLevelText);
 		editor.putString("2_text", voltageText);
+		/*editor.putFloat("lastTime", currentTime);
+		editor.putFloat("lastVoltage", currentVoltage);*/
 		editor.commit();
 		
-		int currentView = settings.getInt("current_view", 0);	
+		if (settings.getBoolean(context.getString(R.string.pref_customize_text_showall), false) &&
+				layoutId == R.layout.main_text) {
+		 String text = "";
+		 for (int i=0;i<MAX_NUMBER_OF_VIEWS;++i) {
+			 if (settings.getBoolean("view_" + Integer.toString(i), true)) {
+				 text += settings.getString(Integer.toString(i) + "_text", "no data") + "\n";
+			 }
+		 }
+		 text = text.substring(0, text.length()-1); // remove last newline
+		 remoteViews.setTextViewText(R.id.text, text);
+		}
+		else {
+			
+			int currentView = settings.getInt("current_view", 0);	
 		
-		remoteViews.setTextViewText(R.id.text, 
-				settings.getString(Integer.toString(currentView) + "_text", "no data"));
+			remoteViews.setTextViewText(R.id.text, 
+					settings.getString(Integer.toString(currentView) + "_text", "no data"));
+		}
 		
 		// set last update
 		remoteViews.setTextViewText(R.id.last_updated_text, (new SimpleDateFormat("HH:mm:ss")).format(new Date()));

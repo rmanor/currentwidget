@@ -30,6 +30,16 @@ public class CurrentReaderFactory {
 		
 		File f = null;		
 
+		// wildfire S
+		if (Build.MODEL.toLowerCase().contains("wildfire s")) {
+			f = new File("/sys/class/power_supply/battery/smem_text");
+			if (f.exists()) {
+				Long value = BattAttrTextReader.getValue(f, "eval_current");
+				if (value != null)
+					return value;
+			}
+		}
+		
 		// trimuph with cm7
 		if (Build.MODEL.toLowerCase().contains("triumph")) {
 			f = new File("/sys/class/power_supply/battery/current_now");
@@ -81,7 +91,7 @@ public class CurrentReaderFactory {
 		f = new File("/sys/class/power_supply/battery/batt_attr_text");
 		if (f.exists())
 		{
-			Long value = BattAttrTextReader.getValue();
+			Long value = BattAttrTextReader.getValue(f, "batt_discharge_current");
 			if (value != null)
 				return value;
 		}
@@ -123,6 +133,11 @@ public class CurrentReaderFactory {
 		
 		// Acer Iconia Tab A500
 		f = new File("/sys/EcControl/BatCurrent");
+		if (f.exists())
+			return OneLineReader.getValue(f, false);
+		
+		// charge current only, Samsung Note
+		f = new File("/sys/class/power_supply/battery/batt_current_now");
 		if (f.exists())
 			return OneLineReader.getValue(f, false);
 		

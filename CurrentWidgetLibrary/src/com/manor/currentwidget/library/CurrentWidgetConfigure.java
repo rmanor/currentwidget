@@ -38,6 +38,7 @@ import android.app.ProgressDialog;
 import android.appwidget.AppWidgetManager;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -51,6 +52,7 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.Toast;
 
@@ -112,7 +114,7 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 			((CheckBoxPreference)p).setChecked(false);
 		}
 		
-		SharedPreferences settings = getSharedPreferences(SHARED_PREFS_NAME, 0);
+		/*SharedPreferences settings = getSharedPreferences(SHARED_PREFS_NAME, 0);
 		
 		findPreference("text_textColor").setEnabled(settings.getString(getString(R.string.pref_widget_type_key), "0").equals("1"));
 		
@@ -125,7 +127,7 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 				
 				return true;
 			}
-		});
+		});*/
 
 
 	}
@@ -147,6 +149,24 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 				sendBroadcast(updateIntent);
 				
 				// @@@ try calling the static function instead
+			}
+			else {
+				ComponentName name = new ComponentName(getApplicationContext(), CurrentWidget.class);
+				int [] ids = AppWidgetManager.getInstance(getApplicationContext()).getAppWidgetIds(name);
+				if (ids == null || ids.length == 0) {
+					//Log.e("SmartWidget", "Error - SmartWidgets not found");			
+				}
+				else {
+					//for (int id : ids) {
+						Intent updateIntent = new Intent(getApplicationContext(), CurrentWidget.class);
+						//updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id);
+						updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids );
+						updateIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+
+						getApplicationContext().sendBroadcast(updateIntent);							
+					//}					
+				}
+
 			}
 		}
 		return super.onKeyDown(keyCode, event);
