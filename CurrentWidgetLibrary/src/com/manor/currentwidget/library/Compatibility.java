@@ -2,14 +2,18 @@ package com.manor.currentwidget.library;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Vector;
 
 import android.content.Context;
+import android.media.AudioManager;
 import android.os.PowerManager;
+import android.util.Log;
 
 public class Compatibility {
 	private static Method method_isScreenOn;
-	private static PowerManager powerManager;
+	//private static PowerManager powerManager;	
+	
+	private static Method method_isWiredHeadsetOn;
+	
 	static {
 		initCompatibility();
 	};
@@ -27,12 +31,21 @@ public class Compatibility {
 		} catch (Exception e) {
 			method_isScreenOn = null;
 		}      
+		
+		try {
+			method_isWiredHeadsetOn = AudioManager.class.getMethod("isWiredHeadsetOn", new Class[]{});
+			//Log.d("CurrentWidget", "isWiredHeadsetOn supported");
+		}
+		catch (Exception e) {
+			method_isWiredHeadsetOn = null;
+		}
 	}
+	
 	public static boolean isScreenOn(Context main) {
 	
 		if (method_isScreenOn != null) {
 			try {
-				powerManager = (PowerManager)main.getSystemService(
+				PowerManager powerManager = (PowerManager)main.getSystemService(
 						Context.POWER_SERVICE);
 
 
@@ -55,5 +68,21 @@ public class Compatibility {
 		}
 
 		return true;
+	}
+	
+	public static boolean isWiredHeadsetOn(Context context) {
+		
+		if (method_isWiredHeadsetOn != null) {
+			try {
+				AudioManager audioManager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
+				Boolean result = (Boolean)(method_isWiredHeadsetOn.invoke(audioManager, (Object[])null));
+				return result;
+			}
+			catch (Exception e) {
+				
+			}
+		}
+		
+		return false;
 	}
 }

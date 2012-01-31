@@ -40,7 +40,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.SystemClock;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
@@ -135,7 +135,18 @@ public class CurrentWidget extends AppWidgetProvider {
 		int layoutId = convertPrefValueToLayout(settings.getString(context.getString(R.string.pref_widget_type_key), "0"));
 		if (layoutId == R.layout.main_text &&
 				settings.getBoolean(context.getString(R.string.pref_customize_text_showall), false)) {
+			
+			// showing multiple values, no switching
+			
+			Intent configIntent = new Intent(context.getApplicationContext(), CurrentWidgetConfigure.class);
+			configIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, new int[] { appWidgetId } );
+			configIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+			configIntent.setData(Uri.withAppendedPath(Uri.parse("droidrm://widget/id/"), String.valueOf(appWidgetId)));
+			configIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			context.startActivity(configIntent);
+			
 			return;
+			
 		}
 		
 		int currentView = settings.getInt("current_view", 0);
@@ -362,7 +373,7 @@ public class CurrentWidget extends AppWidgetProvider {
 		String batteryLevelText = "no data";
 		String voltageText = "no data";
 		int batteryLevel = -1;
-		float currentVoltage = 0;
+		float currentVoltage = 0;		
 		//float currentTime = 0;
 		// get battery level & voltage
 		try {
@@ -395,7 +406,7 @@ public class CurrentWidget extends AppWidgetProvider {
 			Log.e("CurrentWidget", ex.getMessage());
 			ex.printStackTrace();
 		}
-		
+			
 		int numberOfHighValueTimes = 0;
 		
 		// if not charging and notification is enabled in settings
@@ -424,40 +435,99 @@ public class CurrentWidget extends AppWidgetProvider {
 					numberOfHighValueTimes = 0;
 				}
 				
-				if (numberOfHighValueTimes >= Integer.parseInt(settings.getString(context.getString(R.string.pref_notification_number_of_updates_key), "3"))) {
+				if (numberOfHighValueTimes >= 
+					Integer.parseInt(settings.getString(context.getString(R.string.pref_notification_number_of_updates_key), "3"))) {
 					
-					Notification notification = new Notification(R.drawable.icon,
-							"CurrentWidget detected a high current usage",
-							System.currentTimeMillis());
+					// check for excluded apps
+					ActivityManager activityManager = (ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE);
+					List<ActivityManager.RunningAppProcessInfo> runningApps = activityManager.getRunningAppProcesses();				
+				
+					boolean excluded = false;
 					
-					notification.flags |= Notification.FLAG_AUTO_CANCEL;
 					
-					Intent notificationIntent = new Intent(context.getApplicationContext(), CurrentWidgetConfigure.class);
-					notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-					PendingIntent contentIntent = PendingIntent.getActivity(context.getApplicationContext(), 0, notificationIntent, 0);
-					
-					notification.setLatestEventInfo(context.getApplicationContext(), 
-							"CurrentWidget", "High current usage was detected", contentIntent);
-					
-					String sound = settings.getString(context.getString(R.string.pref_notification_sound_key), "");
-					if (sound.length() > 0)
-						notification.sound = Uri.parse(sound);
-					
-					if (settings.getBoolean(context.getString(R.string.pref_notification_vibrate_key), false))
-						notification.defaults |= Notification.DEFAULT_VIBRATE;
-					
-					if (settings.getBoolean(context.getString(R.string.pref_notification_led_key), false))
-					{
-						notification.ledARGB = 0xffffffff;
-						notification.ledOnMS = 300;
-						notification.ledOffMS = 1000;
-						notification.flags |= Notification.FLAG_SHOW_LIGHTS;						
+					for (RunningAppProcessInfo processInfo : runningApps) {
+						
+						Log.d("CurrentWidget", "checking: " + processInfo.processName + " importance: " +
+								Integer.toString(processInfo.importance));
+
+						
+						if (settings.getBoolean(ExcludedAppsActivity.EXCLUDED_PREFIX +
+										processInfo.processName, false)) {
+							
+							Log.d("CurrentWidget", "found: " + processInfo.processName + " importance: " +
+										Integer.toString(processInfo.importance));
+							
+							if (processInfo.importance <= RunningAppProcessInfo.IMPORTANCE_BACKGROUND) {
+								excluded = true;
+								break;
+							}
+						}
+						
 					}
-									
-					NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
-					notificationManager.notify(1, notification);					
 					
-					numberOfHighValueTimes = 0;
+					if (!excluded &&
+							settings.getBoolean(context.getString(R.string.pref_notification_exclude_incall), false)) {
+						
+						TelephonyManager telephonyManager = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
+						if (telephonyManager.getCallState() == TelephonyManager.CALL_STATE_OFFHOOK) {
+							excluded = true;					
+						}
+							
+					}
+					
+					if (!excluded &&
+							settings.getBoolean(context.getString(R.string.pref_notification_exclude_bluetooth), false)) {
+						
+						// version 2.0 and above
+						//bluetooth adapater
+						
+					}
+					
+					if (!excluded &&
+							settings.getBoolean(context.getString(R.string.pref_notification_exclude_headset), false)) {
+						
+						// version 2.0 and above
+						if (Compatibility.isWiredHeadsetOn(context)) {
+							excluded = true;
+						}					
+					}
+
+
+					
+					if (!excluded) {
+						Notification notification = new Notification(R.drawable.icon,
+								"CurrentWidget detected a high current usage",
+								System.currentTimeMillis());
+						
+						notification.flags |= Notification.FLAG_AUTO_CANCEL;
+						
+						Intent notificationIntent = new Intent(context.getApplicationContext(), CurrentWidgetConfigure.class);
+						notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+						PendingIntent contentIntent = PendingIntent.getActivity(context.getApplicationContext(), 0, notificationIntent, 0);
+						
+						notification.setLatestEventInfo(context.getApplicationContext(), 
+								"CurrentWidget", "High current usage was detected", contentIntent);
+						
+						String sound = settings.getString(context.getString(R.string.pref_notification_sound_key), "");
+						if (sound.length() > 0)
+							notification.sound = Uri.parse(sound);
+						
+						if (settings.getBoolean(context.getString(R.string.pref_notification_vibrate_key), false))
+							notification.defaults |= Notification.DEFAULT_VIBRATE;
+						
+						if (settings.getBoolean(context.getString(R.string.pref_notification_led_key), false))
+						{
+							notification.ledARGB = 0xffffffff;
+							notification.ledOnMS = 300;
+							notification.ledOffMS = 1000;
+							notification.flags |= Notification.FLAG_SHOW_LIGHTS;						
+						}
+										
+						NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+						notificationManager.notify(1, notification);					
+						
+						numberOfHighValueTimes = 0;
+					}
 				}
 
 			}		
@@ -518,7 +588,7 @@ public class CurrentWidget extends AppWidgetProvider {
 				
 					ActivityManager activityManager = (ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE);
 					List<ActivityManager.RunningAppProcessInfo> runningApps = activityManager.getRunningAppProcesses();
-					
+				
 					if (runningApps != null)
 					{
 						str += ",";
@@ -527,7 +597,6 @@ public class CurrentWidget extends AppWidgetProvider {
 							str += processInfo.processName + ";";
 						}
 					}
-					
 				}
 				
 				str += "," + voltageText;

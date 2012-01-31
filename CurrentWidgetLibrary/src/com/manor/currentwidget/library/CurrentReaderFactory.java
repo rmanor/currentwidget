@@ -29,7 +29,7 @@ public class CurrentReaderFactory {
 	static public Long getValue() {
 		
 		File f = null;		
-
+	
 		// wildfire S
 		if (Build.MODEL.toLowerCase().contains("wildfire s")) {
 			f = new File("/sys/class/power_supply/battery/smem_text");
@@ -51,7 +51,9 @@ public class CurrentReaderFactory {
 		// htc desire hd / desire z / inspire?
 		if (Build.MODEL.toLowerCase().contains("desire hd") ||
 				Build.MODEL.toLowerCase().contains("desire z") ||
-				Build.MODEL.toLowerCase().contains("inspire")) {
+				Build.MODEL.toLowerCase().contains("inspire") ||
+				//htc evo view tablet
+				Build.MODEL.toLowerCase().contains("pg41200"))  {
 			
 			f = new File("/sys/class/power_supply/battery/batt_current");
 			if (f.exists()) {

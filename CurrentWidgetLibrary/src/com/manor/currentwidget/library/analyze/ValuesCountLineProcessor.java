@@ -24,7 +24,7 @@ public class ValuesCountLineProcessor implements ILogLineProcessor {
 			// remove mA at the end
 			value = Integer.parseInt(tokens[1].substring(0, tokens[1].length()-2));
 		}
-		catch (NumberFormatException nfe)
+		catch (Exception nfe) // not a number, weird string, etc.
 		{
 			value = 0;
 		}

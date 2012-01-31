@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2010-2011 Ran Manor
+ *  Copyright (c) 2010-2012 Ran Manor
  *  
  *  This file is part of CurrentWidget.
  *    
@@ -36,11 +36,11 @@ import yuku.ambilwarna.AmbilWarnaDialog.OnAmbilWarnaListener;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
@@ -49,9 +49,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
-import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.Toast;
@@ -114,6 +114,17 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 			((CheckBoxPreference)p).setChecked(false);
 		}
 		
+		if (Integer.parseInt(Build.VERSION.SDK) < 5) {
+			/*Preference p = findPreference(getString(R.string.pref_notification_exclude_bluetooth));
+			p.setEnabled(false);
+			p.setSummary("Requires Android 2.0+");
+			((CheckBoxPreference)p).setChecked(false);*/			
+			Preference p = findPreference(getString(R.string.pref_notification_exclude_headset));
+			p.setEnabled(false);
+			p.setSummary("Requires Android 2.0+");
+			((CheckBoxPreference)p).setChecked(false);		
+		}
+		
 		/*SharedPreferences settings = getSharedPreferences(SHARED_PREFS_NAME, 0);
 		
 		findPreference("text_textColor").setEnabled(settings.getString(getString(R.string.pref_widget_type_key), "0").equals("1"));
@@ -127,9 +138,10 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 				
 				return true;
 			}
-		});*/
+		});*/		
+		
 
-
+		
 	}
 
 	@Override
@@ -423,6 +435,11 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 			
 			
 			return true;
+		} else if (preference.getKey().equals("excludedApps")) {
+			
+			Intent i = new Intent(this, ExcludedAppsActivity.class);
+			startActivity(i);
+			
 		}
 
 		return false;
