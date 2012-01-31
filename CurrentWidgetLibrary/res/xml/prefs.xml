@@ -99,7 +99,26 @@
 		       	    	android:title="Only when screen is off"
 		       	    	android:summaryOn="Alert only when screen is off"
 		       	    	android:summaryOff="Alert whether screen is off or on"
-		       	    	android:defaultValue="false"/>
+		       	    	android:defaultValue="false"/>		       	
+      			
+		       	<CheckBoxPreference android:key="@string/pref_notification_exclude_incall"
+		       	    android:title="Disable During Calls"
+		       	    android:summary="Disable high current notification during phone calls"
+		       	    android:defaultValue="false"/>
+
+ 			    <CheckBoxPreference android:key="@string/pref_notification_exclude_headset"
+		       	    android:title="Disable with Headset"
+		       	    android:summary="Disable high current notification when a headset is connected"
+		       	    android:defaultValue="false"/>
+
+ 				<!-- <CheckBoxPreference android:key="@string/pref_notification_exclude_bluetooth"
+		       	    android:title="No Notification with Bluetooth"
+		       	    android:summary="Disable high current notification when a bluetooth device is connected"
+		       	    android:defaultValue="false"/> -->
+ 							    		       			       	
+       			<Preference android:title="Excluded Apps"
+					android:summary="Notification will be disabled when these apps are running"
+					android:key="excludedApps" />
 		    
 		    </PreferenceCategory>
 		    
