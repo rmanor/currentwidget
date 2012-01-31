@@ -68,4 +68,7 @@
 <string name="pref_customize_text_showtime">customize_text_showtime</string>
 <string name="pref_customize_text_showupdate">customize_text_showupdate</string>
 <string name="pref_customize_text_showall">customize_text_showall</string>
+<string name="pref_notification_exclude_incall">notification_exclude_incall</string>
+<string name="pref_notification_exclude_headset">notification_exclude_headset</string>
+<string name="pref_notification_exclude_bluetooth">notification_exclude_bluetooth</string>
 </resources>
