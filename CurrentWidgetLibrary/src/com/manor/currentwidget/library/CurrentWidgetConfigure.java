@@ -248,6 +248,7 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 				_dataset.addSeries(series);
 
 				_renderer = new XYMultipleSeriesRenderer();
+				_renderer.setZoomButtonsVisible(true);
 
 				XYSeriesRenderer r = new XYSeriesRenderer();
 				r.setColor(Color.WHITE);
