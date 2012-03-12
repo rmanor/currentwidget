@@ -44,6 +44,7 @@
 <string name="pref_view_0_key">view_0</string>
 <string name="pref_view_1_key">view_1</string>
 <string name="pref_view_2_key">view_2</string>
+<string name="pref_view_3_key">view_3</string>
 <string name="current_widget_text_name">CurrentWidget (Text)</string>
 <string name="pref_widget_type_key">widget_type</string>
 <string name="pref_force_sleep_log">force_sleep_log</string>

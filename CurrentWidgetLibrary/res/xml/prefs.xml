@@ -1,238 +1,270 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
-	<PreferenceCategory android:title="General">
+    <PreferenceCategory android:title="General" >
+        <EditTextPreference
+            android:defaultValue="60"
+            android:inputType="number"
+            android:key="@string/pref_interval_key"
+            android:summary="Number of seconds between widget updates (0 = no auto update)"
+            android:title="Update Interval" />
 
-		<EditTextPreference android:key="@string/pref_interval_key"
-			android:title="Update Interval"
-			android:summary="Number of seconds between widget updates (0 = no auto update)"
-			android:defaultValue="60" android:inputType="number" />
+        <Preference
+            android:key="donate"
+            android:summary="Support the development of CurrentWidget"
+            android:title="Donate" />
 
-		<Preference android:title="Donate"
-			android:summary="Support the development of CurrentWidget"
-			android:key="donate" />
+        <PreferenceScreen
+            android:key="prefDisplayOptins"
+            android:summary="Data views, Widget type, Customizations"
+            android:title="Display Options" >
+            <PreferenceScreen
+                android:key="prefViews"
+                android:summary="Select which data to display on the widget"
+                android:title="Views" >
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="@string/pref_view_0_key"
+                    android:title="Electric Current (mA)" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="@string/pref_view_1_key"
+                    android:title="Battery Level (%)" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="@string/pref_view_2_key"
+                    android:title="Voltage (V)" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="@string/pref_view_3_key"
+                    android:title="Temperature (C)" />                
+                
 
-		<PreferenceScreen android:key="prefViews"
-			android:title="Views" android:summary="Select which data to display on the widget">
+                <Preference
+                    android:key=""
+                    android:summary="Touch value on widget to switch views"
+                    android:title="Help" />
+            </PreferenceScreen>
 
-			<CheckBoxPreference android:key="@string/pref_view_0_key"
-				android:title="Electric Current (mA)" 
-				android:defaultValue="true"/>
+            <ListPreference
+                android:defaultValue="0"
+                android:entries="@array/pref_widget_types"
+                android:entryValues="@array/pref_widget_types_values"
+                android:key="@string/pref_widget_type_key"
+                android:summary="Change widget appearance"
+                android:title="Widget Type" />
 
-			<CheckBoxPreference android:key="@string/pref_view_1_key"
-				android:title="Battery Level (%)" 
-				android:defaultValue="true"/>
+            <PreferenceScreen
+                android:key="customize"
+                android:summary="Customize appearance (ClearText only)"
+                android:title="Customize" >
+                <Preference
+                    android:key="text_textColor"
+                    android:summary="Change text color in ClearText type"
+                    android:title="Text Color" />
 
-			<CheckBoxPreference android:key="@string/pref_view_2_key"
-				android:title="Voltage (V)" 
-				android:defaultValue="true"/>
-				
-			<Preference android:title="Help"
-				android:summary="Touch value on widget to switch views"
-				android:key=""/>
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="@string/pref_customize_text_showtime"
+                    android:summaryOff="Don&apos;t show last update time in ClearText type"
+                    android:summaryOn="Show last update time in ClearText type"
+                    android:title="Show Last Update Time" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="@string/pref_customize_text_showupdate"
+                    android:summaryOff="Don&apos;t show update now in ClearText type"
+                    android:summaryOn="Show update now button in ClearText type"
+                    android:title="Show Update Now Button" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="@string/pref_customize_text_showall"
+                    android:summaryOff="Show one view and switch on touch"
+                    android:summaryOn="Show all selected views on widget"
+                    android:title="Show All Selected Views" />
+            </PreferenceScreen>
+        </PreferenceScreen>
+        <PreferenceScreen
+            android:key="prefNotifications"
+            android:summary="Alert on high current values"
+            android:title="Notification" >
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="@string/pref_notification_enabled_key"
+                android:summaryOff="Don&apos;t show notification on high current values"
+                android:summaryOn="Show notification on high current values"
+                android:title="Enabled" />
 
+            <PreferenceCategory android:title="Conditions" >
+                <EditTextPreference
+                    android:defaultValue="200"
+                    android:inputType="number"
+                    android:key="@string/pref_notification_threshold_key"
+                    android:summary="Minimum current value to consider as &apos;high&apos;"
+                    android:title="Threshold" />
+                <EditTextPreference
+                    android:defaultValue="3"
+                    android:inputType="number"
+                    android:key="@string/pref_notification_number_of_updates_key"
+                    android:summary="Number of consecutive high current values required to trigger alert"
+                    android:title="Consecutive High Values Required" />
 
-		</PreferenceScreen>
-		
-		<ListPreference android:title="Widget Type"
-				android:summary="Change widget appearance"
-				android:defaultValue="0"
-				android:key="@string/pref_widget_type_key"
-				android:entries="@array/pref_widget_types"
-				android:entryValues="@array/pref_widget_types_values"
-			/>
-			
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="@string/pref_notification_screen_off_key"
+                    android:summaryOff="Alert whether screen is off or on"
+                    android:summaryOn="Alert only when screen is off"
+                    android:title="Only when screen is off" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="@string/pref_notification_exclude_incall"
+                    android:summary="Disable high current notification during phone calls"
+                    android:title="Disable During Calls" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="@string/pref_notification_exclude_headset"
+                    android:summary="Disable high current notification when a headset is connected"
+                    android:title="Disable with Headset" />
 
-		<PreferenceScreen android:key="customize" android:title="Customize"
-					android:summary="Customize appearance (ClearText only)">
-			
-			<Preference android:key="text_textColor" android:title="Text Color"
-				android:summary="Change text color in ClearText type"/>
-			
-			<CheckBoxPreference android:key="@string/pref_customize_text_showtime" 
-			    android:title="Show Last Update Time"
-			    android:summaryOn="Show last update time in ClearText type"
-			    android:summaryOff="Don't show last update time in ClearText type"
-			    android:defaultValue="true"/>
-
-			<CheckBoxPreference android:key="@string/pref_customize_text_showupdate" 
-			    android:title="Show Update Now Button"
-			    android:summaryOn="Show update now button in ClearText type"
-			    android:summaryOff="Don't show update now in ClearText type"
-			    android:defaultValue="true"/>
-			
-			<CheckBoxPreference android:key="@string/pref_customize_text_showall" 
-			    android:title="Show All Selected Views"
-			    android:summaryOn="Show all selected views on widget"
-			    android:summaryOff="Show one view and switch on touch"
-			    android:defaultValue="false"/>
-						
-						
-		</PreferenceScreen>
-		
-		<PreferenceScreen android:title="Notification"
-				android:key="prefNotifications" 
-				android:summary="Alert on high current values">
-			
-		    <CheckBoxPreference android:key="@string/pref_notification_enabled_key" 
-		        	android:title="Enabled" 
-		        	android:defaultValue="false"
-		        	android:summaryOn="Show notification on high current values"
-		        	android:summaryOff="Don't show notification on high current values"/>
-		    
-		    <PreferenceCategory android:title="Conditions">
-		    
-		        <EditTextPreference android:key="@string/pref_notification_threshold_key"
-		            android:title="Threshold"
-		            android:summary="Minimum current value to consider as 'high'"
-		            android:inputType="number"
-		            android:defaultValue="200"
-		            />
-		        
-		    	<EditTextPreference android:key="@string/pref_notification_number_of_updates_key"
-		    	    android:title="Consecutive High Values Required"
-		    	    android:summary="Number of consecutive high current values required to trigger alert"
-		    	    android:inputType="number"
-		    	    android:defaultValue="3"/>
-		    	
-		       	<CheckBoxPreference android:key="@string/pref_notification_screen_off_key" 
-		       	    	android:title="Only when screen is off"
-		       	    	android:summaryOn="Alert only when screen is off"
-		       	    	android:summaryOff="Alert whether screen is off or on"
-		       	    	android:defaultValue="false"/>		       	
-      			
-		       	<CheckBoxPreference android:key="@string/pref_notification_exclude_incall"
-		       	    android:title="Disable During Calls"
-		       	    android:summary="Disable high current notification during phone calls"
-		       	    android:defaultValue="false"/>
-
- 			    <CheckBoxPreference android:key="@string/pref_notification_exclude_headset"
-		       	    android:title="Disable with Headset"
-		       	    android:summary="Disable high current notification when a headset is connected"
-		       	    android:defaultValue="false"/>
-
- 				<!-- <CheckBoxPreference android:key="@string/pref_notification_exclude_bluetooth"
+                <!--
+                      <CheckBoxPreference android:key="@string/pref_notification_exclude_bluetooth"
 		       	    android:title="No Notification with Bluetooth"
 		       	    android:summary="Disable high current notification when a bluetooth device is connected"
-		       	    android:defaultValue="false"/> -->
- 							    		       			       	
-       			<Preference android:title="Excluded Apps"
-					android:summary="Notification will be disabled when these apps are running"
-					android:key="excludedApps" />
-		    
-		    </PreferenceCategory>
-		    
-		    <PreferenceCategory android:title="Alerts">
-		        
-		        <RingtonePreference android:title="Sound"
-		            	android:key="@string/pref_notification_sound_key"
-		            	android:summary="Ring on notification"
-		            	android:ringtoneType="all"
-		            	android:showSilent="true"
-		            	android:showDefault="true"
-		            	android:defaultValue=""/>
-		    	    
-		    	<CheckBoxPreference android:title="Vibrate"
-		    	    	android:key="@string/pref_notification_vibrate_key"
-		    	    	android:summaryOn="Vibrate on notification"
-		    	    	android:summaryOff="Don't Vibrate on notification"
-		    	    	android:defaultValue="false"/>		    	
-		    
- 			    <CheckBoxPreference android:title="LED"
-		    	    	android:key="@string/pref_notification_led_key"
-		    	    	android:summaryOn="Flash LED light on notification"
-		    	    	android:summaryOff="Don't Flash LED light on notification"
-		    	    	android:defaultValue="false"/>
-		    	
-		    </PreferenceCategory>
-			
-		</PreferenceScreen>
-		    
+		       	    android:defaultValue="false"/>
+                -->
 
-	</PreferenceCategory>
+                <Preference
+                    android:key="excludedApps"
+                    android:summary="Notification will be disabled when these apps are running"
+                    android:title="Excluded Apps" />
+            </PreferenceCategory>
+            <PreferenceCategory android:title="Alerts" >
+                <RingtonePreference
+                    android:defaultValue=""
+                    android:key="@string/pref_notification_sound_key"
+                    android:ringtoneType="all"
+                    android:showDefault="true"
+                    android:showSilent="true"
+                    android:summary="Ring on notification"
+                    android:title="Sound" />
 
-	<PreferenceCategory android:title="Log">
-			
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="@string/pref_notification_vibrate_key"
+                    android:summaryOff="Don&apos;t Vibrate on notification"
+                    android:summaryOn="Vibrate on notification"
+                    android:title="Vibrate" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="@string/pref_notification_led_key"
+                    android:summaryOff="Don&apos;t Flash LED light on notification"
+                    android:summaryOn="Flash LED light on notification"
+                    android:title="LED" />
+            </PreferenceCategory>
+        </PreferenceScreen>
 
-		<CheckBoxPreference android:key="@string/pref_log_enabled_key"
-			android:title="Log file" android:defaultValue="false"
-			android:summaryOn="Log values to file" android:summaryOff="Don't log values to file" />
-			
-		<PreferenceScreen android:title="Log Options"
-				android:key="prefLogOptions" android:summary="Advanced Options">
-				 
-			<EditTextPreference android:key="@string/pref_log_filename_key"
-				android:title="Log filename" android:summary="Where to save the log file"
-				android:defaultValue="/sdcard/currentwidget.log" 
-				android:dependency="log_enabled" />
-	
-			<CheckBoxPreference android:key="@string/pref_log_apps_key"
-				android:title="Log Applications" android:dependency="log_enabled"
-				android:defaultValue="false" android:summaryOn="Log running applications to logfile"
-				android:summaryOff="Don't log running applications" />
-				
-			<CheckBoxPreference android:key="@string/pref_force_sleep_log"
-				android:title="Force Log In Sleep Mode"
-				android:defaultValue="false"
-				android:summary="Force log when device is sleeping"/>
+        <Preference
+            android:key="moreApps"
+            android:summary="Browse for more applications"
+            android:title="RmDroider Apps" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Log" >
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/pref_log_enabled_key"
+            android:summaryOff="Don&apos;t log values to file"
+            android:summaryOn="Log values to file"
+            android:title="Log file" />
 
-			<CheckBoxPreference android:key="@string/pref_no_log_in_charge"
-				android:title="No Log in Charge"
-				android:defaultValue="false"
-				android:summary="Prevents logs when phone is connected to power"/>
-	
+        <PreferenceScreen
+            android:key="prefLogActions"
+            android:summary="View, Analyze, Clear log actions"
+            android:title="Log Actions" >
+            <Preference
+                android:key="view_log"
+                android:summary="Open log file"
+                android:title="View Log" />
 
-		</PreferenceScreen>
-	
-	  	<PreferenceScreen android:key="prefAnalyze"
-				android:title="Analyze Log" 
-				android:summary="Get more data from your log">
-				
-				<Preference android:title="Top Processes"
-					android:summary="List all processes ordered by their average current usage"
-					android:key="analyze_top_processes" />
-					
-				<Preference android:title="Values Count"
-					android:summary="List all current (mA) values ordered by the number of times they were logged"
-					android:key="analyze_values_count"/>
+            <PreferenceScreen
+                android:key="prefAnalyze"
+                android:summary="Get more data from your log"
+                android:title="Analyze Log" >
+                <Preference
+                    android:key="analyze_top_processes"
+                    android:summary="List all processes ordered by their average current usage"
+                    android:title="Top Processes" />
+                <Preference
+                    android:key="analyze_values_count"
+                    android:summary="List all current (mA) values ordered by the number of times they were logged"
+                    android:title="Values Count" />
+                <Preference
+                    android:key="analyze_help"
+                    android:summary="Description of analyze options"
+                    android:title="Help" />
+            </PreferenceScreen>
 
-				<Preference android:title="Help"
-					android:summary="Description of analyze options"
-					android:key="analyze_help" />
-				
-		
-		</PreferenceScreen>
+            <Preference
+                android:key="view_graph"
+                android:summary="Show logged values as graph"
+                android:title="View Log as Graph" />
+            <Preference
+                android:key="clear_log"
+                android:summary="Delete log file"
+                android:title="Clear Log" />
+        </PreferenceScreen>
+        <PreferenceScreen
+            android:key="prefLogOptions"
+            android:summary="Advanced Options"
+            android:title="Log Options" >
+            <EditTextPreference
+                android:defaultValue="/sdcard/currentwidget.log"
+                android:dependency="log_enabled"
+                android:key="@string/pref_log_filename_key"
+                android:summary="Where to save the log file"
+                android:title="Log filename" />
 
-		<Preference android:title="View Log" android:summary="Open log file"
-			android:key="view_log" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="log_enabled"
+                android:key="@string/pref_log_apps_key"
+                android:summaryOff="Don&apos;t log running applications"
+                android:summaryOn="Log running applications to logfile"
+                android:title="Log Applications" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="@string/pref_force_sleep_log"
+                android:summary="Force log when device is sleeping"
+                android:title="Force Log In Sleep Mode" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="@string/pref_no_log_in_charge"
+                android:summary="Prevents logs when phone is connected to power"
+                android:title="No Log in Charge" />
+        </PreferenceScreen>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Custom Operation" >
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/pref_op_enabled_key"
+            android:summaryOff="Display original value"
+            android:summaryOn="Perform an arithmetic operation on current value before display"
+            android:title="Operation on Value" />
 
-		<Preference android:title="View Log as Graph"
-			android:summary="Show logged values as graph" android:key="view_graph" />
+        <ListPreference
+            android:defaultValue="0"
+            android:dependency="op_enabled"
+            android:entries="@array/pref_op_types"
+            android:entryValues="@array/pref_op_types_values"
+            android:key="@string/pref_op_type_key"
+            android:summary="Operation type"
+            android:title="Operation Type" />
 
-		<Preference android:title="Clear Log" android:summary="Delete log file"
-			android:key="clear_log" />			
-
-	</PreferenceCategory>
-
-	<PreferenceCategory android:title="Custom Operation">
-
-		<CheckBoxPreference android:key="@string/pref_op_enabled_key"
-			android:title="Operation on Value" android:defaultValue="false"
-			android:summaryOn="Perform an arithmetic operation on current value before display"
-			android:summaryOff="Display original value" />
-
-		<ListPreference android:title="Operation Type"
-			android:dependency="op_enabled" android:summary="Operation type"
-			android:key="@string/pref_op_type_key" android:defaultValue="0"
-			android:entries="@array/pref_op_types" android:entryValues="@array/pref_op_types_values" />
-
-		<EditTextPreference android:key="@string/pref_op_value_key"
-			android:title="Operation Value" android:summary="Operation value"
-			android:defaultValue="1" android:dependency="op_enabled"
-			android:inputType="numberDecimal|numberSigned" />
-
-	</PreferenceCategory>
-
-
+        <EditTextPreference
+            android:defaultValue="1"
+            android:dependency="op_enabled"
+            android:inputType="numberDecimal|numberSigned"
+            android:key="@string/pref_op_value_key"
+            android:summary="Operation value"
+            android:title="Operation Value" />
+    </PreferenceCategory>
 
 </PreferenceScreen>

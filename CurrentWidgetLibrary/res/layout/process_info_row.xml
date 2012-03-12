@@ -2,7 +2,7 @@
   <TableLayout	xmlns:android="http://schemas.android.com/apk/res/android" 
   		android:layout_width="fill_parent" android:id="@+id/tableLayout1" 
   		android:layout_height="wrap_content" android:stretchColumns="1">
-      <TableRow>
+      
 	    <TextView android:id="@+id/processName" android:gravity="left" 
 	    	android:layout_width="fill_parent" android:layout_height="wrap_content"
 	    	android:padding="3dip" android:maxLength="30"/>
@@ -11,7 +11,7 @@
 	    	android:id="@+id/meanCurrent" android:gravity="right"
 	    	android:layout_width="fill_parent" android:layout_height="wrap_content"
 	    	android:padding="3dip"/>
-      </TableRow>
+      
   </TableLayout>
   
   

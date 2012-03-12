@@ -327,7 +327,19 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 			catch (Exception ex) {
 				ex.printStackTrace();
 				// market not installed, send to browser
-				Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://market.android.com/details?id=com.manor.currentwidgetpaid"));						
+				Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id=com.manor.currentwidgetpaid"));						
+				startActivity(intent);
+			}			
+			return true;
+		}	else if (preference.getKey().equals("moreApps")) {
+			try {
+				Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://search?q=pub:RmDroider"));						
+				startActivity(intent);
+			}
+			catch (Exception ex) {
+				ex.printStackTrace();
+				// market not installed, send to browser
+				Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/search?q=RmDroider"));						
 				startActivity(intent);
 			}			
 			return true;
