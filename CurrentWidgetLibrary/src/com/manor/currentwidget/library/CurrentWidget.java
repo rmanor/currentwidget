@@ -20,7 +20,9 @@
 package com.manor.currentwidget.library;
 
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -57,7 +59,7 @@ public class CurrentWidget extends AppWidgetProvider {
 
 	@Override
 	public void onEnabled(Context context) {
-		Log.d("CurrentWidget", "on enabled");
+		//Log.d("CurrentWidget", "on enabled");
 	}
 
 	@Override
@@ -583,6 +585,25 @@ public class CurrentWidget extends AppWidgetProvider {
 		if (settings.getBoolean(context.getString(R.string.pref_log_enabled_key), false) && doLogFile) {
 
 			try {
+				
+				long logMaxSize = Long.parseLong(settings.getString(context.getString(R.string.pref_log_maxsize), "500000"));
+				if (logMaxSize > 0) {
+					File f = new File(settings.getString(context.getString(R.string.pref_log_filename_key), "/sdcard/currentwidget.log"));
+					if (f.length() >= logMaxSize) {
+						if (settings.getBoolean(context.getString(R.string.pref_log_rotation), false)) {
+							String filename = settings.getString(context.getString(R.string.pref_log_filename_key), "/sdcard/currentwidget.log");
+							filename += "-" + DateFormat.getDateTimeInstance().format(new Date());
+							File newFile = new File(filename);
+							f.renameTo(newFile);
+						}
+						else {
+							f.delete();
+						}
+					}
+					
+					f = null;
+				}
+
 				FileOutputStream logFile = new FileOutputStream(settings.getString(context.getString(R.string.pref_log_filename_key), "/sdcard/currentwidget.log"), true);
 				DataOutputStream logOutput = new DataOutputStream(logFile);
 
@@ -619,6 +640,7 @@ public class CurrentWidget extends AppWidgetProvider {
 
 				logOutput.close();
 				logFile.close();
+				
 			}
 			catch (Exception ex) {
 				Log.e("CurrentWidget", ex.getMessage(), ex);				
