@@ -221,7 +221,18 @@
                 android:key="@string/pref_log_filename_key"
                 android:summary="Where to save the log file"
                 android:title="Log filename" />
-
+            <EditTextPreference 
+                android:inputType="number"
+                android:key="@string/pref_log_maxsize"
+                android:title="Log File Maximum Size"
+                android:summary="Maximum size (bytes) for log file (0 = no maximum)"
+                android:defaultValue="500000"/>
+            <CheckBoxPreference 
+                android:key="@string/pref_log_rotation"                
+                android:defaultValue="false"
+                android:title="Rotate Log File"
+                android:summaryOn="Save old log file using a different filename" 
+                android:summaryOff="Delete log file on maximum file size"/>
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:dependency="log_enabled"
