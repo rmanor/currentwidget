@@ -22,11 +22,11 @@ package com.manor.currentwidget.library;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.AlarmManager;
@@ -43,6 +43,7 @@ import android.net.Uri;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
@@ -134,8 +135,11 @@ public class CurrentWidget extends AppWidgetProvider {
 		//Log.d("CurrentWidget", "onSwitchView");
 
 		SharedPreferences settings = context.getApplicationContext().getSharedPreferences(CurrentWidgetConfigure.SHARED_PREFS_NAME, 0);
+		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context.getApplicationContext());
 
-		int layoutId = convertPrefValueToLayout(settings.getString(context.getString(R.string.pref_widget_type_key), "0"));
+		int layoutId = convertPrefValueToLayout(settings.getString(context.getString(R.string.pref_widget_type_key), "0"),
+				appWidgetManager.getAppWidgetInfo(appWidgetId).initialLayout);
+		
 		if (layoutId == R.layout.main_text &&
 				settings.getBoolean(context.getString(R.string.pref_customize_text_showall), false)) {
 
@@ -201,12 +205,11 @@ public class CurrentWidget extends AppWidgetProvider {
 			currentView = nextView;
 		}
 
-		RemoteViews remoteViews = new RemoteViews(context.getPackageName(), 
-				convertPrefValueToLayout(settings.getString(context.getString(R.string.pref_widget_type_key), "0")));
+		RemoteViews remoteViews = new RemoteViews(context.getPackageName(), layoutId);
 
 		remoteViews.setTextViewText(R.id.text, settings.getString(Integer.toString(currentView) + "_text", "no data"));
-
-		AppWidgetManager.getInstance(context.getApplicationContext()).updateAppWidget(appWidgetId, remoteViews);
+ 
+		appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
 
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putInt("current_view", currentView);
@@ -251,13 +254,12 @@ public class CurrentWidget extends AppWidgetProvider {
 		}
 	}
 
-	static private int convertPrefValueToLayout(String selectedLayoutValue) {
-		int v;
+	static private int convertPrefValueToLayout(String selectedLayoutValue, int initalLayout) {
+		int v = 0;
 		try {
 			v = Integer.parseInt(selectedLayoutValue);
 		}
 		catch (NumberFormatException nfe) {
-			v = 0;
 			Log.e("CurrentWidget", nfe.getMessage());
 			nfe.printStackTrace();			
 		}
@@ -265,10 +267,12 @@ public class CurrentWidget extends AppWidgetProvider {
 		case 1:
 			return R.layout.main_text;				
 		default:				
-			return R.layout.main;
+			return initalLayout;
 		}
 	}
 
+	@TargetApi(9)
+	@SuppressWarnings("deprecation")
 	static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId, boolean doLogFile) {		
 
 		SharedPreferences settings = context.getSharedPreferences(CurrentWidgetConfigure.SHARED_PREFS_NAME, 0);
@@ -283,7 +287,8 @@ public class CurrentWidget extends AppWidgetProvider {
 			ex.printStackTrace();
 		}
 
-		int layoutId = convertPrefValueToLayout(settings.getString(context.getString(R.string.pref_widget_type_key), "0"));
+		int layoutId = convertPrefValueToLayout(settings.getString(context.getString(R.string.pref_widget_type_key), "0"),
+				appWidgetManager.getAppWidgetInfo(appWidgetId).initialLayout);
 
 		RemoteViews remoteViews = new RemoteViews(context.getPackageName(), layoutId);
 
@@ -377,7 +382,6 @@ public class CurrentWidget extends AppWidgetProvider {
 		String voltageText = "no data";
 		String temperatureText = "no data";
 		int batteryLevel = -1;
-		int temperature = -1;
 		float currentVoltage = 0;		
 		//float currentTime = 0;
 		// get battery level & voltage
@@ -389,8 +393,9 @@ public class CurrentWidget extends AppWidgetProvider {
 				batteryLevelText = String.valueOf(batteryLevel) + "%";
 				currentVoltage = (float)batteryIntent.getIntExtra("voltage", 0) / 1000;
 				voltageText = Float.toString(currentVoltage) + "V";
-				temperature = batteryIntent.getIntExtra("temperature", 0);
-				temperatureText = Integer.toString((int)((float)temperature/10)) + "C";
+				int temperature = batteryIntent.getIntExtra("temperature", 0);
+				//Log.d("CurrentWidget", "temp: " + Integer.toString(temperature));
+				temperatureText = String.format("%.1f", ((float)temperature/10)) + "\u00B0C";
 				
 				// in case no current value, show correct status anyway
 				if (value == null) {
@@ -555,17 +560,27 @@ public class CurrentWidget extends AppWidgetProvider {
 		editor.putString("3_text", temperatureText);
 		/*editor.putFloat("lastTime", currentTime);
 		editor.putFloat("lastVoltage", currentVoltage);*/
-		editor.commit();
+		if (Integer.parseInt(Build.VERSION.SDK) >= Build.VERSION_CODES.GINGERBREAD) {
+			editor.apply();
+		}
+		else {
+			editor.commit();
+		}
 
 		if (settings.getBoolean(context.getString(R.string.pref_customize_text_showall), false) &&
 				layoutId == R.layout.main_text) {
 			String text = "";
 			for (int i=0;i<MAX_NUMBER_OF_VIEWS;++i) {
-				if (settings.getBoolean("view_" + Integer.toString(i), true)) {
+				if (settings.getBoolean("view_" + Integer.toString(i), false)) {
 					text += settings.getString(Integer.toString(i) + "_text", "no data") + "\n";
 				}
 			}
-			text = text.substring(0, text.length()-1); // remove last newline
+			if (text.length() == 0) {
+				text = currentText;
+			}
+			else {
+				text = text.substring(0, text.length()-1); // remove last newline
+			}
 			remoteViews.setTextViewText(R.id.text, text);
 		}
 		else {
@@ -582,17 +597,22 @@ public class CurrentWidget extends AppWidgetProvider {
 
 
 		// write to log file
-		if (settings.getBoolean(context.getString(R.string.pref_log_enabled_key), false) && doLogFile) {
+		if (settings.getBoolean(context.getString(R.string.pref_log_enabled_key), false) && doLogFile
+				&& Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
 
-			try {
-				
+			final String defaultLogfile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/currentwidget.log";
+			
+			try {				
 				long logMaxSize = Long.parseLong(settings.getString(context.getString(R.string.pref_log_maxsize), "500000"));
+				 
 				if (logMaxSize > 0) {
-					File f = new File(settings.getString(context.getString(R.string.pref_log_filename_key), "/sdcard/currentwidget.log"));
+					File f = new File(settings.getString(context.getString(R.string.pref_log_filename_key),							
+							defaultLogfile));
 					if (f.length() >= logMaxSize) {
 						if (settings.getBoolean(context.getString(R.string.pref_log_rotation), false)) {
-							String filename = settings.getString(context.getString(R.string.pref_log_filename_key), "/sdcard/currentwidget.log");
-							filename += "-" + DateFormat.getDateTimeInstance().format(new Date());
+							String filename = defaultLogfile; //settings.getString(context.getString(R.string.pref_log_filename_key), "/sdcard/currentwidget.log");
+							SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd-HHmmss");
+							filename += "-" + sdf.format(new Date());
 							File newFile = new File(filename);
 							f.renameTo(newFile);
 						}
@@ -604,7 +624,8 @@ public class CurrentWidget extends AppWidgetProvider {
 					f = null;
 				}
 
-				FileOutputStream logFile = new FileOutputStream(settings.getString(context.getString(R.string.pref_log_filename_key), "/sdcard/currentwidget.log"), true);
+				FileOutputStream logFile = new FileOutputStream(settings.getString(context.getString(R.string.pref_log_filename_key), 
+						defaultLogfile), true);
 				DataOutputStream logOutput = new DataOutputStream(logFile);
 
 				String str = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date()) + ",";

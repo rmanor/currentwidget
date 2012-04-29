@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:gravity="top|center_horizontal"
+    android:background="@drawable/widget1land"
+    android:id="@+id/linear_layout"   
+    >
+    
+    	    <LinearLayout android:id="@+id/linear_layout_top" 
+    	    android:layout_width="fill_parent" 
+    	    android:layout_height="wrap_content"
+    	    android:background="@android:color/transparent"
+    	    android:orientation="horizontal"
+    	    android:gravity="center_vertical|left"
+    	    android:paddingTop="2dp"
+    	    >
+
+				<TextView
+					android:id="@+id/text"  
+				    android:layout_width="68dp" 
+				    android:layout_height="wrap_content"
+				    android:text="0mA"
+				    android:background="@android:color/transparent"
+				    android:textColor="#757876"
+				    android:textSize="15sp"
+				    android:textStyle="bold"
+				    android:paddingLeft="0dp"
+				    android:textColorHighlight="#ff0000"
+				    android:gravity="center"
+				    />
+		
+			    <ImageView android:id="@+id/status_image" 
+			    	android:layout_width="15dp" 
+			    	android:layout_height="9dp"
+			    	android:src="@drawable/drawing"
+			    	/>
+
+    	    
+    	    </LinearLayout> 
+
+   	    <LinearLayout android:id="@+id/LinearLayout01" 
+    	    android:layout_width="fill_parent" 
+    	    android:layout_height="wrap_content"
+    	    android:background="@android:color/transparent"
+    	    android:orientation="horizontal"
+    	    android:gravity="center_vertical"
+    	    android:paddingBottom="2dp"
+    	    >
+		        
+
+	    	<TextView 
+		    	android:id="@+id/last_update_title"
+			    android:layout_width="wrap_content" 
+			    android:layout_height="wrap_content"
+			    android:gravity="center_vertical" 
+			    android:text="Last upd."
+			    android:background="@android:color/transparent"
+			    android:textColor="#3e6eb4"
+			    android:textSize="8sp"
+			    android:textStyle="bold"
+			    android:paddingLeft="8dp"
+			    android:paddingRight="2dp"
+			    />        
+			    
+		    <TextView 
+		    	android:id="@+id/last_updated_text"
+			    android:layout_width="wrap_content" 
+			    android:layout_height="wrap_content"
+			    android:gravity="center_vertical" 
+			    android:text=""
+			    android:background="@android:color/transparent"
+			    android:textColor="#3e6eb4"
+			    android:textSize="9sp"
+			    android:textStyle="bold"
+			    />
+			    
+	    </LinearLayout>
+    
+	<Button android:text="Update Now" android:textColor="#ffffff"
+	android:background="@drawable/update_button" 
+	android:id="@+id/update_now_button" 
+	android:layout_width="65dp" 
+	android:gravity="center"
+	android:textStyle="bold"
+	android:layout_height="12dp" 
+	android:textSize="8sp"
+	android:shadowDy="1"
+	android:shadowColor="#000000"
+	android:shadowRadius="0.5"
+	/>    	
+
+      
+
+
+</LinearLayout>

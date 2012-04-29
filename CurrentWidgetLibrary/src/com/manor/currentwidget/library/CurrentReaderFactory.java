@@ -22,7 +22,6 @@ package com.manor.currentwidget.library;
 import java.io.File;
 
 import android.os.Build;
-import android.util.Log;
 
 public class CurrentReaderFactory {
 	
@@ -40,8 +39,9 @@ public class CurrentReaderFactory {
 			}
 		}
 		
-		// trimuph with cm7
-		if (Build.MODEL.toLowerCase().contains("triumph")) {
+		// trimuph with cm7, lg ls670
+		if (Build.MODEL.toLowerCase().contains("triumph") ||
+				Build.MODEL.toLowerCase().contains("ls670")) {
 			f = new File("/sys/class/power_supply/battery/current_now");
 			if (f.exists()) {
 				return OneLineReader.getValue(f, false);
@@ -140,6 +140,11 @@ public class CurrentReaderFactory {
 		
 		// charge current only, Samsung Note
 		f = new File("/sys/class/power_supply/battery/batt_current_now");
+		if (f.exists())
+			return OneLineReader.getValue(f, false);
+		
+		// galaxy note
+		f = new File("/sys/class/power_supply/battery/batt_current_adc");
 		if (f.exists())
 			return OneLineReader.getValue(f, false);
 		

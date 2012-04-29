@@ -33,11 +33,12 @@ import org.achartengine.renderer.XYSeriesRenderer;
 
 import yuku.ambilwarna.AmbilWarnaDialog;
 import yuku.ambilwarna.AmbilWarnaDialog.OnAmbilWarnaListener;
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.app.backup.BackupManager;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
@@ -47,12 +48,11 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
-import android.telephony.TelephonyManager;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.Toast;
 
@@ -88,7 +88,6 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 		getPreferenceManager().setSharedPreferencesName(SHARED_PREFS_NAME);
 
 		addPreferencesFromResource(R.xml.prefs);
-
 		
 		// get widget id
 		Intent intent = getIntent();		
@@ -183,7 +182,18 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 		}
 		return super.onKeyDown(keyCode, event);
 	}
-
+	
+	@TargetApi(8)
+	@Override
+	protected void onPause() {
+		super.onPause();
+		if (Integer.parseInt(Build.VERSION.SDK) >= 8) {
+			BackupManager backupManager = new BackupManager(this);
+			backupManager.dataChanged();			
+			
+		}
+	}
+	
 	private void startGraphActivity() {
 	
 		// start a thread , show progress bar, allow cancel
@@ -200,7 +210,8 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 				FileReader logFile = null;
 
 				try {
-					File f = new File(settings.getString(getApplicationContext().getString(R.string.pref_log_filename_key), "/sdcard/currentwidget.log"));
+					final String defaultLogfile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/currentwidget.log";
+					File f = new File(settings.getString(getApplicationContext().getString(R.string.pref_log_filename_key),defaultLogfile));
 					logFile = new FileReader(f);
 					//DataInputStream ds = new DataInputStream(logFile);
 					BufferedReader ds = new BufferedReader(logFile);
@@ -304,8 +315,10 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 
 	public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
 
-		if (preference.getKey().equals("view_log")) {
-			String logFilename = getPreferenceManager().getSharedPreferences().getString(getString(R.string.pref_log_filename_key), "/sdcard/currentwidget.log");
+		final String defaultLogfile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/currentwidget.log";
+		
+		if (preference.getKey().equals("view_log")) {			
+			String logFilename = getPreferenceManager().getSharedPreferences().getString(getString(R.string.pref_log_filename_key), defaultLogfile);
 			File logFile = new File(logFilename);
 			if (logFile.exists()) {
 				Intent viewLogIntent = new Intent(Intent.ACTION_VIEW);					
@@ -346,7 +359,7 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 		} else if (preference.getKey().equals("view_graph")) {
 
 			SharedPreferences settings = getSharedPreferences(SHARED_PREFS_NAME, 0);
-			File f = new File(settings.getString(getApplicationContext().getString(R.string.pref_log_filename_key), "/sdcard/currentwidget.log"));
+			File f = new File(settings.getString(getApplicationContext().getString(R.string.pref_log_filename_key), defaultLogfile));
 
 			if (f.exists()) {
 				startGraphActivity();
@@ -368,7 +381,7 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 							public void onClick(DialogInterface dialog, int which) {
 								
 								SharedPreferences settings = getSharedPreferences(SHARED_PREFS_NAME, 0);
-								File f = new File(settings.getString(getApplicationContext().getString(R.string.pref_log_filename_key), "/sdcard/currentwidget.log"));
+								File f = new File(settings.getString(getApplicationContext().getString(R.string.pref_log_filename_key), defaultLogfile));
 								Toast t = null;
 								if (f.exists()) {
 									if (f.delete())

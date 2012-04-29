@@ -16,7 +16,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with CurrentWidget.  If not, see <http://www.gnu.org/licenses/>.
 */
-
+/*
 package com.manor.currentwidget.library;
 
 import java.io.DataInputStream;
@@ -147,3 +147,4 @@ public class GraphActivity extends Activity {
 	}
 
 }
+*/
