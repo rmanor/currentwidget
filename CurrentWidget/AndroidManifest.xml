@@ -1,15 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="com.manor.currentwidget"
-      android:versionCode="28"
-      android:versionName="0.35">
+      android:versionCode="29"
+      android:versionName="0.36"
+      android:installLocation="internalOnly">
 
-    <uses-sdk android:minSdkVersion="3" android:targetSdkVersion="4"/>
+    <uses-sdk android:minSdkVersion="3" android:targetSdkVersion="15"/>
     
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 	<uses-permission android:name="android.permission.VIBRATE"/>
+	
     
-    <application android:icon="@drawable/icon" android:label="@string/app_name">
+    <application android:icon="@drawable/icon" android:label="@string/app_name"
+        android:theme="@style/MyTheme"
+        android:backupAgent="com.manor.currentwidget.library.CwBackupAgent" 
+        android:restoreAnyVersion="true"
+        android:allowBackup="true">
+
+       	<meta-data android:name="com.google.android.backup.api_key"
+           android:value="AEdPqrEAAAAIaxqMK3mHac69kfDQ_X9t8Q2T0W6Ml-Sv5CoYSA" />
+        
+        
 		<!--  broadcast receiver that will process widget updates -->
 		<receiver android:name="com.manor.currentwidget.library.CurrentWidget" 
 					android:label="@string/app_name">
@@ -19,7 +30,16 @@
 		    <meta-data android:name="android.appwidget.provider"
 		               android:resource="@xml/current_widget_info" />
 		</receiver>
-		
+
+		<!-- <receiver android:name="com.manor.currentwidget.library.CurrentWidget2by2" 
+					android:label="CurrentWidget (2x2)">
+		    <intent-filter>
+		        <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+		    </intent-filter>
+		    <meta-data android:name="android.appwidget.provider"
+		               android:resource="@xml/current_widget_info_2by2" />
+		</receiver> -->
+				
 		<activity android:name="com.manor.currentwidget.library.CurrentWidgetConfigure"
 				android:label="@string/app_name"
 				android:configChanges="orientation|keyboardHidden|keyboard">
