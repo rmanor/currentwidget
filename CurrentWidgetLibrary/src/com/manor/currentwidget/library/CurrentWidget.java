@@ -560,12 +560,7 @@ public class CurrentWidget extends AppWidgetProvider {
 		editor.putString("3_text", temperatureText);
 		/*editor.putFloat("lastTime", currentTime);
 		editor.putFloat("lastVoltage", currentVoltage);*/
-		if (Integer.parseInt(Build.VERSION.SDK) >= Build.VERSION_CODES.GINGERBREAD) {
-			editor.apply();
-		}
-		else {
-			editor.commit();
-		}
+		editor.commit();
 
 		if (settings.getBoolean(context.getString(R.string.pref_customize_text_showall), false) &&
 				layoutId == R.layout.main_text) {

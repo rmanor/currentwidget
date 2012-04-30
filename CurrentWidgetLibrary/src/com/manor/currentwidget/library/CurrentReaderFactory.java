@@ -29,11 +29,21 @@ public class CurrentReaderFactory {
 		
 		File f = null;		
 	
+		// HTC One X
+		if (Build.MODEL.toLowerCase().contains("htc one x")) {
+			f = new File("/sys/class/power_supply/battery/batt_attr_text");
+			if (f.exists()) {
+				Long value = BattAttrTextReader.getValue(f, "I_MBAT", "I_MBAT");
+				if (value != null)
+					return value;
+			}			
+		}
+		
 		// wildfire S
 		if (Build.MODEL.toLowerCase().contains("wildfire s")) {
 			f = new File("/sys/class/power_supply/battery/smem_text");
 			if (f.exists()) {
-				Long value = BattAttrTextReader.getValue(f, "eval_current");
+				Long value = BattAttrTextReader.getValue(f, "eval_current", "batt_current");
 				if (value != null)
 					return value;
 			}
@@ -93,7 +103,7 @@ public class CurrentReaderFactory {
 		f = new File("/sys/class/power_supply/battery/batt_attr_text");
 		if (f.exists())
 		{
-			Long value = BattAttrTextReader.getValue(f, "batt_discharge_current");
+			Long value = BattAttrTextReader.getValue(f, "batt_discharge_current", "batt_current");
 			if (value != null)
 				return value;
 		}

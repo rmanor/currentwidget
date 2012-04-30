@@ -23,6 +23,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.Date;
 
 import org.achartengine.ChartFactory;
@@ -36,9 +38,9 @@ import yuku.ambilwarna.AmbilWarnaDialog.OnAmbilWarnaListener;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.app.backup.BackupManager;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
@@ -53,6 +55,7 @@ import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.Toast;
 
@@ -67,15 +70,15 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 	private int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;	
 
 	public final static String SHARED_PREFS_NAME = "currentWidgetPrefs";
-	
+
 	private XYMultipleSeriesDataset _dataset = null;
 	private XYMultipleSeriesRenderer _renderer = null;
 	private ProgressDialog _progressDialog = null;
 	private boolean _graphLoadingCancelled = false;
-	
+
 	// @@@ when you'll have more results types, move it to a resultsDataHolder singleton class
 	public static ITwoValuesResult[] p = null;
-	
+
 	public CurrentWidgetConfigure() {
 		super();
 
@@ -88,7 +91,7 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 		getPreferenceManager().setSharedPreferencesName(SHARED_PREFS_NAME);
 
 		addPreferencesFromResource(R.xml.prefs);
-		
+
 		// get widget id
 		Intent intent = getIntent();		
 		Bundle extras = intent.getExtras();
@@ -105,14 +108,14 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 		if (this.getApplicationContext().getPackageName().equals("com.manor.currentwidgetpaid")) {
 			findPreference("donate").setTitle("Thank you for donating!");
 		}
-		
+
 		if (Integer.parseInt(Build.VERSION.SDK) < 7) {
 			Preference p = findPreference(getString(R.string.pref_notification_screen_off_key));
 			p.setEnabled(false);
 			p.setSummary("Requires Android 2.1+");
 			((CheckBoxPreference)p).setChecked(false);
 		}
-		
+
 		if (Integer.parseInt(Build.VERSION.SDK) < 5) {
 			/*Preference p = findPreference(getString(R.string.pref_notification_exclude_bluetooth));
 			p.setEnabled(false);
@@ -123,24 +126,24 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 			p.setSummary("Requires Android 2.0+");
 			((CheckBoxPreference)p).setChecked(false);		
 		}
-		
+
 		/*SharedPreferences settings = getSharedPreferences(SHARED_PREFS_NAME, 0);
-		
+
 		findPreference("text_textColor").setEnabled(settings.getString(getString(R.string.pref_widget_type_key), "0").equals("1"));
-		
+
 		findPreference(getString(R.string.pref_widget_type_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-			
+
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
-				
+
 				Preference p = findPreference("text_textColor");
 				p.setEnabled(Integer.parseInt(newValue.toString()) == 1);
-				
+
 				return true;
 			}
 		});*/		
-		
 
-		
+
+
 	}
 
 	@Override
@@ -148,7 +151,7 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 		/*SharedPreferences settings = getSharedPreferences(SHARED_PREFS_NAME, 0);
 		Log.d("CurrentWidget",
 				"sound: " + settings.getString(getString(R.string.pref_notification_sound_key), ""));*/
-		
+
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			if (mAppWidgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
 				Intent updateIntent = new Intent(this.getApplicationContext(), CurrentWidget.class);
@@ -158,7 +161,7 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 				updateIntent.setData(Uri.withAppendedPath(Uri.parse("droidrm://widget/id/"), String.valueOf(mAppWidgetId)));
 
 				sendBroadcast(updateIntent);
-				
+
 				// @@@ try calling the static function instead
 			}
 			else {
@@ -169,12 +172,12 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 				}
 				else {
 					//for (int id : ids) {
-						Intent updateIntent = new Intent(getApplicationContext(), CurrentWidget.class);
-						//updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id);
-						updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids );
-						updateIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+					Intent updateIntent = new Intent(getApplicationContext(), CurrentWidget.class);
+					//updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id);
+					updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids );
+					updateIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
 
-						getApplicationContext().sendBroadcast(updateIntent);							
+					getApplicationContext().sendBroadcast(updateIntent);							
 					//}					
 				}
 
@@ -182,25 +185,35 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 		}
 		return super.onKeyDown(keyCode, event);
 	}
-	
+
 	@TargetApi(8)
 	@Override
 	protected void onPause() {
 		super.onPause();
 		if (Integer.parseInt(Build.VERSION.SDK) >= 8) {
-			BackupManager backupManager = new BackupManager(this);
-			backupManager.dataChanged();			
-			
+			/*BackupManager backupManager = new BackupManager(this);
+			backupManager.dataChanged();*/
+			try {
+				Class managerClass = Class.forName("android.app.backup.BackupManager");
+				Constructor managerConstructor = managerClass.getConstructor(Context.class);
+				Object manager = managerConstructor.newInstance(this);
+				Method m = managerClass.getMethod("dataChanged");
+				m.invoke(manager);
+			} catch(ClassNotFoundException e) {
+				Log.d("CurrentWidget", "No Backup Mananger");
+			} catch(Throwable t) {
+				t.printStackTrace();
+			}
 		}
 	}
-	
+
 	private void startGraphActivity() {
-	
+
 		// start a thread , show progress bar, allow cancel
-		
+
 		Thread t = new Thread() {
 			public void run() {
-				
+
 				SharedPreferences settings = getSharedPreferences(SHARED_PREFS_NAME, 0);
 
 				//Intent i = new Intent(getApplicationContext(), GraphActivity.class);
@@ -217,20 +230,20 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 					BufferedReader ds = new BufferedReader(logFile);
 
 					_progressDialog.setMax((int)f.length());
-					
+
 					String line = null;
 					String[] tokens = null;
 					int x = 0;
 					int bytesRead = 0;
-					
+
 					while ( ( line = ds.readLine() ) != null && !_graphLoadingCancelled) {
 
 						bytesRead += line.length();
 						_progressDialog.setProgress(bytesRead);
-						
+
 						// 0 is datetime , 1 is value, 3 all the rest
 						tokens = line.split(",", 3);						
-						
+
 						// add to graph series
 						//tokens[1]	
 						//Log.d("CurrentWidget", line);
@@ -269,7 +282,7 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 
 				_renderer.setAxesColor(Color.DKGRAY);
 				_renderer.setLabelsColor(Color.LTGRAY);
-				
+
 				runOnUiThread(_fininshedLoadingGraphRunnable);
 
 			}
@@ -277,23 +290,23 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 
 		_graphLoadingCancelled = false;
 		/*_progressDialog = ProgressDialog.show(this, "", "Loading. Please wait...", true, true, new DialogInterface.OnCancelListener() {
-			
+
 			public void onCancel(DialogInterface dialog) {
 				_graphLoadingCancelled = true;
 			}
 		});*/
-		
+
 		_progressDialog = new ProgressDialog(CurrentWidgetConfigure.this);
 		_progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 		_progressDialog.setMessage("Loading. Please Wait...");
 		_progressDialog.setCancelable(true);
 		_progressDialog.setOnCancelListener(new OnCancelListener() {
-			
+
 			public void onCancel(DialogInterface dialog) {
 				_graphLoadingCancelled = true;					
 			}
 		});
-		
+
 		_progressDialog.setProgress(0);
 		_progressDialog.show();
 
@@ -301,9 +314,9 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 		t.start();
 
 	}
-	
+
 	private final Runnable _fininshedLoadingGraphRunnable = new Runnable() {
-		
+
 		public void run() {
 			if (!_graphLoadingCancelled) {
 				Intent i = ChartFactory.getTimeChartIntent(getApplicationContext(), _dataset, _renderer, null);
@@ -316,7 +329,7 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 	public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
 
 		final String defaultLogfile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/currentwidget.log";
-		
+
 		if (preference.getKey().equals("view_log")) {			
 			String logFilename = getPreferenceManager().getSharedPreferences().getString(getString(R.string.pref_log_filename_key), defaultLogfile);
 			File logFile = new File(logFilename);
@@ -374,39 +387,39 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 		} else if (preference.getKey().equals("clear_log")) {
 
 			new AlertDialog.Builder(this).setMessage("Are you sure you want to delete the log file?")
-						.setCancelable(false)
-						.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-							
-							
-							public void onClick(DialogInterface dialog, int which) {
-								
-								SharedPreferences settings = getSharedPreferences(SHARED_PREFS_NAME, 0);
-								File f = new File(settings.getString(getApplicationContext().getString(R.string.pref_log_filename_key), defaultLogfile));
-								Toast t = null;
-								if (f.exists()) {
-									if (f.delete())
-										t = Toast.makeText(getApplicationContext(), "Log file deleted", Toast.LENGTH_LONG);
-									else
-										t = Toast.makeText(getApplicationContext(), "Error deleting log file", Toast.LENGTH_LONG);
-								}
-								else {
-									t = Toast.makeText(getApplicationContext(), "No log file", Toast.LENGTH_LONG);
-								}
+			.setCancelable(false)
+			.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 
-								t.show();
-								
-							}
-						})
-						.setNegativeButton("No", new DialogInterface.OnClickListener() {
-							
-							
-							public void onClick(DialogInterface dialog, int which) {
-								
-								dialog.dismiss();
-								
-							}
-						}).show();
-			
+
+				public void onClick(DialogInterface dialog, int which) {
+
+					SharedPreferences settings = getSharedPreferences(SHARED_PREFS_NAME, 0);
+					File f = new File(settings.getString(getApplicationContext().getString(R.string.pref_log_filename_key), defaultLogfile));
+					Toast t = null;
+					if (f.exists()) {
+						if (f.delete())
+							t = Toast.makeText(getApplicationContext(), "Log file deleted", Toast.LENGTH_LONG);
+						else
+							t = Toast.makeText(getApplicationContext(), "Error deleting log file", Toast.LENGTH_LONG);
+					}
+					else {
+						t = Toast.makeText(getApplicationContext(), "No log file", Toast.LENGTH_LONG);
+					}
+
+					t.show();
+
+				}
+			})
+			.setNegativeButton("No", new DialogInterface.OnClickListener() {
+
+
+				public void onClick(DialogInterface dialog, int which) {
+
+					dialog.dismiss();
+
+				}
+			}).show();
+
 
 			return true;
 		} else if (preference.getKey().equals("analyze_help")) {
@@ -414,102 +427,102 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 			new AlertDialog.Builder(this).setTitle("Analyze Help").
 			setMessage(getString(R.string.pref_analyze_help)).
 			setPositiveButton("OK", new DialogInterface.OnClickListener() {
-				
+
 				public void onClick(DialogInterface dialog, int which) {
 					dialog.dismiss();					
 				}
 			}).show();
-			
+
 			return true;
 		} else if (preference.getKey().equals("analyze_top_processes")) {
-			
+
 			//LogAnalyzer.getInstance(getApplicationContext()).getProcessesSortedByAverageCurrent();			
-			
+
 			new logLineProcessorAsyncTask().execute(new TopProcessesLineProcessor());
 			//CurrentWidgetConfigure.p = p;
-			
+
 			/*Intent i = new Intent(this, ResultsActivity.class);
 			startActivity(i);*/
-			
+
 			return true;
 		} else if (preference.getKey().equals("analyze_values_count")) {
-			
+
 			new logLineProcessorAsyncTask().execute(new ValuesCountLineProcessor());
-			
+
 		} else if (preference.getKey().equals("text_textColor")) {
-			
+
 			SharedPreferences settings = getSharedPreferences(SHARED_PREFS_NAME, 0);
-			
-			
+
+
 			AmbilWarnaDialog dialog = new AmbilWarnaDialog(this, 
 					settings.getInt(getString(R.string.pref_text_text_color), 0xFFFFFFFF),
 					new OnAmbilWarnaListener() {
-		        public void onOk(AmbilWarnaDialog dialog, int color) {
-		                // color is the color selected by the user.
-			    		SharedPreferences settings = getSharedPreferences(SHARED_PREFS_NAME, 0);
-			    		SharedPreferences.Editor editor = settings.edit();
-			    		editor.putInt(getString(R.string.pref_text_text_color), color);
-			    		editor.commit();
-		        }
-		                
-		        public void onCancel(AmbilWarnaDialog dialog) {
-		                // cancel was selected by the user
-		        }
+				public void onOk(AmbilWarnaDialog dialog, int color) {
+					// color is the color selected by the user.
+					SharedPreferences settings = getSharedPreferences(SHARED_PREFS_NAME, 0);
+					SharedPreferences.Editor editor = settings.edit();
+					editor.putInt(getString(R.string.pref_text_text_color), color);
+					editor.commit();
+				}
+
+				public void onCancel(AmbilWarnaDialog dialog) {
+					// cancel was selected by the user
+				}
 			});
 
 			dialog.show();
-			
-			
+
+
 			return true;
 		} else if (preference.getKey().equals("excludedApps")) {
-			
+
 			Intent i = new Intent(this, ExcludedAppsActivity.class);
 			startActivity(i);
-			
+
 		}
 
 		return false;
 	};
-	
+
 	private class logLineProcessorAsyncTask extends AsyncTask<ILogLineProcessor, Integer, ITwoValuesResult[]> {
-		
+
 		private ProgressDialog dialog = null;
 
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
-			
+
 			/*dialog = ProgressDialog.show(CurrentWidgetConfigure.this, "", "Loading. Please Wait...", true, true, new OnCancelListener() {
-				
+
 				public void onCancel(DialogInterface dialog) {
 					cancel(true);					
 				}
 			});*/
-			
+
 			dialog = new ProgressDialog(CurrentWidgetConfigure.this);
 			dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 			dialog.setMessage("Loading. Please Wait...");
 			dialog.setCancelable(true);
 			dialog.setOnCancelListener(new OnCancelListener() {
-				
+
 				public void onCancel(DialogInterface dialog) {
 					cancel(true);					
 				}
 			});
-			
+
 			dialog.setProgress(0);
 			dialog.show();
-					
+
 		}
-		
+
 		@Override
 		protected ITwoValuesResult[] doInBackground(ILogLineProcessor... params) {
-			
+
 			SharedPreferences settings = getApplicationContext().getSharedPreferences(CurrentWidgetConfigure.SHARED_PREFS_NAME, 0);
-			
+
 			//FileInputStream logFile = null;
 			FileReader logFile = null;
-			
+
 			try {
 				//logFile = new FileInputStream(settings.getString(getApplicationContext().getString(R.string.pref_log_filename_key), "/sdcard/currentwidget.log"));
 				logFile = new FileReader(settings.getString(getApplicationContext().getString(R.string.pref_log_filename_key), "/sdcard/currentwidget.log"));
@@ -519,68 +532,68 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 				//int fileSize = logFile.available();
 				//int fileSize = 1;
 				int bytesRead = 0;
-				
+
 				//DataInputStream ds = new DataInputStream(logFile);
 				BufferedReader ds = new BufferedReader(logFile);				
 
 				String line = null;
-				
+
 				ILogLineProcessor logLineProcessor = params[0];
 
 				while ( ( line = ds.readLine() ) != null && !isCancelled()) {
 
 					bytesRead += line.length();
 					publishProgress(fileSize, bytesRead);
-				
+
 					logLineProcessor.process(line);
 
 				}		
 
 				ds.close();
 				logFile.close();				
-						
+
 				return (ITwoValuesResult[])logLineProcessor.getResult();			
 
 			} catch (IOException e) {
 				e.printStackTrace();
 				// @@@ show error message
 			}			
-		
+
 			return null;
 		}
-		
+
 		@Override
 		protected void onProgressUpdate(Integer... values) {
 			super.onProgressUpdate(values);
 			dialog.setMax(values[0]);
 			dialog.setProgress(values[1]);
 		}
-		
+
 		@Override
 		protected void onPostExecute(ITwoValuesResult[] result) {
 			super.onPostExecute(result);
-			
+
 			CurrentWidgetConfigure.p = result;
 			dialog.dismiss();
-			
+
 			if (result == null || result.length == 0) {
-				
+
 				new AlertDialog.Builder(CurrentWidgetConfigure.this).setMessage("No log data").setPositiveButton("OK", null).show();				
-				
+
 				return;
 			}
 
 			Intent i = new Intent(getApplicationContext(), ResultsActivity.class);
 			startActivity(i);			
-			
+
 		}
-		
+
 		@Override
 		protected void onCancelled() {
 			super.onCancelled();
-			
+
 			dialog.dismiss();
-			
+
 		}
 	}
 
