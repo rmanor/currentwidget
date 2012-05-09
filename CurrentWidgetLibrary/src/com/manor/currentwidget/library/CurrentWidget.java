@@ -35,6 +35,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.appwidget.AppWidgetProviderInfo;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -137,8 +138,13 @@ public class CurrentWidget extends AppWidgetProvider {
 		SharedPreferences settings = context.getApplicationContext().getSharedPreferences(CurrentWidgetConfigure.SHARED_PREFS_NAME, 0);
 		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context.getApplicationContext());
 
+		AppWidgetProviderInfo appWidgetProviderInfo = appWidgetManager.getAppWidgetInfo(appWidgetId);
+		
+		if (appWidgetProviderInfo == null)
+			return;
+		
 		int layoutId = convertPrefValueToLayout(settings.getString(context.getString(R.string.pref_widget_type_key), "0"),
-				appWidgetManager.getAppWidgetInfo(appWidgetId).initialLayout);
+				appWidgetProviderInfo.initialLayout);
 		
 		if (layoutId == R.layout.main_text &&
 				settings.getBoolean(context.getString(R.string.pref_customize_text_showall), false)) {
@@ -287,8 +293,13 @@ public class CurrentWidget extends AppWidgetProvider {
 			ex.printStackTrace();
 		}
 
+		AppWidgetProviderInfo appWidgetProviderInfo = appWidgetManager.getAppWidgetInfo(appWidgetId);
+		if (appWidgetProviderInfo == null) {
+			return;
+		}
+		
 		int layoutId = convertPrefValueToLayout(settings.getString(context.getString(R.string.pref_widget_type_key), "0"),
-				appWidgetManager.getAppWidgetInfo(appWidgetId).initialLayout);
+				appWidgetProviderInfo.initialLayout);
 
 		RemoteViews remoteViews = new RemoteViews(context.getPackageName(), layoutId);
 
