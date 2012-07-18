@@ -49,9 +49,10 @@ public class CurrentReaderFactory {
 			}
 		}
 		
-		// trimuph with cm7, lg ls670
+		// trimuph with cm7, lg ls670, galaxy s3
 		if (Build.MODEL.toLowerCase().contains("triumph") ||
-				Build.MODEL.toLowerCase().contains("ls670")) {
+				Build.MODEL.toLowerCase().contains("ls670") ||
+				Build.MODEL.toLowerCase().contains("gt-i9300")) {
 			f = new File("/sys/class/power_supply/battery/current_now");
 			if (f.exists()) {
 				return OneLineReader.getValue(f, false);
