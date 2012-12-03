@@ -21,13 +21,23 @@ package com.manor.currentwidget.library;
 
 import java.io.File;
 
+import android.annotation.TargetApi;
 import android.os.Build;
+import android.util.Log;
 
 public class CurrentReaderFactory {
 	
+	@TargetApi(4)
 	static public Long getValue() {
 		
-		File f = null;		
+		File f = null;
+		
+		/*String s; @@@@
+		if (Integer.parseInt(Build.VERSION.SDK) >= 4) {
+			s = Build.CPU_ABI;
+		}
+		
+		Log.d("CurrentWidget", Build.CPU_ABI);*/
 	
 		// HTC One X
 		if (Build.MODEL.toLowerCase().contains("htc one x")) {
@@ -158,6 +168,11 @@ public class CurrentReaderFactory {
 		f = new File("/sys/class/power_supply/battery/batt_current_adc");
 		if (f.exists())
 			return OneLineReader.getValue(f, false);
+		
+		// intel
+		f = new File("/sys/class/power_supply/max170xx_battery/current_now");
+		if (f.exists())
+			return OneLineReader.getValue(f, true);
 		
 		return null;
 	}

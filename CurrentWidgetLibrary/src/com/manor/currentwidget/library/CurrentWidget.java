@@ -366,7 +366,13 @@ public class CurrentWidget extends AppWidgetProvider {
 			if (settings.getBoolean(context.getString(R.string.pref_op_enabled_key), false)) {
 				int op = Integer.parseInt(settings.getString(context.getString(R.string.pref_op_type_key), "0"));
 				if (op > 0) {
-					float opValue = Float.parseFloat(settings.getString(context.getString(R.string.pref_op_value_key), "0"));
+					float opValue = 0;
+					try {
+						opValue = Float.parseFloat(settings.getString(context.getString(R.string.pref_op_value_key), "0"));
+					}
+					catch (NumberFormatException nfe) {
+						opValue = 0;
+					}
 					if (opValue > 0) {
 						switch(op) {
 						case 1:
