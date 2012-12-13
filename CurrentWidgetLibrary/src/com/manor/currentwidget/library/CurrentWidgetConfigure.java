@@ -520,20 +520,20 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 
 			SharedPreferences settings = getApplicationContext().getSharedPreferences(CurrentWidgetConfigure.SHARED_PREFS_NAME, 0);
 
-			//FileInputStream logFile = null;
 			FileReader logFile = null;
 
 			try {
-				//logFile = new FileInputStream(settings.getString(getApplicationContext().getString(R.string.pref_log_filename_key), "/sdcard/currentwidget.log"));
-				logFile = new FileReader(settings.getString(getApplicationContext().getString(R.string.pref_log_filename_key), "/sdcard/currentwidget.log"));
-				File f = new File(settings.getString(getApplicationContext().getString(R.string.pref_log_filename_key), "/sdcard/currentwidget.log"));
+				String external_path = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator;
+				logFile = new FileReader(
+							settings.getString(getApplicationContext().getString(R.string.pref_log_filename_key),
+									external_path + "currentwidget.log"));
+				File f = new File(
+							settings.getString(getApplicationContext().getString(R.string.pref_log_filename_key),
+										external_path + "currentwidget.log"));
 				int fileSize = (int)f.length();
 
-				//int fileSize = logFile.available();
-				//int fileSize = 1;
 				int bytesRead = 0;
 
-				//DataInputStream ds = new DataInputStream(logFile);
 				BufferedReader ds = new BufferedReader(logFile);				
 
 				String line = null;

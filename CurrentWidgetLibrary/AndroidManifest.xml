@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.manor.currentwidget.library"
-    android:versionCode="31"
-    android:versionName="0.36b">
+    android:versionCode="33"
+    android:versionName="0.36d">
 
     <uses-sdk
-        android:minSdkVersion="3"
-        android:targetSdkVersion="15" />
+        android:minSdkVersion="4"
+        android:targetSdkVersion="17" />
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 

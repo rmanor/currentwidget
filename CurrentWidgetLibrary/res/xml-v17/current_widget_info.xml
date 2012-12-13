@@ -1,0 +1,11 @@
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="40dp"
+    android:minHeight="40dp"
+    android:initialLayout="@layout/main" 
+    android:updatePeriodMillis="0"
+    android:configure="com.manor.currentwidget.library.CurrentWidgetConfigure"
+    android:label="@string/app_name"
+    android:widgetCategory="home_screen|keyguard"
+    android:initialKeyguardLayout="@layout/main_text"
+    />
+    

@@ -20,6 +20,7 @@
 package com.manor.currentwidget.library;
 
 import java.io.File;
+import java.util.Locale;
 
 import android.annotation.TargetApi;
 import android.os.Build;
@@ -40,7 +41,7 @@ public class CurrentReaderFactory {
 		Log.d("CurrentWidget", Build.CPU_ABI);*/
 	
 		// HTC One X
-		if (Build.MODEL.toLowerCase().contains("htc one x")) {
+		if (Build.MODEL.toLowerCase(Locale.ENGLISH).contains("htc one x")) {
 			f = new File("/sys/class/power_supply/battery/batt_attr_text");
 			if (f.exists()) {
 				Long value = BattAttrTextReader.getValue(f, "I_MBAT", "I_MBAT");
@@ -50,7 +51,7 @@ public class CurrentReaderFactory {
 		}
 		
 		// wildfire S
-		if (Build.MODEL.toLowerCase().contains("wildfire s")) {
+		if (Build.MODEL.toLowerCase(Locale.ENGLISH).contains("wildfire s")) {
 			f = new File("/sys/class/power_supply/battery/smem_text");
 			if (f.exists()) {
 				Long value = BattAttrTextReader.getValue(f, "eval_current", "batt_current");
@@ -60,9 +61,9 @@ public class CurrentReaderFactory {
 		}
 		
 		// trimuph with cm7, lg ls670, galaxy s3
-		if (Build.MODEL.toLowerCase().contains("triumph") ||
-				Build.MODEL.toLowerCase().contains("ls670") ||
-				Build.MODEL.toLowerCase().contains("gt-i9300")) {
+		if (Build.MODEL.toLowerCase(Locale.ENGLISH).contains("triumph") ||
+				Build.MODEL.toLowerCase(Locale.ENGLISH).contains("ls670") ||
+				Build.MODEL.toLowerCase(Locale.ENGLISH).contains("gt-i9300")) {
 			f = new File("/sys/class/power_supply/battery/current_now");
 			if (f.exists()) {
 				return OneLineReader.getValue(f, false);
@@ -70,11 +71,11 @@ public class CurrentReaderFactory {
 		}
 		
 		// htc desire hd / desire z / inspire?
-		if (Build.MODEL.toLowerCase().contains("desire hd") ||
-				Build.MODEL.toLowerCase().contains("desire z") ||
-				Build.MODEL.toLowerCase().contains("inspire") ||
+		if (Build.MODEL.toLowerCase(Locale.ENGLISH).contains("desire hd") ||
+				Build.MODEL.toLowerCase(Locale.ENGLISH).contains("desire z") ||
+				Build.MODEL.toLowerCase(Locale.ENGLISH).contains("inspire") ||
 				//htc evo view tablet
-				Build.MODEL.toLowerCase().contains("pg41200"))  {
+				Build.MODEL.toLowerCase(Locale.ENGLISH).contains("pg41200"))  {
 			
 			f = new File("/sys/class/power_supply/battery/batt_current");
 			if (f.exists()) {

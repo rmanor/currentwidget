@@ -25,6 +25,7 @@ import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import android.annotation.TargetApi;
 import android.app.ActivityManager;
@@ -143,8 +144,24 @@ public class CurrentWidget extends AppWidgetProvider {
 		if (appWidgetProviderInfo == null)
 			return;
 		
-		int layoutId = convertPrefValueToLayout(settings.getString(context.getString(R.string.pref_widget_type_key), "0"),
-				appWidgetProviderInfo.initialLayout);
+		boolean isKeyguard = false;
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+			Bundle myOptions = appWidgetManager.getAppWidgetOptions(appWidgetId);
+
+			// Get the value of OPTION_APPWIDGET_HOST_CATEGORY
+			int category = myOptions.getInt(AppWidgetManager.OPTION_APPWIDGET_HOST_CATEGORY, -1);
+
+			// If the value is WIDGET_CATEGORY_KEYGUARD, it's a lockscreen widget
+			isKeyguard = category == AppWidgetProviderInfo.WIDGET_CATEGORY_KEYGUARD;
+		}
+		
+		int layoutId;
+		if (isKeyguard) {
+			layoutId = R.layout.main_text;
+		} else {
+			layoutId = convertPrefValueToLayout(settings.getString(context.getString(R.string.pref_widget_type_key), "0"),
+					appWidgetProviderInfo.initialLayout);
+		}
 		
 		if (layoutId == R.layout.main_text &&
 				settings.getBoolean(context.getString(R.string.pref_customize_text_showall), false)) {
@@ -450,9 +467,9 @@ public class CurrentWidget extends AppWidgetProvider {
 			boolean onlyIfScreenOff = settings.getBoolean(context.getString(R.string.pref_notification_screen_off_key), false);
 
 			boolean isOk = false;
-			if (Integer.parseInt(Build.VERSION.SDK) < 7)
+			if (Integer.parseInt(Build.VERSION.SDK) < 7) {
 				isOk = true;
-			else {
+			} else {
 				isOk = !onlyIfScreenOff || (onlyIfScreenOff && !Compatibility.isScreenOn(context));
 			}
 
@@ -604,9 +621,8 @@ public class CurrentWidget extends AppWidgetProvider {
 		}
 
 		// set last update
-		remoteViews.setTextViewText(R.id.last_updated_text, (new SimpleDateFormat("HH:mm:ss")).format(new Date()));
-
-
+		remoteViews.setTextViewText(R.id.last_updated_text, 
+				(new SimpleDateFormat("HH:mm:ss", Locale.US)).format(new Date()));
 
 		// write to log file
 		if (settings.getBoolean(context.getString(R.string.pref_log_enabled_key), false) && doLogFile
@@ -623,7 +639,7 @@ public class CurrentWidget extends AppWidgetProvider {
 					if (f.length() >= logMaxSize) {
 						if (settings.getBoolean(context.getString(R.string.pref_log_rotation), false)) {
 							String filename = defaultLogfile; //settings.getString(context.getString(R.string.pref_log_filename_key), "/sdcard/currentwidget.log");
-							SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd-HHmmss");
+							SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd-HHmmss", Locale.US);
 							filename += "-" + sdf.format(new Date());
 							File newFile = new File(filename);
 							f.renameTo(newFile);
@@ -640,7 +656,7 @@ public class CurrentWidget extends AppWidgetProvider {
 						defaultLogfile), true);
 				DataOutputStream logOutput = new DataOutputStream(logFile);
 
-				String str = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date()) + ",";
+				String str = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.US)).format(new Date()) + ",";
 				if (!isCharging)
 					str += "-";
 

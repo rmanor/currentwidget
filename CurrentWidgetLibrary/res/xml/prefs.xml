@@ -37,8 +37,7 @@
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="@string/pref_view_3_key"
-                    android:title="Temperature (C)" />                
-                
+                    android:title="Temperature (C)" />
 
                 <Preference
                     android:key=""
@@ -162,6 +161,34 @@
             </PreferenceCategory>
         </PreferenceScreen>
 
+        <PreferenceScreen android:title="Normalize Current Value" 
+            android:key="perfCustomOperation"
+            android:summary="Define an artihmetic operation to be performed on the current value">
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="@string/pref_op_enabled_key"
+                android:summaryOff="Display original value"
+                android:summaryOn="Perform an arithmetic operation on current value before display"
+                android:title="Operation on Value" />
+
+            <ListPreference
+                android:defaultValue="0"
+                android:dependency="op_enabled"
+                android:entries="@array/pref_op_types"
+                android:entryValues="@array/pref_op_types_values"
+                android:key="@string/pref_op_type_key"
+                android:summary="Operation type"
+                android:title="Operation Type" />
+
+            <EditTextPreference
+                android:defaultValue="1"
+                android:dependency="op_enabled"
+                android:inputType="numberDecimal|numberSigned"
+                android:key="@string/pref_op_value_key"
+                android:summary="Operation value"
+                android:title="Operation Value" />
+        </PreferenceScreen>
+
         <Preference
             android:key="moreApps"
             android:summary="Browse for more applications"
@@ -221,18 +248,19 @@
                 android:key="@string/pref_log_filename_key"
                 android:summary="Where to save the log file"
                 android:title="Log filename" />
-            <EditTextPreference 
+            <EditTextPreference
+                android:defaultValue="500000"
                 android:inputType="number"
                 android:key="@string/pref_log_maxsize"
-                android:title="Log File Maximum Size"
                 android:summary="Maximum size (bytes) for log file (0 = no maximum)"
-                android:defaultValue="500000"/>
-            <CheckBoxPreference 
-                android:key="@string/pref_log_rotation"                
+                android:title="Log File Maximum Size" />
+
+            <CheckBoxPreference
                 android:defaultValue="false"
-                android:title="Rotate Log File"
-                android:summaryOn="Save old log file using a different filename" 
-                android:summaryOff="Delete log file on maximum file size"/>
+                android:key="@string/pref_log_rotation"
+                android:summaryOff="Delete log file on maximum file size"
+                android:summaryOn="Save old log file using a different filename"
+                android:title="Rotate Log File" />
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:dependency="log_enabled"
@@ -251,31 +279,6 @@
                 android:summary="Prevents logs when phone is connected to power"
                 android:title="No Log in Charge" />
         </PreferenceScreen>
-    </PreferenceCategory>
-    <PreferenceCategory android:title="Custom Operation" >
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="@string/pref_op_enabled_key"
-            android:summaryOff="Display original value"
-            android:summaryOn="Perform an arithmetic operation on current value before display"
-            android:title="Operation on Value" />
-
-        <ListPreference
-            android:defaultValue="0"
-            android:dependency="op_enabled"
-            android:entries="@array/pref_op_types"
-            android:entryValues="@array/pref_op_types_values"
-            android:key="@string/pref_op_type_key"
-            android:summary="Operation type"
-            android:title="Operation Type" />
-
-        <EditTextPreference
-            android:defaultValue="1"
-            android:dependency="op_enabled"
-            android:inputType="numberDecimal|numberSigned"
-            android:key="@string/pref_op_value_key"
-            android:summary="Operation value"
-            android:title="Operation Value" />
     </PreferenceCategory>
 
 </PreferenceScreen>
