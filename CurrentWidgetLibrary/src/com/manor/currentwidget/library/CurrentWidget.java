@@ -132,6 +132,21 @@ public class CurrentWidget extends AppWidgetProvider {
 		} 	
 	}
 
+	@TargetApi(17)
+	private static boolean isKeyguardWidget(AppWidgetManager appWidgetManager, int appWidgetId) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+			Bundle myOptions = appWidgetManager.getAppWidgetOptions(appWidgetId);
+
+			// Get the value of OPTION_APPWIDGET_HOST_CATEGORY
+			int category = myOptions.getInt(AppWidgetManager.OPTION_APPWIDGET_HOST_CATEGORY, -1);
+
+			// If the value is WIDGET_CATEGORY_KEYGUARD, it's a lockscreen widget
+			return category == AppWidgetProviderInfo.WIDGET_CATEGORY_KEYGUARD;
+		}
+		
+		return false;
+	}
+	
 	private void onSwitchView(Context context, int appWidgetId) {	
 
 		//Log.d("CurrentWidget", "onSwitchView");
@@ -142,26 +157,9 @@ public class CurrentWidget extends AppWidgetProvider {
 		AppWidgetProviderInfo appWidgetProviderInfo = appWidgetManager.getAppWidgetInfo(appWidgetId);
 		
 		if (appWidgetProviderInfo == null)
-			return;
-		
-		boolean isKeyguard = false;
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-			Bundle myOptions = appWidgetManager.getAppWidgetOptions(appWidgetId);
-
-			// Get the value of OPTION_APPWIDGET_HOST_CATEGORY
-			int category = myOptions.getInt(AppWidgetManager.OPTION_APPWIDGET_HOST_CATEGORY, -1);
-
-			// If the value is WIDGET_CATEGORY_KEYGUARD, it's a lockscreen widget
-			isKeyguard = category == AppWidgetProviderInfo.WIDGET_CATEGORY_KEYGUARD;
-		}
-		
-		int layoutId;
-		if (isKeyguard) {
-			layoutId = R.layout.main_text;
-		} else {
-			layoutId = convertPrefValueToLayout(settings.getString(context.getString(R.string.pref_widget_type_key), "0"),
-					appWidgetProviderInfo.initialLayout);
-		}
+			return;		
+	
+		int layoutId = getLayoutId(context, appWidgetId);
 		
 		if (layoutId == R.layout.main_text &&
 				settings.getBoolean(context.getString(R.string.pref_customize_text_showall), false)) {
@@ -294,6 +292,17 @@ public class CurrentWidget extends AppWidgetProvider {
 		}
 	}
 
+	private static int getLayoutId(Context context, int appWidgetId) {
+		SharedPreferences settings = context.getApplicationContext().getSharedPreferences(CurrentWidgetConfigure.SHARED_PREFS_NAME, 0);
+		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context.getApplicationContext());
+		if (isKeyguardWidget(appWidgetManager, appWidgetId)) {
+			return R.layout.main_text; 
+		} else {
+			AppWidgetProviderInfo appWidgetProviderInfo = appWidgetManager.getAppWidgetInfo(appWidgetId);
+			return convertPrefValueToLayout(settings.getString(context.getString(R.string.pref_widget_type_key), "0"),
+				appWidgetProviderInfo.initialLayout);
+		}
+	}
 	@TargetApi(9)
 	@SuppressWarnings("deprecation")
 	static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId, boolean doLogFile) {		
@@ -315,8 +324,7 @@ public class CurrentWidget extends AppWidgetProvider {
 			return;
 		}
 		
-		int layoutId = convertPrefValueToLayout(settings.getString(context.getString(R.string.pref_widget_type_key), "0"),
-				appWidgetProviderInfo.initialLayout);
+		int layoutId = getLayoutId(context, appWidgetId);
 
 		RemoteViews remoteViews = new RemoteViews(context.getPackageName(), layoutId);
 
@@ -680,8 +688,8 @@ public class CurrentWidget extends AppWidgetProvider {
 					}
 				}
 
-				// voltage
-				str += "," + voltageText;
+				// Voltage, Temperature
+				str += "," + voltageText + "," + temperatureText;		
 
 				str += "\r\n";
 
