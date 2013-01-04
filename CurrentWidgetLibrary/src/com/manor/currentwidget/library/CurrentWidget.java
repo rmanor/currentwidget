@@ -715,6 +715,7 @@ public class CurrentWidget extends AppWidgetProvider {
 		switchViewIntent.setAction(SWITCH_VIEW_ACTION);
 		switchViewIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, new int[] { appWidgetId } );
 		switchViewIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+		switchViewIntent.setData(Uri.withAppendedPath(Uri.parse("droidrm://widget/id/"), String.valueOf(appWidgetId)));
 		PendingIntent switchViewPi = PendingIntent.getBroadcast(context, 0, switchViewIntent, 
 				PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -724,11 +725,8 @@ public class CurrentWidget extends AppWidgetProvider {
 		Intent widgetUpdate = new Intent(context.getApplicationContext(), CurrentWidget.class);
 		widgetUpdate.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, new int[] { appWidgetId } );
 		widgetUpdate.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-		widgetUpdate.setData(Uri.withAppendedPath(Uri.parse("droidrm://widget/id/"), String.valueOf(appWidgetId)));
-
 		// make this pending intent unique
-		//widgetUpdate.setData(Uri.withAppendedPath(Uri.parse(CurrentWidget.URI_SCHEME + "://widget/id/"), String.valueOf(mAppWidgetId)));
-
+		widgetUpdate.setData(Uri.withAppendedPath(Uri.parse("droidrm://widget/id/"), String.valueOf(appWidgetId)));
 		PendingIntent widgetUpdatePi = PendingIntent.getBroadcast(context, 0, widgetUpdate,
 				PendingIntent.FLAG_UPDATE_CURRENT);
 

@@ -64,7 +64,8 @@ public class CurrentReaderFactory {
 		if (Build.MODEL.toLowerCase(Locale.ENGLISH).contains("triumph") ||
 				Build.MODEL.toLowerCase(Locale.ENGLISH).contains("ls670") ||
 				Build.MODEL.toLowerCase(Locale.ENGLISH).contains("gt-i9300") ||
-				Build.MODEL.toLowerCase(Locale.ENGLISH).contains("gt-n7100")) {
+				Build.MODEL.toLowerCase(Locale.ENGLISH).contains("gt-n7100") ||
+				Build.MODEL.toLowerCase(Locale.ENGLISH).contains("sgh-i317")) {
 			f = new File("/sys/class/power_supply/battery/current_now");
 			if (f.exists()) {
 				return OneLineReader.getValue(f, false);
