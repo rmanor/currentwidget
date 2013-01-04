@@ -28,9 +28,9 @@
 
         <ImageView
             android:id="@+id/status_image"
-            android:layout_width="16dp"
+            android:layout_width="14dp"
             android:layout_height="10dp"
-            android:src="@drawable/drawing" />
+            android:src="@drawable/lightning" />
 
         <TextView
             android:id="@+id/last_updated_text"
@@ -40,7 +40,7 @@
             android:layout_marginTop="0dp"
             android:background="@android:color/transparent"
             android:gravity="top|center_horizontal"
-            android:text=""
+            android:text="00:00:00"
             android:textColor="#ffffff"
             android:textSize="12sp"
             android:textStyle="bold" />
