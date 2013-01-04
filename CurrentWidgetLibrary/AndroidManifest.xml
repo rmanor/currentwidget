@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.manor.currentwidget.library"
     android:versionCode="33"
-    android:versionName="0.36d">
+    android:versionName="0.37">
 
     <uses-sdk
         android:minSdkVersion="4"

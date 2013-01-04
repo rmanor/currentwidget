@@ -159,7 +159,7 @@ public class CurrentWidget extends AppWidgetProvider {
 		if (appWidgetProviderInfo == null)
 			return;		
 	
-		int layoutId = getLayoutId(context, appWidgetId);
+		int layoutId = appWidgetProviderInfo.initialLayout; //getLayoutId(context, appWidgetId);
 		
 		if (layoutId == R.layout.main_text &&
 				settings.getBoolean(context.getString(R.string.pref_customize_text_showall), false)) {
@@ -177,7 +177,7 @@ public class CurrentWidget extends AppWidgetProvider {
 
 		}
 
-		int currentView = settings.getInt("current_view", 0);
+		int currentView = settings.getInt("current_view_" + Integer.toString(appWidgetId), 0);
 
 		// look for next enabled view
 		int nextView = -1;
@@ -228,14 +228,14 @@ public class CurrentWidget extends AppWidgetProvider {
 
 		RemoteViews remoteViews = new RemoteViews(context.getPackageName(), layoutId);
 
-		remoteViews.setTextViewText(R.id.text, settings.getString(Integer.toString(currentView) + "_text", "no data"));
- 
-		appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
+		remoteViews.setTextViewText(R.id.text,
+				settings.getString(Integer.toString(currentView) + "_text", "no data"));
 
 		SharedPreferences.Editor editor = settings.edit();
-		editor.putInt("current_view", currentView);
+		editor.putInt("current_view_" + Integer.toString(appWidgetId), currentView);
 		editor.commit();
-
+		
+		appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
 	}	
 
 	/*private int getEnabledViews(Context context) {
@@ -292,7 +292,7 @@ public class CurrentWidget extends AppWidgetProvider {
 		}
 	}
 
-	private static int getLayoutId(Context context, int appWidgetId) {
+	/*private static int getLayoutId(Context context, int appWidgetId) {
 		SharedPreferences settings = context.getApplicationContext().getSharedPreferences(CurrentWidgetConfigure.SHARED_PREFS_NAME, 0);
 		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context.getApplicationContext());
 		if (isKeyguardWidget(appWidgetManager, appWidgetId)) {
@@ -302,7 +302,8 @@ public class CurrentWidget extends AppWidgetProvider {
 			return convertPrefValueToLayout(settings.getString(context.getString(R.string.pref_widget_type_key), "0"),
 				appWidgetProviderInfo.initialLayout);
 		}
-	}
+	}*/
+	
 	@TargetApi(9)
 	@SuppressWarnings("deprecation")
 	static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId, boolean doLogFile) {		
@@ -324,7 +325,7 @@ public class CurrentWidget extends AppWidgetProvider {
 			return;
 		}
 		
-		int layoutId = getLayoutId(context, appWidgetId);
+		int layoutId = appWidgetProviderInfo.initialLayout; //getLayoutId(context, appWidgetId);
 
 		RemoteViews remoteViews = new RemoteViews(context.getPackageName(), layoutId);
 
@@ -622,7 +623,7 @@ public class CurrentWidget extends AppWidgetProvider {
 		}
 		else {
 
-			int currentView = settings.getInt("current_view", 0);	
+			int currentView = settings.getInt("current_view_" + Integer.toString(appWidgetId), 0);	
 
 			remoteViews.setTextViewText(R.id.text, 
 					settings.getString(Integer.toString(currentView) + "_text", "no data"));

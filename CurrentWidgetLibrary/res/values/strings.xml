@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     
-    <string name="app_name">CurrentWidget</string>
+<string name="app_name">CurrentWidget</string>
+<string name="widget_text_name">CurrentWidget (Text)</string>
 <string name="save_button">Save</string>
 <string name="refresh_text">Refresh widget every</string>
 <string-array name="units_array"><item>seconds</item>
@@ -46,16 +47,7 @@
 <string name="pref_view_2_key">view_2</string>
 <string name="pref_view_3_key">view_3</string>
 <string name="current_widget_text_name">CurrentWidget (Text)</string>
-<string name="pref_widget_type_key">widget_type</string>
 <string name="pref_force_sleep_log">force_sleep_log</string>
-<string-array name="pref_widget_types">
-    <item>Classic</item>
-    <item>Clear Text</item>
-</string-array>
-<string-array name="pref_widget_types_values">
-    <item>0</item>
-    <item>1</item>
-</string-array>
 <string name="pref_analyze_help">- Top Processes - Scans log for current usage of processes and displays them ordered by average usage (only when phone is NOT charging). Requires log file and log applications enabled. </string>
 <string name="pref_no_log_in_charge">no_log_in_charge</string>
 <string name="pref_text_text_color">text_text_color</string>

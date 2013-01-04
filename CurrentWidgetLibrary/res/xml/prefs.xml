@@ -16,7 +16,7 @@
 
         <PreferenceScreen
             android:key="prefDisplayOptins"
-            android:summary="Data views, Widget type, Customizations"
+            android:summary="Data views, Customizations"
             android:title="Display Options" >
             <PreferenceScreen
                 android:key="prefViews"
@@ -45,34 +45,26 @@
                     android:title="Help" />
             </PreferenceScreen>
 
-            <ListPreference
-                android:defaultValue="0"
-                android:entries="@array/pref_widget_types"
-                android:entryValues="@array/pref_widget_types_values"
-                android:key="@string/pref_widget_type_key"
-                android:summary="Change widget appearance"
-                android:title="Widget Type" />
-
             <PreferenceScreen
                 android:key="customize"
-                android:summary="Customize appearance (ClearText only)"
+                android:summary="Customize appearance (Text widget only)"
                 android:title="Customize" >
                 <Preference
                     android:key="text_textColor"
-                    android:summary="Change text color in ClearText type"
+                    android:summary="Change text color in text widget"
                     android:title="Text Color" />
 
                 <CheckBoxPreference
                     android:defaultValue="true"
                     android:key="@string/pref_customize_text_showtime"
-                    android:summaryOff="Don&apos;t show last update time in ClearText type"
-                    android:summaryOn="Show last update time in ClearText type"
+                    android:summaryOff="Don&apos;t show last update time in text wigdet"
+                    android:summaryOn="Show last update time in text widget"
                     android:title="Show Last Update Time" />
                 <CheckBoxPreference
                     android:defaultValue="true"
                     android:key="@string/pref_customize_text_showupdate"
-                    android:summaryOff="Don&apos;t show update now in ClearText type"
-                    android:summaryOn="Show update now button in ClearText type"
+                    android:summaryOff="Don&apos;t show update now in text widget"
+                    android:summaryOn="Show update now button in text widget"
                     android:title="Show Update Now Button" />
                 <CheckBoxPreference
                     android:defaultValue="false"

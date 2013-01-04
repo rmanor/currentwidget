@@ -1,10 +1,10 @@
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:minWidth="40dp"
     android:minHeight="40dp"
-    android:initialLayout="@layout/main" 
+    android:initialLayout="@layout/main_text" 
     android:updatePeriodMillis="0"
     android:configure="com.manor.currentwidget.library.CurrentWidgetConfigure"
-    android:label="@string/app_name"
-    android:previewImage="@drawable/widgetpreview_classic"
+    android:label="@string/widget_text_name"
+    android:resizeMode="horizontal|vertical"
+    android:previewImage="@drawable/widgetpreview_text"
     />
-    

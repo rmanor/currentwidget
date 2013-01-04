@@ -5,7 +5,7 @@
     android:updatePeriodMillis="0"
     android:configure="com.manor.currentwidget.library.CurrentWidgetConfigure"
     android:label="@string/app_name"
-    android:widgetCategory="home_screen|keyguard"
-    android:initialKeyguardLayout="@layout/main_text"
+    android:widgetCategory="home_screen"
+    android:previewImage="@drawable/widgetpreview_classic"
     />
     
