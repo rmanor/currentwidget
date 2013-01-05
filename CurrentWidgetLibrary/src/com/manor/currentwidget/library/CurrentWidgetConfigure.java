@@ -109,14 +109,14 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 			findPreference("donate").setTitle("Thank you for donating!");
 		}
 
-		if (Integer.parseInt(Build.VERSION.SDK) < 7) {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ECLAIR_MR1) {
 			Preference p = findPreference(getString(R.string.pref_notification_screen_off_key));
 			p.setEnabled(false);
 			p.setSummary("Requires Android 2.1+");
 			((CheckBoxPreference)p).setChecked(false);
 		}
 
-		if (Integer.parseInt(Build.VERSION.SDK) < 5) {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ECLAIR) {
 			/*Preference p = findPreference(getString(R.string.pref_notification_exclude_bluetooth));
 			p.setEnabled(false);
 			p.setSummary("Requires Android 2.0+");
@@ -125,6 +125,18 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 			p.setEnabled(false);
 			p.setSummary("Requires Android 2.0+");
 			((CheckBoxPreference)p).setChecked(false);		
+		}
+		
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+			Preference p = findPreference(getString(R.string.pref_value_text_size_key));
+			p.setEnabled(false);
+			p.setSummary("Requires Android 4.1+");
+			p = findPreference(getString(R.string.pref_last_updated_text_size_key));
+			p.setEnabled(false);
+			p.setSummary("Requires Android 4.1+");
+			p = findPreference(getString(R.string.pref_update_now_text_size_key));
+			p.setEnabled(false);
+			p.setSummary("Requires Android 4.1+");
 		}
 
 		/*SharedPreferences settings = getSharedPreferences(SHARED_PREFS_NAME, 0);

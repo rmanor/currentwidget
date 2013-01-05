@@ -48,6 +48,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.RemoteViews;
 
@@ -132,7 +133,7 @@ public class CurrentWidget extends AppWidgetProvider {
 		} 	
 	}
 
-	@TargetApi(17)
+	/*@TargetApi(17)
 	private static boolean isKeyguardWidget(AppWidgetManager appWidgetManager, int appWidgetId) {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
 			Bundle myOptions = appWidgetManager.getAppWidgetOptions(appWidgetId);
@@ -145,7 +146,7 @@ public class CurrentWidget extends AppWidgetProvider {
 		}
 		
 		return false;
-	}
+	}*/
 	
 	private void onSwitchView(Context context, int appWidgetId) {	
 
@@ -304,8 +305,23 @@ public class CurrentWidget extends AppWidgetProvider {
 		}
 	}*/
 	
-	@TargetApi(9)
-	@SuppressWarnings("deprecation")
+	@TargetApi(16)
+	static void setTextSizes(Context context, RemoteViews remoteViews, SharedPreferences settings) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+			remoteViews.setTextViewTextSize(R.id.text,
+						TypedValue.COMPLEX_UNIT_SP,
+						Integer.parseInt(settings.getString(context.getString(R.string.pref_value_text_size_key), "18")));
+			remoteViews.setTextViewTextSize(R.id.last_updated_text,
+					TypedValue.COMPLEX_UNIT_SP,
+					Integer.parseInt(settings.getString(context.getString(R.string.pref_last_updated_text_size_key), "12")));
+			remoteViews.setTextViewTextSize(R.id.update_now_button,
+					TypedValue.COMPLEX_UNIT_SP,
+					Integer.parseInt(settings.getString(context.getString(R.string.pref_update_now_text_size_key), "10")));
+		}
+	}
+	
+	/*@TargetApi(9)
+	@SuppressWarnings("deprecation")*/
 	static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId, boolean doLogFile) {		
 
 		SharedPreferences settings = context.getSharedPreferences(CurrentWidgetConfigure.SHARED_PREFS_NAME, 0);
@@ -329,6 +345,7 @@ public class CurrentWidget extends AppWidgetProvider {
 
 		RemoteViews remoteViews = new RemoteViews(context.getPackageName(), layoutId);
 
+		// Customizations.
 		if (layoutId == R.layout.main_text) {
 
 			// text color
@@ -345,7 +362,8 @@ public class CurrentWidget extends AppWidgetProvider {
 			// show update now button
 			remoteViews.setViewVisibility(R.id.update_now_button, 
 					settings.getBoolean(context.getString(R.string.pref_customize_text_showupdate), true)?View.VISIBLE:View.GONE);
-
+			
+			setTextSizes(context, remoteViews, settings);
 		}
 
 		String currentText = null;
@@ -476,7 +494,7 @@ public class CurrentWidget extends AppWidgetProvider {
 			boolean onlyIfScreenOff = settings.getBoolean(context.getString(R.string.pref_notification_screen_off_key), false);
 
 			boolean isOk = false;
-			if (Integer.parseInt(Build.VERSION.SDK) < 7) {
+			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ECLAIR_MR1) {
 				isOk = true;
 			} else {
 				isOk = !onlyIfScreenOff || (onlyIfScreenOff && !Compatibility.isScreenOn(context));
