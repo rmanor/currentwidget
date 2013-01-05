@@ -44,7 +44,6 @@
                     android:summary="Touch value on widget to switch views"
                     android:title="Help" />
             </PreferenceScreen>
-
             <PreferenceScreen
                 android:key="customize"
                 android:summary="Customize appearance (Text widget only)"
@@ -72,6 +71,29 @@
                     android:summaryOff="Show one view and switch on touch"
                     android:summaryOn="Show all selected views on widget"
                     android:title="Show All Selected Views" />
+
+                <PreferenceCategory
+                    android:key=""
+                    android:title="Text Size" >
+                    <EditTextPreference
+                        android:defaultValue="18"
+                        android:inputType="number"
+                        android:key="@string/pref_value_text_size_key"
+                        android:summary="Set text size of values in widget"
+                        android:title="Value Text Size" />
+                    <EditTextPreference
+                        android:defaultValue="12"
+                        android:inputType="number"
+                        android:key="@string/pref_last_updated_text_size_key"
+                        android:summary="Set text size of last updated time in widget"                        
+                        android:title="Last Updated Text Size" />
+                    <EditTextPreference
+                        android:defaultValue="10"
+                        android:inputType="number"
+                        android:key="@string/pref_update_now_text_size_key"
+                        android:summary="Set text size of update now button in widget"                        
+                        android:title="Update Now Text Size" />
+                </PreferenceCategory>
             </PreferenceScreen>
         </PreferenceScreen>
         <PreferenceScreen
@@ -152,10 +174,10 @@
                     android:title="LED" />
             </PreferenceCategory>
         </PreferenceScreen>
-
-        <PreferenceScreen android:title="Normalize Current Value" 
+        <PreferenceScreen
             android:key="perfCustomOperation"
-            android:summary="Define an artihmetic operation to be performed on the current value">
+            android:summary="Define an artihmetic operation to be performed on the current value"
+            android:title="Normalize Current Value" >
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="@string/pref_op_enabled_key"

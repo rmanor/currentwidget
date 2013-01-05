@@ -34,6 +34,9 @@
 <item>3</item>
 <item>4</item>
 </string-array>
+<string name="pref_value_text_size_key">value_text_size</string>
+<string name="pref_last_updated_text_size_key">last_updated_text_size</string>
+<string name="pref_update_now_text_size_key">update_now_text_size</string>
 <string name="pref_interval_key">interval</string>
 <string name="pref_log_enabled_key">log_enabled</string>
 <string name="pref_log_filename_key">log_filename</string>
