@@ -15,7 +15,7 @@
         android:background="@android:color/transparent"
         android:gravity="bottom|center_horizontal"
         android:paddingLeft="5dp"
-        android:text="0mA"
+        android:text="@string/zero_ma"
         android:textColor="#ffffff"
         android:textSize="18sp"
         android:textStyle="bold" />
