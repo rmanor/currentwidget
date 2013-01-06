@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="com.manor.currentwidget"
-      android:versionCode="31"
-      android:versionName="0.36b"
+      android:versionCode="33"
+      android:versionName="0.37"
       android:installLocation="internalOnly">
 
-    <uses-sdk android:minSdkVersion="3" android:targetSdkVersion="15"/>
+    <uses-sdk android:minSdkVersion="4" android:targetSdkVersion="17"/>
     
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 	<uses-permission android:name="android.permission.VIBRATE"/>
@@ -31,15 +31,15 @@
 		               android:resource="@xml/current_widget_info" />
 		</receiver>
 
-		<!-- <receiver android:name="com.manor.currentwidget.library.CurrentWidget2by2" 
-					android:label="CurrentWidget (2x2)">
+		<receiver android:name="com.manor.currentwidget.library.CurrentWidgetText" 
+					android:label="@string/widget_text_name">
 		    <intent-filter>
 		        <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
 		    </intent-filter>
 		    <meta-data android:name="android.appwidget.provider"
-		               android:resource="@xml/current_widget_info_2by2" />
-		</receiver> -->
-				
+		               android:resource="@xml/current_widget_text_info" />
+		</receiver>
+		
 		<activity android:name="com.manor.currentwidget.library.CurrentWidgetConfigure"
 				android:label="@string/app_name"
 				android:configChanges="orientation|keyboardHidden|keyboard">
