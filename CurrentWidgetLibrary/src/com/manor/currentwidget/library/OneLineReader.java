@@ -19,9 +19,10 @@
 
 package com.manor.currentwidget.library;
 
-import java.io.DataInputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStreamReader;
 
 import android.util.Log;
 
@@ -40,17 +41,15 @@ public class OneLineReader {
 		String text = null;
 		
 		try {
-			
+			FileInputStream fs = new FileInputStream(_f);		
+			InputStreamReader sr = new InputStreamReader(fs);
+			BufferedReader br = new BufferedReader(sr);			
 		
-			FileInputStream fs = new FileInputStream(_f);
+			text = br.readLine();
 			
-			DataInputStream ds = new DataInputStream(fs);
-		
-			text = ds.readLine();
-			
-			ds.close();		
-			fs.close();	
-			
+			br.close();
+			sr.close();
+			fs.close();				
 		}
 		catch (Exception ex) {
 			Log.e("CurrentWidget", ex.getMessage());
@@ -72,7 +71,7 @@ public class OneLineReader {
 			}
 			
 			if (_convertToMillis && value != null)
-				value = value/1000; // convert to milliampere
+				value = value / 1000; // convert to milliampere
 
 		}
 		

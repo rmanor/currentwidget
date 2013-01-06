@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2010-2012 Ran Manor
+ *  Copyright (c) 2010-2013 Ran Manor
  *  
  *  This file is part of CurrentWidget.
  *    
@@ -276,7 +276,7 @@ public class CurrentWidget extends AppWidgetProvider {
 		}
 	}
 
-	static private int convertPrefValueToLayout(String selectedLayoutValue, int initalLayout) {
+	/*static private int convertPrefValueToLayout(String selectedLayoutValue, int initalLayout) {
 		int v = 0;
 		try {
 			v = Integer.parseInt(selectedLayoutValue);
@@ -291,7 +291,7 @@ public class CurrentWidget extends AppWidgetProvider {
 		default:				
 			return initalLayout;
 		}
-	}
+	}*/
 
 	/*private static int getLayoutId(Context context, int appWidgetId) {
 		SharedPreferences settings = context.getApplicationContext().getSharedPreferences(CurrentWidgetConfigure.SHARED_PREFS_NAME, 0);

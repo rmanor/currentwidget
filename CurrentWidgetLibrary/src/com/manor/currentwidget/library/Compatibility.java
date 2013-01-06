@@ -6,7 +6,6 @@ import java.lang.reflect.Method;
 import android.content.Context;
 import android.media.AudioManager;
 import android.os.PowerManager;
-import android.util.Log;
 
 public class Compatibility {
 	private static Method method_isScreenOn;
