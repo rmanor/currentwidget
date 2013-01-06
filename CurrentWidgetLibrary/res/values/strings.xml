@@ -3,12 +3,6 @@
     
 <string name="app_name">CurrentWidget</string>
 <string name="widget_text_name">CurrentWidget (Text)</string>
-<string name="save_button">Save</string>
-<string name="refresh_text">Refresh widget every</string>
-<string-array name="units_array"><item>seconds</item>
-<item>minutes</item>
-</string-array>
-<string name="units_prompt">units</string>
 <string name="update_now_button">Update Now</string>
 <string name="log_checkbox">Write to log file</string>
 <string name="log_filename">/sdcard/currentwidget.log</string>
@@ -17,6 +11,7 @@
 <string name="pref_log_category">Log File</string>
 <string name="op_text">Operation on value</string>
 <string name="op_prompt">operation</string>
+<string name="zero_ma">0mA</string>
 <string-array name="op_array">
 <item>none</item>
 <item>*</item>

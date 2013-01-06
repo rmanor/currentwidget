@@ -22,7 +22,7 @@
 					android:id="@+id/text"  
 				    android:layout_width="72dp" 
 				    android:layout_height="wrap_content"
-				    android:text="0mA"
+				    android:text="@string/zero_ma"
 				    android:background="@android:color/transparent"
 				    android:textColor="#757876"
 				    android:textSize="18sp"

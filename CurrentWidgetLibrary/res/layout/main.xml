@@ -15,7 +15,7 @@
 		    android:layout_width="fill_parent" 
 		    android:layout_height="25dp"
 		    android:gravity="center" 
-		    android:text="0mA"
+		    android:text="@string/zero_ma"
 		    android:background="@android:color/transparent"
 		    android:textColor="#757876"
 		    android:textSize="18sp"
