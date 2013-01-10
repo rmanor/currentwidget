@@ -1,10 +1,7 @@
 package com.manor.currentwidget.library.analyze;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.TreeMap;
 
-import android.R.array;
 import android.util.SparseIntArray;
 
 public class ValuesCountLineProcessor implements ILogLineProcessor {
