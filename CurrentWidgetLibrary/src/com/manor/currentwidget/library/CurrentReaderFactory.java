@@ -33,13 +33,6 @@ public class CurrentReaderFactory {
 	static public Long getValue() {
 		
 		File f = null;
-		
-		/*String s; @@@@
-		if (Integer.parseInt(Build.VERSION.SDK) >= 4) {
-			s = Build.CPU_ABI;
-		}
-		
-		Log.d("CurrentWidget", Build.CPU_ABI);*/
 	
 		// HTC One X
 		if (CurrentReaderFactory.BUILD_MODEL.contains("htc one x")) {

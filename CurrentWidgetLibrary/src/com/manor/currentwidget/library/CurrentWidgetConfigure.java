@@ -25,7 +25,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import org.achartengine.ChartFactory;
 import org.achartengine.model.TimeSeries;
@@ -55,6 +57,7 @@ import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.Toast;
@@ -248,6 +251,8 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 					int x = 0;
 					int bytesRead = 0;
 
+					SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.US);
+					
 					while ( ( line = ds.readLine() ) != null && !_graphLoadingCancelled) {
 
 						bytesRead += line.length();
@@ -261,9 +266,8 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 						//Log.d("CurrentWidget", line);
 						if (tokens.length > 1) {
 							try {
-
-								series.add(new Date(tokens[0]), Double.parseDouble(tokens[1].substring(0, tokens[1].length() - 2)));
-
+								series.add(dateFormat.parse(tokens[0]),
+										Double.parseDouble(tokens[1].substring(0, tokens[1].length() - 2)));
 								x = x + 1;
 							}
 							catch (Exception ex) {
