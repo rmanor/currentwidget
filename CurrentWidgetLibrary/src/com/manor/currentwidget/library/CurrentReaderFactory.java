@@ -33,7 +33,24 @@ public class CurrentReaderFactory {
 	static public Long getValue() {
 		
 		File f = null;
-	
+
+		// Zopo Zp900
+		if (CurrentReaderFactory.BUILD_MODEL.contains("zp900")) {	
+			f = new File("/sys/class/power_supply/battery/BatteryAverageCurrent");
+			if (f.exists()) {
+				return OneLineReader.getValue(f, false);
+			}
+		}
+		
+		// Samsung Galaxy Tab 2
+		if (CurrentReaderFactory.BUILD_MODEL.contains("gt-p31") ||
+			CurrentReaderFactory.BUILD_MODEL.contains("gt-p51")) {
+			f = new File("/sys/class/power_supply/battery/current_avg");
+			if (f.exists()) {
+				return OneLineReader.getValue(f, false);
+			}	
+		}
+			
 		// HTC One X
 		if (CurrentReaderFactory.BUILD_MODEL.contains("htc one x")) {
 			f = new File("/sys/class/power_supply/battery/batt_attr_text");
@@ -67,12 +84,11 @@ public class CurrentReaderFactory {
 		}
 		
 		// htc desire hd / desire z / inspire?
+		// htc evo view tablet
 		if (CurrentReaderFactory.BUILD_MODEL.contains("desire hd") ||
 				CurrentReaderFactory.BUILD_MODEL.contains("desire z") ||
 				CurrentReaderFactory.BUILD_MODEL.contains("inspire") ||
-				//htc evo view tablet
-				CurrentReaderFactory.BUILD_MODEL.contains("pg41200"))  {
-			
+				CurrentReaderFactory.BUILD_MODEL.contains("pg41200"))  {			
 			f = new File("/sys/class/power_supply/battery/batt_current");
 			if (f.exists()) {
 				return OneLineReader.getValue(f, false);
@@ -161,7 +177,7 @@ public class CurrentReaderFactory {
 		if (f.exists())
 			return OneLineReader.getValue(f, false);
 		
-		// galaxy note
+		// galaxy note, galaxy s2
 		f = new File("/sys/class/power_supply/battery/batt_current_adc");
 		if (f.exists())
 			return OneLineReader.getValue(f, false);
