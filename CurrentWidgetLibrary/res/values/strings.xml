@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    
+
+<string name="pref_value_text_size_default">18</string>
+<string name="pref_last_updated_text_size_default">12</string>
+<string name="pref_update_now_text_size_default">10</string>
 <string name="app_name">CurrentWidget</string>
 <string name="widget_text_name">CurrentWidget (Text)</string>
 <string name="update_now_button">Update Now</string>

@@ -307,7 +307,7 @@ public class CurrentWidget extends AppWidgetProvider {
 	
 	@TargetApi(16)
 	static void setTextSizes(Context context, RemoteViews remoteViews, SharedPreferences settings) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {			
 			remoteViews.setTextViewTextSize(R.id.text,
 						TypedValue.COMPLEX_UNIT_SP,
 						Integer.parseInt(settings.getString(context.getString(R.string.pref_value_text_size_key), "18")));

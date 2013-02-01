@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Locale;
 
 import org.achartengine.ChartFactory;
@@ -47,6 +46,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -54,10 +54,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.CheckBoxPreference;
+import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
-import android.text.format.DateFormat;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.Toast;
@@ -68,7 +69,7 @@ import com.manor.currentwidget.library.analyze.ResultsActivity;
 import com.manor.currentwidget.library.analyze.TopProcessesLineProcessor;
 import com.manor.currentwidget.library.analyze.ValuesCountLineProcessor;
 
-public class CurrentWidgetConfigure extends PreferenceActivity  {
+public class CurrentWidgetConfigure extends PreferenceActivity implements OnSharedPreferenceChangeListener {
 
 	private int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;	
 
@@ -87,6 +88,31 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 
 	}
 
+	@Override
+    protected void onResume() {
+        super.onResume();
+        getPreferenceScreen().getSharedPreferences()
+                .registerOnSharedPreferenceChangeListener(this);
+    }
+	
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
+			String key) {
+		if (getString(R.string.pref_value_text_size_key).equals(key)) {
+			if (TextUtils.isEmpty(sharedPreferences.getString(key, ""))) {
+				((EditTextPreference)findPreference(key)).setText(getString(R.string.pref_value_text_size_default));
+			}
+		} else if (getString(R.string.pref_last_updated_text_size_key).equals(key)) {
+			if (TextUtils.isEmpty(sharedPreferences.getString(key, ""))) {
+				((EditTextPreference)findPreference(key)).setText(getString(R.string.pref_last_updated_text_size_default));
+			}
+		} else if (getString(R.string.pref_update_now_text_size_key).equals(key)) {
+			if (TextUtils.isEmpty(sharedPreferences.getString(key, ""))) {
+				((EditTextPreference)findPreference(key)).setText(getString(R.string.pref_update_now_text_size_default));
+			}
+		}
+	}
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);		
@@ -205,6 +231,8 @@ public class CurrentWidgetConfigure extends PreferenceActivity  {
 	@Override
 	protected void onPause() {
 		super.onPause();
+        getPreferenceScreen().getSharedPreferences()
+        	.unregisterOnSharedPreferenceChangeListener(this);
 		if (Integer.parseInt(Build.VERSION.SDK) >= 8) {
 			/*BackupManager backupManager = new BackupManager(this);
 			backupManager.dataChanged();*/
