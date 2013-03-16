@@ -75,7 +75,7 @@
                 <PreferenceCategory
                     android:key=""
                     android:title="Text Size" >
-                    <EditTextPreference                        
+                    <EditTextPreference
                         android:defaultValue="@string/pref_value_text_size_default"
                         android:inputType="number"
                         android:key="@string/pref_value_text_size_key"
@@ -85,13 +85,13 @@
                         android:defaultValue="@string/pref_last_updated_text_size_default"
                         android:inputType="number"
                         android:key="@string/pref_last_updated_text_size_key"
-                        android:summary="Set text size of last updated time in widget"                        
+                        android:summary="Set text size of last updated time in widget"
                         android:title="Last Updated Text Size" />
                     <EditTextPreference
                         android:defaultValue="@string/pref_update_now_text_size_default"
                         android:inputType="number"
                         android:key="@string/pref_update_now_text_size_key"
-                        android:summary="Set text size of update now button in widget"                        
+                        android:summary="Set text size of update now button in widget"
                         android:title="Update Now Text Size" />
                 </PreferenceCategory>
             </PreferenceScreen>
@@ -99,7 +99,7 @@
         <PreferenceScreen
             android:key="prefNotifications"
             android:summary="Alert on high current values"
-            android:title="Notification" >
+            android:title="Alert Notification">
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="@string/pref_notification_enabled_key"
@@ -137,13 +137,6 @@
                     android:key="@string/pref_notification_exclude_headset"
                     android:summary="Disable high current notification when a headset is connected"
                     android:title="Disable with Headset" />
-
-                <!--
-                      <CheckBoxPreference android:key="@string/pref_notification_exclude_bluetooth"
-		       	    android:title="No Notification with Bluetooth"
-		       	    android:summary="Disable high current notification when a bluetooth device is connected"
-		       	    android:defaultValue="false"/>
-                -->
 
                 <Preference
                     android:key="excludedApps"

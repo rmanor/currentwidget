@@ -46,6 +46,7 @@ import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.NotificationCompat;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.util.TypedValue;
@@ -276,34 +277,115 @@ public class CurrentWidget extends AppWidgetProvider {
 		}
 	}
 
-	/*static private int convertPrefValueToLayout(String selectedLayoutValue, int initalLayout) {
-		int v = 0;
-		try {
-			v = Integer.parseInt(selectedLayoutValue);
-		}
-		catch (NumberFormatException nfe) {
-			Log.e("CurrentWidget", nfe.getMessage());
-			nfe.printStackTrace();			
-		}
-		switch(v) {
-		case 1:
-			return R.layout.main_text;				
-		default:				
-			return initalLayout;
-		}
-	}*/
+	static int HandleHighAlert(Context context, SharedPreferences settings, Long value) {
+		int numberOfHighValueTimes = 0;
+		boolean onlyIfScreenOff = settings.getBoolean(context.getString(R.string.pref_notification_screen_off_key), false);
 
-	/*private static int getLayoutId(Context context, int appWidgetId) {
-		SharedPreferences settings = context.getApplicationContext().getSharedPreferences(CurrentWidgetConfigure.SHARED_PREFS_NAME, 0);
-		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context.getApplicationContext());
-		if (isKeyguardWidget(appWidgetManager, appWidgetId)) {
-			return R.layout.main_text; 
+		boolean isOk = false;
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ECLAIR_MR1) {
+			isOk = true;
 		} else {
-			AppWidgetProviderInfo appWidgetProviderInfo = appWidgetManager.getAppWidgetInfo(appWidgetId);
-			return convertPrefValueToLayout(settings.getString(context.getString(R.string.pref_widget_type_key), "0"),
-				appWidgetProviderInfo.initialLayout);
+			isOk = !onlyIfScreenOff || (onlyIfScreenOff && !Compatibility.isScreenOn(context));
 		}
-	}*/
+
+		// only if don't check for screen off
+		// or if check and screen is off
+		if (isOk) {
+
+			numberOfHighValueTimes = settings.getInt("numberOfHighValueTimes", 0);
+
+			if (value >= Long.parseLong(settings.getString(context.getString(R.string.pref_notification_threshold_key), "200"))) {
+				++numberOfHighValueTimes;
+			}
+			else {
+				numberOfHighValueTimes = 0;
+			}
+
+			if (numberOfHighValueTimes >= 
+				Integer.parseInt(settings.getString(context.getString(R.string.pref_notification_number_of_updates_key), "3"))) {
+
+				// check for excluded apps
+				ActivityManager activityManager = (ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE);
+				List<ActivityManager.RunningAppProcessInfo> runningApps = activityManager.getRunningAppProcesses();				
+
+				boolean excluded = false;
+
+				for (RunningAppProcessInfo processInfo : runningApps) {
+					/*Log.d("CurrentWidget", "checking: " + processInfo.processName + " importance: " +
+							Integer.toString(processInfo.importance));*/
+					if (settings.getBoolean(ExcludedAppsActivity.EXCLUDED_PREFIX +
+							processInfo.processName, false)) {
+						/*Log.d("CurrentWidget", "found: " + processInfo.processName + " importance: " +
+									Integer.toString(processInfo.importance));*/
+						if (processInfo.importance <= RunningAppProcessInfo.IMPORTANCE_BACKGROUND) {
+							excluded = true;
+							break;
+						}
+					}
+
+				}
+
+				if (!excluded &&
+						settings.getBoolean(context.getString(R.string.pref_notification_exclude_incall), false)) {
+
+					TelephonyManager telephonyManager = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
+					if (telephonyManager.getCallState() == TelephonyManager.CALL_STATE_OFFHOOK) {
+						excluded = true;					
+					}
+				}
+
+				if (!excluded &&
+						settings.getBoolean(context.getString(R.string.pref_notification_exclude_headset), false)) {
+
+					// version 2.0 and above
+					if (Compatibility.isWiredHeadsetOn(context)) {
+						excluded = true;
+					}					
+				}
+
+				if (!excluded) {
+					/*Notification n = new NotificationCompat.Builder(context)
+						.setContentTitle("ran")
+						.build();*/
+					Notification notification = 
+							new Notification(R.drawable.icon,
+							"CurrentWidget detected a high current usage",
+							System.currentTimeMillis());
+
+					notification.flags |= Notification.FLAG_AUTO_CANCEL;
+
+					Intent notificationIntent = new Intent(context.getApplicationContext(), CurrentWidgetConfigure.class);
+					notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+					PendingIntent contentIntent = PendingIntent.getActivity(context.getApplicationContext(), 0, notificationIntent, 0);
+
+					notification.setLatestEventInfo(context.getApplicationContext(), 
+							"CurrentWidget", "High current usage was detected", contentIntent);
+
+					String sound = settings.getString(context.getString(R.string.pref_notification_sound_key), "");
+					if (sound.length() > 0)
+						notification.sound = Uri.parse(sound);
+
+					if (settings.getBoolean(context.getString(R.string.pref_notification_vibrate_key), false))
+						notification.defaults |= Notification.DEFAULT_VIBRATE;
+
+					if (settings.getBoolean(context.getString(R.string.pref_notification_led_key), false))
+					{
+						notification.ledARGB = 0xffffffff;
+						notification.ledOnMS = 300;
+						notification.ledOffMS = 1000;
+						notification.flags |= Notification.FLAG_SHOW_LIGHTS;						
+					}
+
+					NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+					notificationManager.notify(1, notification);					
+
+					numberOfHighValueTimes = 0;
+				}
+			}
+		}
+		
+		return numberOfHighValueTimes;
+	}
 	
 	@TargetApi(16)
 	static void setTextSizes(Context context, RemoteViews remoteViews, SharedPreferences settings) {
@@ -320,21 +402,9 @@ public class CurrentWidget extends AppWidgetProvider {
 		}
 	}
 	
-	/*@TargetApi(9)
-	@SuppressWarnings("deprecation")*/
 	static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId, boolean doLogFile) {		
 
 		SharedPreferences settings = context.getSharedPreferences(CurrentWidgetConfigure.SHARED_PREFS_NAME, 0);
-
-		long secondsInterval = 60;
-		try {
-			secondsInterval = Long.parseLong(settings.getString(context.getString(R.string.pref_interval_key), "60"));
-		}
-		catch(Exception ex) {
-			secondsInterval = 60;
-			Log.e("CurrentWidget", ex.getMessage());
-			ex.printStackTrace();
-		}
 
 		AppWidgetProviderInfo appWidgetProviderInfo = appWidgetManager.getAppWidgetInfo(appWidgetId);
 		if (appWidgetProviderInfo == null) {
@@ -369,43 +439,26 @@ public class CurrentWidget extends AppWidgetProvider {
 		String currentText = null;
 		boolean isCharging = true;
 
-		//ICurrentReader currentReader =  CurrentReaderFactory.getCurrentReader();
 		Long value = CurrentReaderFactory.getValue();
 
 		if (value == null) {
 			currentText = "no data";
-			if (layoutId == R.layout.main)
-				remoteViews.setImageViewResource(R.id.status_image, R.drawable.drawing);
-			else
-				remoteViews.setImageViewResource(R.id.status_image, R.drawable.lightning);
+			isCharging = false;
 		}
 		else
 		{				
 			if (value < 0)
 			{
 				value = value*(-1);
-				//remoteViews.setTextColor(R.id.text, Color.rgb(117, 120, 118)); // drawing
-				//remoteViews.setViewVisibility(R.id.charging_image, View.INVISIBLE);
-
-				if (layoutId == R.layout.main)
-					remoteViews.setImageViewResource(R.id.status_image, R.drawable.drawing);
-				else
-					remoteViews.setImageViewResource(R.id.status_image, R.drawable.lightning);
-
 				isCharging = false;
 			}
 			else
 			{
-				if (layoutId == R.layout.main)
-					remoteViews.setImageViewResource(R.id.status_image, R.drawable.charging);
-				else
-					remoteViews.setImageViewResource(R.id.status_image, R.drawable.lightning_green);
-
-				if (settings.getBoolean(context.getString(R.string.pref_no_log_in_charge), false))
+				if (settings.getBoolean(context.getString(R.string.pref_no_log_in_charge), false)) {
 					doLogFile = false;
-
+				}
+				isCharging = true;
 			}
-
 
 			if (settings.getBoolean(context.getString(R.string.pref_op_enabled_key), false)) {
 				int op = Integer.parseInt(settings.getString(context.getString(R.string.pref_op_type_key), "0"));
@@ -444,8 +497,7 @@ public class CurrentWidget extends AppWidgetProvider {
 		String temperatureText = "no data";
 		int batteryLevel = -1;
 		float currentVoltage = 0;		
-		//float currentTime = 0;
-		// get battery level & voltage
+		// Get information from battery intent.
 		try {
 			Intent batteryIntent = context.getApplicationContext().registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
 			if (batteryIntent != null) {
@@ -459,24 +511,9 @@ public class CurrentWidget extends AppWidgetProvider {
 				temperatureText = String.format("%.1f", ((float)temperature/10)) + "\u00B0C";
 				
 				// in case no current value, show correct status anyway
-				if (value == null) {
-					if (batteryIntent.getIntExtra("status", 1) == BatteryManager.BATTERY_STATUS_CHARGING) {
-						if (layoutId == R.layout.main)
-							remoteViews.setImageViewResource(R.id.status_image, R.drawable.charging);
-						else
-							remoteViews.setImageViewResource(R.id.status_image, R.drawable.lightning_green);
-
-					}
-					else {
-						if (layoutId == R.layout.main)
-							remoteViews.setImageViewResource(R.id.status_image, R.drawable.drawing);
-						else
-							remoteViews.setImageViewResource(R.id.status_image, R.drawable.lightning);
-
-					}
-				}
-
-
+				//if (value == null) {
+				isCharging = batteryIntent.getIntExtra("status", 1) == BatteryManager.BATTERY_STATUS_CHARGING;
+				//}
 			}
 		}
 		catch (Exception ex) {
@@ -485,131 +522,27 @@ public class CurrentWidget extends AppWidgetProvider {
 			ex.printStackTrace();
 		}
 
+		if (isCharging) {
+			if (layoutId == R.layout.main) {
+				remoteViews.setImageViewResource(R.id.status_image, R.drawable.charging);
+			} else {
+				remoteViews.setImageViewResource(R.id.status_image, R.drawable.lightning_green);
+			}			
+		} else {
+			if (layoutId == R.layout.main) {
+				remoteViews.setImageViewResource(R.id.status_image, R.drawable.drawing);
+			} else {
+				remoteViews.setImageViewResource(R.id.status_image, R.drawable.lightning);
+			}			
+		}
+
 		int numberOfHighValueTimes = 0;
 
 		// if not charging and notification is enabled in settings
 		if (value != null && !isCharging &&
 				settings.getBoolean(context.getString(R.string.pref_notification_enabled_key), false)) {
 
-			boolean onlyIfScreenOff = settings.getBoolean(context.getString(R.string.pref_notification_screen_off_key), false);
-
-			boolean isOk = false;
-			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ECLAIR_MR1) {
-				isOk = true;
-			} else {
-				isOk = !onlyIfScreenOff || (onlyIfScreenOff && !Compatibility.isScreenOn(context));
-			}
-
-			// only if don't check for screen off
-			// or if check and screen is off
-			if (isOk) {
-
-				numberOfHighValueTimes = settings.getInt("numberOfHighValueTimes", 0);
-
-				if (value >= Long.parseLong(settings.getString(context.getString(R.string.pref_notification_threshold_key), "200"))) {
-					++numberOfHighValueTimes;
-				}
-				else {
-					numberOfHighValueTimes = 0;
-				}
-
-				if (numberOfHighValueTimes >= 
-					Integer.parseInt(settings.getString(context.getString(R.string.pref_notification_number_of_updates_key), "3"))) {
-
-					// check for excluded apps
-					ActivityManager activityManager = (ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE);
-					List<ActivityManager.RunningAppProcessInfo> runningApps = activityManager.getRunningAppProcesses();				
-
-					boolean excluded = false;
-
-
-					for (RunningAppProcessInfo processInfo : runningApps) {
-
-						/*Log.d("CurrentWidget", "checking: " + processInfo.processName + " importance: " +
-								Integer.toString(processInfo.importance));*/
-
-
-						if (settings.getBoolean(ExcludedAppsActivity.EXCLUDED_PREFIX +
-								processInfo.processName, false)) {
-
-							/*Log.d("CurrentWidget", "found: " + processInfo.processName + " importance: " +
-										Integer.toString(processInfo.importance));*/
-
-							if (processInfo.importance <= RunningAppProcessInfo.IMPORTANCE_BACKGROUND) {
-								excluded = true;
-								break;
-							}
-						}
-
-					}
-
-					if (!excluded &&
-							settings.getBoolean(context.getString(R.string.pref_notification_exclude_incall), false)) {
-
-						TelephonyManager telephonyManager = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
-						if (telephonyManager.getCallState() == TelephonyManager.CALL_STATE_OFFHOOK) {
-							excluded = true;					
-						}
-
-					}
-
-					if (!excluded &&
-							settings.getBoolean(context.getString(R.string.pref_notification_exclude_bluetooth), false)) {
-
-						// version 2.0 and above
-						//bluetooth adapater
-
-					}
-
-					if (!excluded &&
-							settings.getBoolean(context.getString(R.string.pref_notification_exclude_headset), false)) {
-
-						// version 2.0 and above
-						if (Compatibility.isWiredHeadsetOn(context)) {
-							excluded = true;
-						}					
-					}
-
-
-
-					if (!excluded) {
-						Notification notification = new Notification(R.drawable.icon,
-								"CurrentWidget detected a high current usage",
-								System.currentTimeMillis());
-
-						notification.flags |= Notification.FLAG_AUTO_CANCEL;
-
-						Intent notificationIntent = new Intent(context.getApplicationContext(), CurrentWidgetConfigure.class);
-						notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-						PendingIntent contentIntent = PendingIntent.getActivity(context.getApplicationContext(), 0, notificationIntent, 0);
-
-						notification.setLatestEventInfo(context.getApplicationContext(), 
-								"CurrentWidget", "High current usage was detected", contentIntent);
-
-						String sound = settings.getString(context.getString(R.string.pref_notification_sound_key), "");
-						if (sound.length() > 0)
-							notification.sound = Uri.parse(sound);
-
-						if (settings.getBoolean(context.getString(R.string.pref_notification_vibrate_key), false))
-							notification.defaults |= Notification.DEFAULT_VIBRATE;
-
-						if (settings.getBoolean(context.getString(R.string.pref_notification_led_key), false))
-						{
-							notification.ledARGB = 0xffffffff;
-							notification.ledOnMS = 300;
-							notification.ledOffMS = 1000;
-							notification.flags |= Notification.FLAG_SHOW_LIGHTS;						
-						}
-
-						NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
-						notificationManager.notify(1, notification);					
-
-						numberOfHighValueTimes = 0;
-					}
-				}
-
-			}		
-
+			numberOfHighValueTimes = HandleHighAlert(context, settings, value);
 		}
 
 		SharedPreferences.Editor editor = settings.edit();
@@ -623,10 +556,11 @@ public class CurrentWidget extends AppWidgetProvider {
 		editor.putFloat("lastVoltage", currentVoltage);*/
 		editor.commit();
 
+		// Show all customization.
 		if (settings.getBoolean(context.getString(R.string.pref_customize_text_showall), false) &&
 				layoutId == R.layout.main_text) {
 			String text = "";
-			for (int i=0;i<MAX_NUMBER_OF_VIEWS;++i) {
+			for (int i = 0; i < MAX_NUMBER_OF_VIEWS; ++i) {
 				if (settings.getBoolean("view_" + Integer.toString(i), false)) {
 					text += settings.getString(Integer.toString(i) + "_text", "no data") + "\n";
 				}
@@ -640,18 +574,17 @@ public class CurrentWidget extends AppWidgetProvider {
 			remoteViews.setTextViewText(R.id.text, text);
 		}
 		else {
-
-			int currentView = settings.getInt("current_view_" + Integer.toString(appWidgetId), 0);	
-
+			// Set text for current view.
+			int currentView = settings.getInt("current_view_" + Integer.toString(appWidgetId), 0);
 			remoteViews.setTextViewText(R.id.text, 
 					settings.getString(Integer.toString(currentView) + "_text", "no data"));
 		}
 
-		// set last update
+		// Set last update time.
 		remoteViews.setTextViewText(R.id.last_updated_text, 
 				(new SimpleDateFormat("HH:mm:ss", Locale.US)).format(new Date()));
 
-		// write to log file
+		// Write to log file.
 		if (settings.getBoolean(context.getString(R.string.pref_log_enabled_key), false) && doLogFile
 				&& Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
 
@@ -674,8 +607,7 @@ public class CurrentWidget extends AppWidgetProvider {
 						else {
 							f.delete();
 						}
-					}
-					
+					}					
 					f = null;
 				}
 
@@ -708,15 +640,11 @@ public class CurrentWidget extends AppWidgetProvider {
 				}
 
 				// Voltage, Temperature
-				str += "," + voltageText + "," + temperatureText;		
-
+				str += "," + voltageText + "," + temperatureText;
 				str += "\r\n";
-
 				logOutput.writeBytes(str);
-
 				logOutput.close();
-				logFile.close();
-				
+				logFile.close();				
 			}
 			catch (Exception ex) {
 				Log.e("CurrentWidget", ex.getMessage(), ex);				
@@ -758,8 +686,17 @@ public class CurrentWidget extends AppWidgetProvider {
 
 		AlarmManager alarms = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
 
+		long secondsInterval = 60;
+		try {
+			secondsInterval = Long.parseLong(settings.getString(context.getString(R.string.pref_interval_key), "60"));
+		}
+		catch(Exception ex) {
+			secondsInterval = 60;
+			Log.e("CurrentWidget", ex.getMessage());
+			ex.printStackTrace();
+		}
 		// schedule the new widget for updating
-		// @@@ enough? I think I need to cancel previous one as well!
+		// @@@ enough? I might need to cancel previous one as well!
 		if (secondsInterval > 0) {       	    
 			//alarms.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + 5*60*1000, newPending);
 			if (settings.getBoolean(context.getString(R.string.pref_force_sleep_log), false))
@@ -773,10 +710,7 @@ public class CurrentWidget extends AppWidgetProvider {
 			alarms.cancel(widgetUpdatePi);
 		}
 
-
 		appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
-
-
 	}
 
 }
