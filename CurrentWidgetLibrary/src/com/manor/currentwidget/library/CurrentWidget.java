@@ -344,22 +344,21 @@ public class CurrentWidget extends AppWidgetProvider {
 				}
 
 				if (!excluded) {
-					/*Notification n = new NotificationCompat.Builder(context)
-						.setContentTitle("ran")
-						.build();*/
-					Notification notification = 
-							new Notification(R.drawable.icon,
-							"CurrentWidget detected a high current usage",
-							System.currentTimeMillis());
-
-					notification.flags |= Notification.FLAG_AUTO_CANCEL;
-
 					Intent notificationIntent = new Intent(context.getApplicationContext(), CurrentWidgetConfigure.class);
 					notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 					PendingIntent contentIntent = PendingIntent.getActivity(context.getApplicationContext(), 0, notificationIntent, 0);
 
-					notification.setLatestEventInfo(context.getApplicationContext(), 
-							"CurrentWidget", "High current usage was detected", contentIntent);
+					Notification notification = new NotificationCompat.Builder(context)
+					.setContentTitle("CurrentWidget")
+					.setContentText("CurrentWidget detected a high current usage")
+					.setSmallIcon(R.drawable.icon)
+					.setContentIntent(contentIntent)
+					.build();
+
+					notification.flags |= Notification.FLAG_AUTO_CANCEL;
+
+					/*notification.setLatestEventInfo(context.getApplicationContext(), 
+							"CurrentWidget", "High current usage was detected", contentIntent);*/
 
 					String sound = settings.getString(context.getString(R.string.pref_notification_sound_key), "");
 					if (sound.length() > 0)
