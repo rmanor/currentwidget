@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2010-2012 Ran Manor
+ *  Copyright (c) 2010-2013 Ran Manor
  *  
  *  This file is part of CurrentWidget.
  *    
@@ -38,6 +38,7 @@ import yuku.ambilwarna.AmbilWarnaDialog;
 import yuku.ambilwarna.AmbilWarnaDialog.OnAmbilWarnaListener;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
+import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
@@ -182,9 +183,6 @@ public class CurrentWidgetConfigure extends PreferenceActivity implements OnShar
 				return true;
 			}
 		});*/		
-
-
-
 	}
 
 	@Override
@@ -209,16 +207,17 @@ public class CurrentWidgetConfigure extends PreferenceActivity implements OnShar
 				ComponentName name = new ComponentName(getApplicationContext(), CurrentWidget.class);
 				int [] ids = AppWidgetManager.getInstance(getApplicationContext()).getAppWidgetIds(name);
 				if (ids == null || ids.length == 0) {
-					//Log.e("SmartWidget", "Error - SmartWidgets not found");			
+					//Log.e("CurrentWidget", "Error - CurrentWidget not found");			
 				}
 				else {
+					//Log.e("CurrentWidget", "here2");
 					//for (int id : ids) {
 					Intent updateIntent = new Intent(getApplicationContext(), CurrentWidget.class);
-					//updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id);
-					updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids );
+					///updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id);
+					updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
 					updateIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
 
-					getApplicationContext().sendBroadcast(updateIntent);							
+					getApplicationContext().sendBroadcast(updateIntent);
 					//}					
 				}
 
@@ -374,7 +373,18 @@ public class CurrentWidgetConfigure extends PreferenceActivity implements OnShar
 
 		final String defaultLogfile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/currentwidget.log";
 
-		if (preference.getKey().equals("view_log")) {			
+		if (preference.getKey().equals(getString(R.string.pref_show_info_notification_key))) {
+			if (((CheckBoxPreference)preference).isChecked()) {
+				SharedPreferences settings = getSharedPreferences(SHARED_PREFS_NAME, 0);
+				final String notification_text = settings.getString("0_text", "no data") + " - " + 
+						settings.getString("1_text", "no data") + " - " +
+						settings.getString("2_text", "no data") + " - " 
+						+ settings.getString("3_text", "no data");
+				CurrentWidget.updateInfoNotification(getApplicationContext(), notification_text);				
+			} else {
+				((NotificationManager)getSystemService(NOTIFICATION_SERVICE)).cancel(CurrentWidget.INFO_NOTIFICATION_ID);
+			}
+		} else if (preference.getKey().equals("view_log")) {			
 			String logFilename = getPreferenceManager().getSharedPreferences().getString(getString(R.string.pref_log_filename_key), defaultLogfile);
 			File logFile = new File(logFilename);
 			if (logFile.exists()) {

@@ -99,8 +99,9 @@
 
         <CheckBoxPreference
             android:summary="Show a persistent notification with battery information"
-            android:title="Info Notification" />
-
+            android:title="Info Notification"
+            android:key="@string/pref_show_info_notification_key"/>
+            
         <PreferenceScreen
             android:key="prefNotifications"
             android:summary="Alert on high current values"

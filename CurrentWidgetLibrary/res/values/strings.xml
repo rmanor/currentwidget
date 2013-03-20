@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+<string name="pref_show_info_notification_key">show_info_notification</string>
 <string name="pref_value_text_size_default">18</string>
 <string name="pref_last_updated_text_size_default">12</string>
 <string name="pref_update_now_text_size_default">10</string>

@@ -61,7 +61,8 @@ public class CurrentWidget extends AppWidgetProvider {
 
 	private static final int MAX_NUMBER_OF_VIEWS = 4;
 	private static final String SWITCH_VIEW_ACTION = "CURRENT_WIDGET_SWITCH_VIEW";
-
+	public static final int INFO_NOTIFICATION_ID = 2;
+	
 	@Override
 	public void onEnabled(Context context) {
 		//Log.d("CurrentWidget", "on enabled");
@@ -386,6 +387,24 @@ public class CurrentWidget extends AppWidgetProvider {
 		return numberOfHighValueTimes;
 	}
 	
+	static void updateInfoNotification(Context context, String notification_text) {
+		Intent notificationIntent = new Intent(context.getApplicationContext(), CurrentWidgetConfigure.class);
+		notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		PendingIntent contentIntent = PendingIntent.getActivity(context.getApplicationContext(), 0, notificationIntent, 0);
+
+		Notification notification = new NotificationCompat.Builder(context)
+		.setContentTitle("CurrentWidget")
+		.setContentText(notification_text)
+		.setSmallIcon(R.drawable.icon)
+		.setContentIntent(contentIntent)
+		.build();
+
+		notification.flags |= Notification.FLAG_NO_CLEAR;
+
+		NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+		notificationManager.notify(INFO_NOTIFICATION_ID, notification);	
+	}
+	
 	@TargetApi(16)
 	static void setTextSizes(Context context, RemoteViews remoteViews, SharedPreferences settings) {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {			
@@ -542,6 +561,13 @@ public class CurrentWidget extends AppWidgetProvider {
 				settings.getBoolean(context.getString(R.string.pref_notification_enabled_key), false)) {
 
 			numberOfHighValueTimes = HandleHighAlert(context, settings, value);
+		}
+		
+		if (settings.getBoolean(context.getString(R.string.pref_show_info_notification_key), false)) {
+			final String notification_text = currentText + " - " + batteryLevelText + " - " +
+					voltageText + " - " + temperatureText;
+		
+			updateInfoNotification(context, notification_text);
 		}
 
 		SharedPreferences.Editor editor = settings.edit();
@@ -711,6 +737,5 @@ public class CurrentWidget extends AppWidgetProvider {
 
 		appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
 	}
-
 }
 
