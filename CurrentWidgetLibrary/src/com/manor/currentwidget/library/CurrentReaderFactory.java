@@ -34,6 +34,19 @@ public class CurrentReaderFactory {
 		
 		File f = null;
 
+		if (CurrentReaderFactory.BUILD_MODEL.contains("sgh-i337")) {
+			f = new File("/sys/class/power_supply/battery/current_now");
+			if (f.exists()) {
+				return OneLineReader.getValue(f, false);
+			}			
+		}
+		
+		if (CurrentReaderFactory.BUILD_MODEL.contains("cynus")) {
+			f = new File("/sys/devices/platform/mt6329-battery/FG_Battery_CurrentConsumption");
+			if (f.exists()) {
+				return OneLineReader.getValue(f, false);
+			}
+		}
 		// Zopo Zp900
 		if (CurrentReaderFactory.BUILD_MODEL.contains("zp900")) {	
 			f = new File("/sys/class/power_supply/battery/BatteryAverageCurrent");
@@ -191,6 +204,10 @@ public class CurrentReaderFactory {
 		f = new File("/sys/class/power_supply/ab8500_fg/current_now");
 		if (f.exists())
 			return OneLineReader.getValue(f,  true);
+		
+		f = new File("/sys/class/power_supply/android-battery/current_now");
+		if (f.exists())
+			return OneLineReader.getValue(f,  false);		
 		
 		return null;
 	}
