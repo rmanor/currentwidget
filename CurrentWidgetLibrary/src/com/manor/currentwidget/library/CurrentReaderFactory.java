@@ -206,8 +206,9 @@ public class CurrentReaderFactory {
 			return OneLineReader.getValue(f,  true);
 		
 		f = new File("/sys/class/power_supply/android-battery/current_now");
-		if (f.exists())
-			return OneLineReader.getValue(f,  false);		
+		if (f.exists()) {
+			return OneLineReader.getValue(f,  false);
+		}
 		
 		return null;
 	}
