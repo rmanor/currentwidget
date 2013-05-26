@@ -34,7 +34,8 @@ public class CurrentReaderFactory {
 		
 		File f = null;
 
-		if (CurrentReaderFactory.BUILD_MODEL.contains("sgh-i337")) {
+		if (CurrentReaderFactory.BUILD_MODEL.contains("sgh-i337") ||
+				CurrentReaderFactory.BUILD_MODEL.contains("gt-i9505")) {
 			f = new File("/sys/class/power_supply/battery/current_now");
 			if (f.exists()) {
 				return OneLineReader.getValue(f, false);
