@@ -49,7 +49,8 @@ public class CurrentReaderFactory {
 			}
 		}
 		// Zopo Zp900
-		if (CurrentReaderFactory.BUILD_MODEL.contains("zp900")) {	
+		if (CurrentReaderFactory.BUILD_MODEL.contains("zp900") ||
+				CurrentReaderFactory.BUILD_MODEL.contains("jy-g3")) {	
 			f = new File("/sys/class/power_supply/battery/BatteryAverageCurrent");
 			if (f.exists()) {
 				return OneLineReader.getValue(f, false);
