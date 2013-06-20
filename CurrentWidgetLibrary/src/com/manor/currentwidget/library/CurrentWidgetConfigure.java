@@ -56,8 +56,10 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.text.TextUtils;
 import android.util.Log;
@@ -83,11 +85,6 @@ public class CurrentWidgetConfigure extends PreferenceActivity implements OnShar
 
 	// @@@ when you'll have more results types, move it to a resultsDataHolder singleton class
 	public static ITwoValuesResult[] p = null;
-
-	public CurrentWidgetConfigure() {
-		super();
-
-	}
 
 	@Override
     protected void onResume() {
@@ -168,7 +165,7 @@ public class CurrentWidgetConfigure extends PreferenceActivity implements OnShar
 			p.setEnabled(false);
 			p.setSummary("Requires Android 4.1+");
 		}
-
+		
 		/*SharedPreferences settings = getSharedPreferences(SHARED_PREFS_NAME, 0);
 
 		findPreference("text_textColor").setEnabled(settings.getString(getString(R.string.pref_widget_type_key), "0").equals("1"));
@@ -183,6 +180,13 @@ public class CurrentWidgetConfigure extends PreferenceActivity implements OnShar
 				return true;
 			}
 		});*/		
+	}
+	
+	@Override
+	protected void onPostCreate(Bundle savedInstanceState) {
+		super.onPostCreate(savedInstanceState);
+		bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_show_info_notification_state_key)));
+
 	}
 
 	@Override
@@ -205,7 +209,8 @@ public class CurrentWidgetConfigure extends PreferenceActivity implements OnShar
 			}
 			else {
 				ComponentName name = new ComponentName(getApplicationContext(), CurrentWidget.class);
-				int [] ids = AppWidgetManager.getInstance(getApplicationContext()).getAppWidgetIds(name);
+				AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
+				int [] ids = appWidgetManager.getAppWidgetIds(name);
 				if (ids == null || ids.length == 0) {
 					//Log.e("CurrentWidget", "Error - CurrentWidget not found");			
 				}
@@ -218,9 +223,10 @@ public class CurrentWidgetConfigure extends PreferenceActivity implements OnShar
 					updateIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
 
 					getApplicationContext().sendBroadcast(updateIntent);
-					//}					
-				}
-
+					//}
+					CurrentWidget.updateAppWidget(getApplicationContext(), appWidgetManager, 
+							ids[0], false);
+				}				
 			}
 		}
 		return super.onKeyDown(keyCode, event);
@@ -382,7 +388,7 @@ public class CurrentWidgetConfigure extends PreferenceActivity implements OnShar
 						+ settings.getString("3_text", "no data");
 				CurrentWidget.updateInfoNotification(getApplicationContext(), notification_text);				
 			} else {
-				((NotificationManager)getSystemService(NOTIFICATION_SERVICE)).cancel(CurrentWidget.INFO_NOTIFICATION_ID);
+				CurrentWidget.clearInfoNotification(getApplicationContext());
 			}
 		} else if (preference.getKey().equals("view_log")) {			
 			String logFilename = getPreferenceManager().getSharedPreferences().getString(getString(R.string.pref_log_filename_key), defaultLogfile);
@@ -651,5 +657,42 @@ public class CurrentWidgetConfigure extends PreferenceActivity implements OnShar
 		}
 	}
 
+
+	private static void bindPreferenceSummaryToValue(Preference preference) {
+		// Set the listener to watch for value changes.
+		preference
+				.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
+
+		// Trigger the listener immediately with the preference's
+		// current value.
+		sBindPreferenceSummaryToValueListener.onPreferenceChange(
+				preference,
+				preference.getContext().getSharedPreferences(SHARED_PREFS_NAME, 0).getString(preference.getKey(),
+						""));
+	}
+
+	private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
+		@Override
+		public boolean onPreferenceChange(Preference preference, Object value) {
+			String stringValue = value.toString();
+
+			if (preference instanceof ListPreference) {
+				// For list preferences, look up the correct display value in
+				// the preference's 'entries' list.
+				ListPreference listPreference = (ListPreference) preference;
+				int index = listPreference.findIndexOfValue(stringValue);
+
+				// Set the summary to reflect the new value.
+				preference
+						.setSummary(index >= 0 ? listPreference.getEntries()[index]
+								: null);
+			} else {
+				// For all other preferences, set the summary to the value's
+				// simple string representation.
+				preference.setSummary(stringValue);
+			}
+			return true;
+		}
+	};
 
 }

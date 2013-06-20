@@ -405,6 +405,10 @@ public class CurrentWidget extends AppWidgetProvider {
 		notificationManager.notify(INFO_NOTIFICATION_ID, notification);	
 	}
 	
+	public static void clearInfoNotification(Context context) {
+		((NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE)).cancel(CurrentWidget.INFO_NOTIFICATION_ID);
+	}
+	
 	@TargetApi(16)
 	static void setTextSizes(Context context, RemoteViews remoteViews, SharedPreferences settings) {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {			
@@ -564,12 +568,21 @@ public class CurrentWidget extends AppWidgetProvider {
 		}
 		
 		if (settings.getBoolean(context.getString(R.string.pref_show_info_notification_key), false)) {
-			final String notification_text = currentText + " - " + batteryLevelText + " - " +
-					voltageText + " - " + temperatureText;
+			int infoState = 
+					Integer.parseInt(settings.getString(context.getString(R.string.pref_show_info_notification_state_key), "0"));
+			boolean showInfoNotification = infoState == 0 || (isCharging && infoState == 1) ||
+					(!isCharging && infoState == 2);
+			
+			if (showInfoNotification) {			
+				final String notification_text = currentText + " - " + batteryLevelText + " - " +
+						voltageText + " - " + temperatureText;
 		
-			updateInfoNotification(context, notification_text);
-		}
-
+				updateInfoNotification(context, notification_text);
+			} else {
+				clearInfoNotification(context);
+			}
+		} 
+		
 		SharedPreferences.Editor editor = settings.edit();
 		//editor.putInt("lastBatteryLevel", batteryLevel);
 		editor.putInt("numberOfHighValueTimes", numberOfHighValueTimes);

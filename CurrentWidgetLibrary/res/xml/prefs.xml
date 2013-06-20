@@ -96,12 +96,6 @@
                 </PreferenceCategory>
             </PreferenceScreen>
         </PreferenceScreen>
-
-        <CheckBoxPreference
-            android:summary="Show a persistent notification with battery information"
-            android:title="Info Notification"
-            android:key="@string/pref_show_info_notification_key"/>
-            
         <PreferenceScreen
             android:key="prefNotifications"
             android:summary="Alert on high current values"
@@ -206,6 +200,21 @@
             android:key="moreApps"
             android:summary="Browse for more applications"
             android:title="RmDroider Apps" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Info Notification" >
+        <CheckBoxPreference
+            android:key="@string/pref_show_info_notification_key"
+            android:summary="Show a persistent notification with battery information"
+            android:title="Info Notification" />
+
+        <ListPreference
+            android:defaultValue="0"
+            android:dependency="@string/pref_show_info_notification_key"
+            android:entries="@array/pref_show_notification_state_entries"
+            android:entryValues="@array/pref_show_notification_state_key_values"
+            android:key="@string/pref_show_info_notification_state_key"
+            android:summary="Always"
+            android:title="When to show info notification" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Log" >
         <CheckBoxPreference
