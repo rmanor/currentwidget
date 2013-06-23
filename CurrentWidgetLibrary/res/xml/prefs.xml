@@ -97,74 +97,95 @@
             </PreferenceScreen>
         </PreferenceScreen>
         <PreferenceScreen
-            android:key="prefNotifications"
-            android:summary="Alert on high current values"
-            android:title="Alert Notification" >
-            <CheckBoxPreference
-                android:defaultValue="false"
-                android:key="@string/pref_notification_enabled_key"
-                android:summaryOff="Don&apos;t show notification on high current values"
-                android:summaryOn="Show notification on high current values"
-                android:title="Enabled" />
-
-            <PreferenceCategory android:title="Conditions" >
-                <EditTextPreference
-                    android:defaultValue="200"
-                    android:inputType="number"
-                    android:key="@string/pref_notification_threshold_key"
-                    android:summary="Minimum current value to consider as &apos;high&apos;"
-                    android:title="Threshold" />
-                <EditTextPreference
-                    android:defaultValue="3"
-                    android:inputType="number"
-                    android:key="@string/pref_notification_number_of_updates_key"
-                    android:summary="Number of consecutive high current values required to trigger alert"
-                    android:title="Consecutive High Values Required" />
-
+            android:key="prefScreenNotifications"
+            android:title="Notifications" >
+            <PreferenceCategory android:title="Info Notification" >
                 <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:key="@string/pref_notification_screen_off_key"
-                    android:summaryOff="Alert whether screen is off or on"
-                    android:summaryOn="Alert only when screen is off"
-                    android:title="Only when screen is off" />
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:key="@string/pref_notification_exclude_incall"
-                    android:summary="Disable high current notification during phone calls"
-                    android:title="Disable During Calls" />
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:key="@string/pref_notification_exclude_headset"
-                    android:summary="Disable high current notification when a headset is connected"
-                    android:title="Disable with Headset" />
+                    android:key="@string/pref_show_info_notification_key"
+                    android:summary="Show a persistent notification with battery information"
+                    android:title="Info Notification" />
 
-                <Preference
-                    android:key="excludedApps"
-                    android:summary="Notification will be disabled when these apps are running"
-                    android:title="Excluded Apps" />
+                <ListPreference
+                    android:defaultValue="0"
+                    android:dependency="@string/pref_show_info_notification_key"
+                    android:entries="@array/pref_show_notification_state_entries"
+                    android:entryValues="@array/pref_show_notification_state_key_values"
+                    android:key="@string/pref_show_info_notification_state_key"
+                    android:summary="Always"
+                    android:title="When to show info notification" />
             </PreferenceCategory>
-            <PreferenceCategory android:title="Alerts" >
-                <RingtonePreference
-                    android:defaultValue=""
-                    android:key="@string/pref_notification_sound_key"
-                    android:ringtoneType="all"
-                    android:showDefault="true"
-                    android:showSilent="true"
-                    android:summary="Ring on notification"
-                    android:title="Sound" />
+            <PreferenceCategory android:title="Alert Notification" >
+                <PreferenceScreen
+                    android:key="prefNotifications"
+                    android:summary="Alert on high current values"
+                    android:title="Alert Notification" >
+                    <CheckBoxPreference
+                        android:defaultValue="false"
+                        android:key="@string/pref_notification_enabled_key"
+                        android:summaryOff="Don&apos;t show notification on high current values"
+                        android:summaryOn="Show notification on high current values"
+                        android:title="Enabled" />
 
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:key="@string/pref_notification_vibrate_key"
-                    android:summaryOff="Don&apos;t Vibrate on notification"
-                    android:summaryOn="Vibrate on notification"
-                    android:title="Vibrate" />
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:key="@string/pref_notification_led_key"
-                    android:summaryOff="Don&apos;t Flash LED light on notification"
-                    android:summaryOn="Flash LED light on notification"
-                    android:title="LED" />
+                    <PreferenceCategory android:title="Conditions" >
+                        <EditTextPreference
+                            android:defaultValue="200"
+                            android:inputType="number"
+                            android:key="@string/pref_notification_threshold_key"
+                            android:summary="Minimum current value to consider as &apos;high&apos;"
+                            android:title="Threshold" />
+                        <EditTextPreference
+                            android:defaultValue="3"
+                            android:inputType="number"
+                            android:key="@string/pref_notification_number_of_updates_key"
+                            android:summary="Number of consecutive high current values required to trigger alert"
+                            android:title="Consecutive High Values Required" />
+
+                        <CheckBoxPreference
+                            android:defaultValue="false"
+                            android:key="@string/pref_notification_screen_off_key"
+                            android:summaryOff="Alert whether screen is off or on"
+                            android:summaryOn="Alert only when screen is off"
+                            android:title="Only when screen is off" />
+                        <CheckBoxPreference
+                            android:defaultValue="false"
+                            android:key="@string/pref_notification_exclude_incall"
+                            android:summary="Disable high current notification during phone calls"
+                            android:title="Disable During Calls" />
+                        <CheckBoxPreference
+                            android:defaultValue="false"
+                            android:key="@string/pref_notification_exclude_headset"
+                            android:summary="Disable high current notification when a headset is connected"
+                            android:title="Disable with Headset" />
+
+                        <Preference
+                            android:key="excludedApps"
+                            android:summary="Notification will be disabled when these apps are running"
+                            android:title="Excluded Apps" />
+                    </PreferenceCategory>
+                    <PreferenceCategory android:title="Alerts" >
+                        <RingtonePreference
+                            android:defaultValue=""
+                            android:key="@string/pref_notification_sound_key"
+                            android:ringtoneType="all"
+                            android:showDefault="true"
+                            android:showSilent="true"
+                            android:summary="Ring on notification"
+                            android:title="Sound" />
+
+                        <CheckBoxPreference
+                            android:defaultValue="false"
+                            android:key="@string/pref_notification_vibrate_key"
+                            android:summaryOff="Don&apos;t Vibrate on notification"
+                            android:summaryOn="Vibrate on notification"
+                            android:title="Vibrate" />
+                        <CheckBoxPreference
+                            android:defaultValue="false"
+                            android:key="@string/pref_notification_led_key"
+                            android:summaryOff="Don&apos;t Flash LED light on notification"
+                            android:summaryOn="Flash LED light on notification"
+                            android:title="LED" />
+                    </PreferenceCategory>
+                </PreferenceScreen>
             </PreferenceCategory>
         </PreferenceScreen>
         <PreferenceScreen
@@ -195,26 +216,18 @@
                 android:summary="Operation value"
                 android:title="Operation Value" />
         </PreferenceScreen>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="About" >
+        <com.manor.currentwidget.library.PlusOnePreference
+            android:key="rate"
+            android:selectable="true"
+            android:title="Rate CurrentWidget"
+            android:widgetLayout="@layout/plusone_pref" />
 
         <Preference
             android:key="moreApps"
             android:summary="Browse for more applications"
             android:title="RmDroider Apps" />
-    </PreferenceCategory>
-    <PreferenceCategory android:title="Info Notification" >
-        <CheckBoxPreference
-            android:key="@string/pref_show_info_notification_key"
-            android:summary="Show a persistent notification with battery information"
-            android:title="Info Notification" />
-
-        <ListPreference
-            android:defaultValue="0"
-            android:dependency="@string/pref_show_info_notification_key"
-            android:entries="@array/pref_show_notification_state_entries"
-            android:entryValues="@array/pref_show_notification_state_key_values"
-            android:key="@string/pref_show_info_notification_state_key"
-            android:summary="Always"
-            android:title="When to show info notification" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Log" >
         <CheckBoxPreference
