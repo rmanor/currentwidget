@@ -37,7 +37,10 @@ public class CurrentReaderFactory {
 		// Galaxy S4
 		if (CurrentReaderFactory.BUILD_MODEL.contains("sgh-i337")
 				|| CurrentReaderFactory.BUILD_MODEL.contains("gt-i9505")
-				|| CurrentReaderFactory.BUILD_MODEL.contains("sch-i545")) {
+				|| CurrentReaderFactory.BUILD_MODEL.contains("sch-i545")
+				|| CurrentReaderFactory.BUILD_MODEL.contains("find 5")
+				|| CurrentReaderFactory.BUILD_MODEL.contains("sgh-m919")
+				|| CurrentReaderFactory.BUILD_MODEL.contains("sgh-i537")) {
 			f = new File("/sys/class/power_supply/battery/current_now");
 			if (f.exists()) {
 				return OneLineReader.getValue(f, false);
@@ -51,9 +54,14 @@ public class CurrentReaderFactory {
 				return OneLineReader.getValue(f, false);
 			}
 		}
-		// Zopo Zp900
+		// Zopo Zp900, etc.
 		if (CurrentReaderFactory.BUILD_MODEL.contains("zp900")
-				|| CurrentReaderFactory.BUILD_MODEL.contains("jy-g3")) {
+				|| CurrentReaderFactory.BUILD_MODEL.contains("jy-g3")
+				|| CurrentReaderFactory.BUILD_MODEL.contains("zp800")
+				|| CurrentReaderFactory.BUILD_MODEL.contains("zp800h")
+				|| CurrentReaderFactory.BUILD_MODEL.contains("zp810")
+				|| CurrentReaderFactory.BUILD_MODEL.contains("w100")
+				|| CurrentReaderFactory.BUILD_MODEL.contains("zte v987")) {
 			f = new File(
 					"/sys/class/power_supply/battery/BatteryAverageCurrent");
 			if (f.exists()) {
