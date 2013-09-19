@@ -34,9 +34,17 @@ public class CurrentReaderFactory {
 
 		File f = null;
 
+		if (CurrentReaderFactory.BUILD_MODEL.contains("sl930")) {
+			f = new File("/sys/class/power_supply/da9052-bat/current_avg");
+			if (f.exists()) {
+				return OneLineReader.getValue(f, false);
+			}			
+		}
+		
 		// Galaxy S4
 		if (CurrentReaderFactory.BUILD_MODEL.contains("sgh-i337")
 				|| CurrentReaderFactory.BUILD_MODEL.contains("gt-i9505")
+				|| CurrentReaderFactory.BUILD_MODEL.contains("gt-i9500")
 				|| CurrentReaderFactory.BUILD_MODEL.contains("sch-i545")
 				|| CurrentReaderFactory.BUILD_MODEL.contains("find 5")
 				|| CurrentReaderFactory.BUILD_MODEL.contains("sgh-m919")

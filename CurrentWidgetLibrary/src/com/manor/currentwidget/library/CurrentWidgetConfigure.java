@@ -436,7 +436,6 @@ public class CurrentWidgetConfigure extends PreferenceActivity implements
 				_renderer.setLabelsColor(Color.LTGRAY);
 
 				runOnUiThread(_fininshedLoadingGraphRunnable);
-
 			}
 		};
 
@@ -469,7 +468,6 @@ public class CurrentWidgetConfigure extends PreferenceActivity implements
 	}
 
 	private final Runnable _fininshedLoadingGraphRunnable = new Runnable() {
-
 		public void run() {
 			if (!_graphLoadingCancelled) {
 				Intent i = ChartFactory.getTimeChartIntent(
