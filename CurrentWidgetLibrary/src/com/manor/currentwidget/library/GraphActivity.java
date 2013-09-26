@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2010-2011 Ran Manor
+ *  Copyright (c) 2010-2013 Ran Manor
  *  
  *  This file is part of CurrentWidget.
  *    
@@ -15,136 +15,110 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with CurrentWidget.  If not, see <http://www.gnu.org/licenses/>.
-*/
-/*
+ */
+
 package com.manor.currentwidget.library;
 
-import java.io.DataInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
+import org.achartengine.chart.PointStyle;
+import org.achartengine.model.SeriesSelection;
 import org.achartengine.model.XYMultipleSeriesDataset;
-import org.achartengine.model.XYSeries;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
 
 import android.app.Activity;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.view.ViewGroup.LayoutParams;
-import android.widget.LinearLayout;
+import android.view.View;
+import android.widget.Toast;
 
 public class GraphActivity extends Activity {
-	
-	  private XYMultipleSeriesDataset _dataset = new XYMultipleSeriesDataset();
-	  private XYMultipleSeriesRenderer _renderer = new XYMultipleSeriesRenderer();
-	  //private XYSeries _series;
-	  //private XYSeriesRenderer mCurrentRenderer;
-	  private GraphicalView _chartView;
 
-	
+	private XYMultipleSeriesDataset _dataset = new XYMultipleSeriesDataset();
+	private XYMultipleSeriesRenderer _renderer = new XYMultipleSeriesRenderer();
+	private GraphicalView _chartView;
+
+	public static final String EXTRA_DATASET = "extra_dataset";
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		Bundle extras = getIntent().getExtras();
+		_dataset = (XYMultipleSeriesDataset) extras.getSerializable(EXTRA_DATASET);
+
+		_renderer = new XYMultipleSeriesRenderer();
+		_renderer.setZoomButtonsVisible(true);		
+		_renderer.setZoomEnabled(true);
+		_renderer.setZoomEnabled(true, true);
+		_renderer.setPanEnabled(true);
+		_renderer.setPanEnabled(true, true);
 		
-		setContentView(R.layout.graph_layout);	
-		
-		// read logfile, add as series
-		SharedPreferences settings = getApplicationContext().getSharedPreferences(CurrentWidgetConfigure.SHARED_PREFS_NAME, 0);
-		
-		XYSeries _series = new XYSeries("Electric Current");
-		_dataset.addSeries(_series);
 		XYSeriesRenderer r = new XYSeriesRenderer();
-		r.setColor(Color.rgb(150, 150, 250));
+		r.setColor(Color.WHITE);
+		r.setFillPoints(true);
+		r.setLineWidth(4);
+		/*r.setPointStyle(PointStyle.CIRCLE);
+		r.setDisplayChartValues(false);*/
+	        
 		_renderer.addSeriesRenderer(r);
-		
-	
-		_renderer.setXTitle("time");
 		_renderer.setYTitle("mA");
+		_renderer.setXTitle("Date/Time");
+		_renderer.setAxesColor(Color.DKGRAY);
+		_renderer.setLabelsColor(Color.WHITE);
+		_renderer.setAxisTitleTextSize(14);
+		_renderer.setLabelsTextSize(20);
 		
-		_renderer.setXLabels(0);
-		
-	
-		
-		FileInputStream logFile;
-		try {
-			logFile = new FileInputStream(settings.getString(getApplicationContext().getString(R.string.pref_log_filename_key), "/sdcard/currentwidget.log"));
-			DataInputStream ds = new DataInputStream(logFile);
-			
-			String line = null;
-			int x = 0;			
-			while ( ( line = ds.readLine() ) != null ) {
-				
-				// 0 is datetime , 1 is value, 3 all the rest
-				String[] tokens = line.split(",", 3);
-				
-				// add to graph series
-				//tokens[1]	
-				//Log.d("CurrentWidget", line);
-				if (tokens.length > 1) {
-					try {
-						
-						_series.add(x, Double.parseDouble(tokens[1].substring(0, tokens[1].length() - 2)));
-						_renderer.addTextLabel(x, tokens[0]);
-						x = x + 1;
-					}
-					catch (Exception ex) {
-						ex.printStackTrace();
-					}
-				}					
-				       
-			}
-			
-			_renderer.setXLabels(5);
-			
-			ds.close();
-			logFile.close();			
-			
-			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		if (_chartView != null)
-			_chartView.repaint();
-		
-		
+		//_renderer.setClickEnabled(true);		
+		//_renderer.setPointSize(4);
 	}
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();
-		
 		if (_chartView == null) {
-		
-	      LinearLayout layout = (LinearLayout) findViewById(R.id.chart);
-	      _chartView = ChartFactory.getLineChartView(this, _dataset, _renderer);
-	      layout.addView(_chartView, new LayoutParams(LayoutParams.FILL_PARENT,	    		  
-	          LayoutParams.FILL_PARENT));
-	      
-		}		
-	}
-	
-	@Override
-	protected void onPause() {
-		super.onPause();
-	}
-	
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		// TODO Auto-generated method stub
-		super.onSaveInstanceState(outState);
-	}
-	
-	@Override
-	protected void onRestoreInstanceState(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
-		super.onRestoreInstanceState(savedInstanceState);
-	}
+			_chartView = ChartFactory.getTimeChartView(this, _dataset,
+					_renderer, null);
+			setContentView(_chartView);
+			// enable the chart click events
+			_renderer.setClickEnabled(true);
+			_renderer.setSelectableBuffer(10);
+			_renderer.setZoomEnabled(true);
+			_renderer.setZoomEnabled(true, true);
+			_renderer.setPanEnabled(true);
+			_renderer.setPanEnabled(true, true);
 
+			/*_chartView.setOnLongClickListener(new View.OnLongClickListener() {
+				public boolean onLongClick(View v) {
+					// handle the click event on the chart
+					SeriesSelection seriesSelection = _chartView
+							.getCurrentSeriesAndPoint();
+					if (seriesSelection == null) {
+						//Toast.makeText(GraphActivity.this, "nothing", Toast.LENGTH_SHORT).show();
+						return false;
+					} else {
+						// display information of the clicked point
+						SimpleDateFormat dateFormat = new SimpleDateFormat(
+								"yyyy/MM/dd HH:mm:ss", Locale.US);
+						Date d = new Date((long)seriesSelection.getXValue());						
+						Toast.makeText(
+								GraphActivity.this,
+										" closest point value X="
+										+ dateFormat.format(d) + ", Y="
+										+ seriesSelection.getValue(),
+								Toast.LENGTH_SHORT).show();
+						return true;
+					}
+				}
+			})*/;
+		} else {
+			_chartView.repaint();
+		}
+
+	}
 }
-*/

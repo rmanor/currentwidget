@@ -28,11 +28,8 @@ import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-import org.achartengine.ChartFactory;
 import org.achartengine.model.TimeSeries;
 import org.achartengine.model.XYMultipleSeriesDataset;
-import org.achartengine.renderer.XYMultipleSeriesRenderer;
-import org.achartengine.renderer.XYSeriesRenderer;
 
 import yuku.ambilwarna.AmbilWarnaDialog;
 import yuku.ambilwarna.AmbilWarnaDialog.OnAmbilWarnaListener;
@@ -48,7 +45,6 @@ import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -79,7 +75,7 @@ public class CurrentWidgetConfigure extends PreferenceActivity implements
 		OnSharedPreferenceChangeListener, ConnectionCallbacks,
 		OnConnectionFailedListener {
 	
-	private PlusClient mPlusClient;
+	//private PlusClient mPlusClient;
 	//private PlusOneButton mPlusOneButton;
 
     public static final String URL = "https://market.android.com/details?id=com.manor.currentwidget";
@@ -92,14 +88,14 @@ public class CurrentWidgetConfigure extends PreferenceActivity implements
 	public final static String SHARED_PREFS_NAME = "currentWidgetPrefs";
 
 	private XYMultipleSeriesDataset _dataset = null;
-	private XYMultipleSeriesRenderer _renderer = null;
+	//private XYMultipleSeriesRenderer _renderer = null;
 	private ProgressDialog _progressDialog = null;
 	private boolean _graphLoadingCancelled = false;
 
 	// @@@ when you'll have more results types, move it to a resultsDataHolder
 	// singleton class
 	public static ITwoValuesResult[] p = null;
-
+	
 	@SuppressWarnings("deprecation")
 	@Override
 	protected void onResume() {
@@ -211,11 +207,8 @@ public class CurrentWidgetConfigure extends PreferenceActivity implements
 		 * return true; } });
 		 */
 		
-		mPlusClient = new PlusClient.Builder(this, this, this).clearScopes()
-				.build();
-		
-		Preference p = findPreference("rate");
-		((PlusOnePreference)p).setPlusClient(mPlusClient);
+		/*mPlusClient = new PlusClient.Builder(this, this, this).clearScopes()
+				.build();*/
 	}
 	
 	@Override
@@ -224,7 +217,7 @@ public class CurrentWidgetConfigure extends PreferenceActivity implements
 			try {
 				result.startResolutionForResult(this, REQUEST_CODE_RESOLVE_ERR);
 			} catch (SendIntentException e) {
-				mPlusClient.connect();
+				//mPlusClient.connect();
 			}
 		}		
 	}
@@ -239,22 +232,23 @@ public class CurrentWidgetConfigure extends PreferenceActivity implements
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
 		if (requestCode == REQUEST_CODE_RESOLVE_ERR
 				&& resultCode == RESULT_OK) {
-			mPlusClient.connect();
+			//mPlusClient.connect();
 		}
 	}
 	
 	@Override
 	protected void onStart() {
 		super.onStart();
-		mPlusClient.connect();
+		//mPlusClient.connect();
 	}
 	
 	@Override
 	protected void onStop() {
 		super.onStop();
-		mPlusClient.disconnect();
+		//mPlusClient.disconnect();
 	}
 
 	@SuppressWarnings("deprecation")
@@ -351,9 +345,7 @@ public class CurrentWidgetConfigure extends PreferenceActivity implements
 	}
 
 	private void startGraphActivity() {
-
 		// start a thread , show progress bar, allow cancel
-
 		Thread t = new Thread() {
 			public void run() {
 
@@ -420,21 +412,7 @@ public class CurrentWidgetConfigure extends PreferenceActivity implements
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-
 				_dataset.addSeries(series);
-
-				_renderer = new XYMultipleSeriesRenderer();
-				_renderer.setZoomButtonsVisible(true);
-
-				XYSeriesRenderer r = new XYSeriesRenderer();
-				r.setColor(Color.WHITE);
-				r.setFillPoints(true);
-				_renderer.addSeriesRenderer(r);
-				_renderer.setYTitle("mA");
-
-				_renderer.setAxesColor(Color.DKGRAY);
-				_renderer.setLabelsColor(Color.LTGRAY);
-
 				runOnUiThread(_fininshedLoadingGraphRunnable);
 			}
 		};
@@ -470,8 +448,10 @@ public class CurrentWidgetConfigure extends PreferenceActivity implements
 	private final Runnable _fininshedLoadingGraphRunnable = new Runnable() {
 		public void run() {
 			if (!_graphLoadingCancelled) {
-				Intent i = ChartFactory.getTimeChartIntent(
-						getApplicationContext(), _dataset, _renderer, null);
+				/*Intent i = ChartFactory.getTimeChartIntent(
+						getApplicationContext(), _dataset, _renderer, null);*/
+				Intent i = new Intent(getApplicationContext(), GraphActivity.class);
+				i.putExtra(GraphActivity.EXTRA_DATASET, _dataset);
 				startActivity(i);
 			}
 			_progressDialog.dismiss();
