@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="com.manor.currentwidget"
-      android:versionCode="38"
-      android:versionName="0.39"
+      android:versionCode="39"
+      android:versionName="0.39a"
       android:installLocation="internalOnly">
 
-    <uses-sdk android:minSdkVersion="4" android:targetSdkVersion="17"/>
+    <uses-sdk android:minSdkVersion="4" android:targetSdkVersion="18"/>
     
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 	<uses-permission android:name="android.permission.VIBRATE"/>
@@ -51,6 +51,7 @@
 		</activity>		
 	
 		<activity android:name="org.achartengine.GraphicalActivity" />
+		<activity android:name="com.manor.currentwidget.library.GraphActivity" />
 		
 		<activity android:name="com.manor.currentwidget.library.analyze.ResultsActivity"/>
 		
