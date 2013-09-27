@@ -28,8 +28,12 @@ import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
+import org.achartengine.ChartFactory;
 import org.achartengine.model.TimeSeries;
 import org.achartengine.model.XYMultipleSeriesDataset;
+import org.achartengine.model.XYSeries;
+import org.achartengine.renderer.XYMultipleSeriesRenderer;
+import org.achartengine.renderer.XYSeriesRenderer;
 
 import yuku.ambilwarna.AmbilWarnaDialog;
 import yuku.ambilwarna.AmbilWarnaDialog.OnAmbilWarnaListener;
@@ -45,6 +49,7 @@ import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -64,7 +69,6 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
 import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
-import com.google.android.gms.plus.PlusClient;
 import com.manor.currentwidget.library.analyze.ILogLineProcessor;
 import com.manor.currentwidget.library.analyze.ITwoValuesResult;
 import com.manor.currentwidget.library.analyze.ResultsActivity;
@@ -74,28 +78,26 @@ import com.manor.currentwidget.library.analyze.ValuesCountLineProcessor;
 public class CurrentWidgetConfigure extends PreferenceActivity implements
 		OnSharedPreferenceChangeListener, ConnectionCallbacks,
 		OnConnectionFailedListener {
-	
-	//private PlusClient mPlusClient;
-	//private PlusOneButton mPlusOneButton;
 
-    public static final String URL = "https://market.android.com/details?id=com.manor.currentwidget";
-    private static final int REQUEST_CODE_RESOLVE_ERR = 9000;
-    // The request code must be 0 or higher.
-    public static final int PLUS_ONE_REQUEST_CODE = 1;
+	// private PlusClient mPlusClient;
+	// private PlusOneButton mPlusOneButton;
+
+	public static final String URL = "https://market.android.com/details?id=com.manor.currentwidget";
+	private static final int REQUEST_CODE_RESOLVE_ERR = 9000;
+	// The request code must be 0 or higher.
+	public static final int PLUS_ONE_REQUEST_CODE = 1;
 
 	private int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
 
 	public final static String SHARED_PREFS_NAME = "currentWidgetPrefs";
 
 	private XYMultipleSeriesDataset _dataset = null;
-	//private XYMultipleSeriesRenderer _renderer = null;
-	private ProgressDialog _progressDialog = null;
-	private boolean _graphLoadingCancelled = false;
+	private XYMultipleSeriesRenderer _renderer = null;
 
 	// @@@ when you'll have more results types, move it to a resultsDataHolder
 	// singleton class
 	public static ITwoValuesResult[] p = null;
-	
+
 	@SuppressWarnings("deprecation")
 	@Override
 	protected void onResume() {
@@ -206,20 +208,40 @@ public class CurrentWidgetConfigure extends PreferenceActivity implements
 		 * 
 		 * return true; } });
 		 */
-		
-		/*mPlusClient = new PlusClient.Builder(this, this, this).clearScopes()
-				.build();*/
+
+		/*
+		 * mPlusClient = new PlusClient.Builder(this, this, this).clearScopes()
+		 * .build();
+		 */		
+		_renderer = new XYMultipleSeriesRenderer();
+		_renderer.setZoomButtonsVisible(true);
+		_renderer.setZoomEnabled(true);
+		_renderer.setZoomEnabled(true, true);
+		_renderer.setPanEnabled(true);
+		_renderer.setPanEnabled(true, true);
+		XYSeriesRenderer r = new XYSeriesRenderer();
+		r.setColor(Color.WHITE);
+		r.setFillPoints(true);
+		r.setLineWidth(4);
+		_renderer.addSeriesRenderer(r);
+
+		_renderer.setYTitle("mA");
+		_renderer.setXTitle("Date/Time");
+		_renderer.setAxesColor(Color.DKGRAY);
+		_renderer.setLabelsColor(Color.WHITE);
+		_renderer.setAxisTitleTextSize(14);
+		_renderer.setLabelsTextSize(20);
 	}
-	
+
 	@Override
 	public void onConnectionFailed(ConnectionResult result) {
 		if (result.hasResolution()) {
 			try {
 				result.startResolutionForResult(this, REQUEST_CODE_RESOLVE_ERR);
 			} catch (SendIntentException e) {
-				//mPlusClient.connect();
+				// mPlusClient.connect();
 			}
-		}		
+		}
 	}
 
 	@Override
@@ -229,26 +251,25 @@ public class CurrentWidgetConfigure extends PreferenceActivity implements
 	@Override
 	public void onDisconnected() {
 	}
-	
+
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		if (requestCode == REQUEST_CODE_RESOLVE_ERR
-				&& resultCode == RESULT_OK) {
-			//mPlusClient.connect();
+		if (requestCode == REQUEST_CODE_RESOLVE_ERR && resultCode == RESULT_OK) {
+			// mPlusClient.connect();
 		}
 	}
-	
+
 	@Override
 	protected void onStart() {
 		super.onStart();
-		//mPlusClient.connect();
+		// mPlusClient.connect();
 	}
-	
+
 	@Override
 	protected void onStop() {
 		super.onStop();
-		//mPlusClient.disconnect();
+		// mPlusClient.disconnect();
 	}
 
 	@SuppressWarnings("deprecation")
@@ -344,118 +365,111 @@ public class CurrentWidgetConfigure extends PreferenceActivity implements
 		}
 	}
 
-	private void startGraphActivity() {
-		// start a thread , show progress bar, allow cancel
-		Thread t = new Thread() {
-			public void run() {
+	private class StartGraphTask extends AsyncTask<Void, Integer, XYSeries> {
+		private ProgressDialog _progressDialog = null;
+		
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+			_progressDialog = new ProgressDialog(CurrentWidgetConfigure.this);
+			_progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+			_progressDialog.setMessage("Loading. Please Wait...");
+			_progressDialog.setCancelable(true);
+			_progressDialog.setOnCancelListener(new OnCancelListener() {
+				public void onCancel(DialogInterface dialog) {
+					cancel(true);
+				}
+			});
+			_progressDialog.setProgress(0);
+			_progressDialog.show();
+		}
+		
+		@Override
+		protected void onProgressUpdate(Integer... values) {
+			super.onProgressUpdate(values);			
+			if (values[1] != _progressDialog.getMax()) {
+				_progressDialog.setMax(values[1]);
+			}
+			_progressDialog.setProgress(values[0]);
+		}
+		
+		@Override
+		protected XYSeries doInBackground(Void... params) {
+			SharedPreferences settings = getSharedPreferences(
+					SHARED_PREFS_NAME, 0);			
+			TimeSeries series = new TimeSeries("Electric Current");
+			FileReader logFile = null;
+			try {
+				final String defaultLogfile = Environment
+						.getExternalStorageDirectory().getAbsolutePath()
+						+ "/currentwidget.log";
+				File f = new File(settings.getString(
+						getApplicationContext().getString(
+								R.string.pref_log_filename_key),
+						defaultLogfile));
+				logFile = new FileReader(f);
+				// DataInputStream ds = new DataInputStream(logFile);
+				BufferedReader ds = new BufferedReader(logFile);
 
-				SharedPreferences settings = getSharedPreferences(
-						SHARED_PREFS_NAME, 0);
+				publishProgress(0, (int) f.length());				
 
-				// Intent i = new Intent(getApplicationContext(),
-				// GraphActivity.class);
-				_dataset = new XYMultipleSeriesDataset();
-				TimeSeries series = new TimeSeries("Electric Current");
+				String line = null;
+				String[] tokens = null;
+				int x = 0;
+				int bytesRead = 0;
 
-				FileReader logFile = null;
+				SimpleDateFormat dateFormat = new SimpleDateFormat(
+						"yyyy/MM/dd HH:mm:ss", Locale.US);
 
-				try {
-					final String defaultLogfile = Environment
-							.getExternalStorageDirectory().getAbsolutePath()
-							+ "/currentwidget.log";
-					File f = new File(settings.getString(
-							getApplicationContext().getString(
-									R.string.pref_log_filename_key),
-							defaultLogfile));
-					logFile = new FileReader(f);
-					// DataInputStream ds = new DataInputStream(logFile);
-					BufferedReader ds = new BufferedReader(logFile);
+				while ((line = ds.readLine()) != null
+						&& !isCancelled()) {
 
-					_progressDialog.setMax((int) f.length());
+					bytesRead += line.length();
+					publishProgress(bytesRead, (int)f.length());
 
-					String line = null;
-					String[] tokens = null;
-					int x = 0;
-					int bytesRead = 0;
+					// 0 is datetime , 1 is value, 3 all the rest
+					tokens = line.split(",", 3);
 
-					SimpleDateFormat dateFormat = new SimpleDateFormat(
-							"yyyy/MM/dd HH:mm:ss", Locale.US);
-
-					while ((line = ds.readLine()) != null
-							&& !_graphLoadingCancelled) {
-
-						bytesRead += line.length();
-						_progressDialog.setProgress(bytesRead);
-
-						// 0 is datetime , 1 is value, 3 all the rest
-						tokens = line.split(",", 3);
-
-						// add to graph series
-						// tokens[1]
-						// Log.d("CurrentWidget", line);
-						if (tokens.length > 1) {
-							try {
-								series.add(dateFormat.parse(tokens[0]), Double
-										.parseDouble(tokens[1].substring(0,
-												tokens[1].length() - 2)));
-								x = x + 1;
-							} catch (Exception ex) {
-								ex.printStackTrace();
-							}
+					// add to graph series
+					// tokens[1]
+					// Log.d("CurrentWidget", line);
+					if (tokens.length > 1) {
+						try {
+							series.add(dateFormat.parse(tokens[0]), Double
+									.parseDouble(tokens[1].substring(0,
+											tokens[1].length() - 2)));
+							x = x + 1;
+						} catch (Exception ex) {
+							ex.printStackTrace();
 						}
-
 					}
 
-					ds.close();
-					logFile.close();
-
-				} catch (IOException e) {
-					e.printStackTrace();
 				}
-				_dataset.addSeries(series);
-				runOnUiThread(_fininshedLoadingGraphRunnable);
-			}
-		};
-
-		_graphLoadingCancelled = false;
-		/*
-		 * _progressDialog = ProgressDialog.show(this, "",
-		 * "Loading. Please wait...", true, true, new
-		 * DialogInterface.OnCancelListener() {
-		 * 
-		 * public void onCancel(DialogInterface dialog) { _graphLoadingCancelled
-		 * = true; } });
-		 */
-
-		_progressDialog = new ProgressDialog(CurrentWidgetConfigure.this);
-		_progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-		_progressDialog.setMessage("Loading. Please Wait...");
-		_progressDialog.setCancelable(true);
-		_progressDialog.setOnCancelListener(new OnCancelListener() {
-
-			public void onCancel(DialogInterface dialog) {
-				_graphLoadingCancelled = true;
-			}
-		});
-
-		_progressDialog.setProgress(0);
-		_progressDialog.show();
-
-		t.start();
-
-	}
-
-	private final Runnable _fininshedLoadingGraphRunnable = new Runnable() {
-		public void run() {
-			if (!_graphLoadingCancelled) {
-				/*Intent i = ChartFactory.getTimeChartIntent(
-						getApplicationContext(), _dataset, _renderer, null);*/
-				Intent i = new Intent(getApplicationContext(), GraphActivity.class);
-				i.putExtra(GraphActivity.EXTRA_DATASET, _dataset);
+				ds.close();
+				logFile.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}	
+			return series;
+		}
+		
+		@Override
+		protected void onPostExecute(XYSeries result) {
+			super.onPostExecute(result);
+			_progressDialog.dismiss();
+			if (!isCancelled()) {
+				_dataset = new XYMultipleSeriesDataset();
+				_dataset.addSeries(result);
+				Intent i = ChartFactory.getTimeChartIntent(
+						getApplicationContext(), _dataset, _renderer, null);
+				/*
+				 * Intent i = new Intent(getApplicationContext(),
+				 * GraphActivity.class); i.putExtra(GraphActivity.EXTRA_DATASET,
+				 * _dataset);
+				 */
 				startActivity(i);
 			}
-			_progressDialog.dismiss();
-		};
+		}
 	};
 
 	public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen,
@@ -546,14 +560,12 @@ public class CurrentWidgetConfigure extends PreferenceActivity implements
 			}
 			return true;
 		} else if (preference.getKey().equals("view_graph")) {
-
 			SharedPreferences settings = getSharedPreferences(
 					SHARED_PREFS_NAME, 0);
 			File f = new File(settings.getString(getApplicationContext()
 					.getString(R.string.pref_log_filename_key), defaultLogfile));
-
 			if (f.exists()) {
-				startGraphActivity();
+				(new StartGraphTask()).execute();
 			} else {
 				new AlertDialog.Builder(this).setMessage("Log file not found")
 						.setPositiveButton("OK", null).show();
