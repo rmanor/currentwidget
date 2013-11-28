@@ -258,10 +258,6 @@
                     android:key="analyze_values_count"
                     android:summary="List all current (mA) values ordered by the number of times they were logged"
                     android:title="Values Count" />
-                <Preference
-                    android:key="analyze_help"
-                    android:summary="Description of analyze options"
-                    android:title="Help" />
             </PreferenceScreen>
 
             <Preference

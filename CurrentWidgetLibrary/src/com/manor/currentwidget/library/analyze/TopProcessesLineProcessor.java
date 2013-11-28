@@ -27,26 +27,24 @@ public class TopProcessesLineProcessor implements ILogLineProcessor {
 	private long value = 0;
 	private HashMap<String, ProcessInfo> processesData = new HashMap<String, ProcessInfo>();
 	
-	public void process(String line) {
-		
+	public void process(String line) {		
 		// 0 is date/time , 1 is value, 2 battery level, 3 running processes separated by semicolons, 4 all the rest
 		String[] tokens = line.split(",", 5);
 		
 		// if there is apps info
-		if (tokens.length < 4)
-			return;
-	
-		try
-		{
+		if (tokens.length < 4) {
+			return;	
+		}
+		
+		try	{
 			// remove mA at the end
 			value = Long.parseLong(tokens[1].substring(0, tokens[1].length()-2));
 		}
-		catch (NumberFormatException nfe)
-		{
+		catch (NumberFormatException nfe) {
 			value = 0;
 		}
 			
-		// drawing value
+		// Only if discharging.
 		if (value  < 0) {
 			value = Math.abs(value);
 			String[] processes = tokens[3].split(";");
@@ -59,26 +57,14 @@ public class TopProcessesLineProcessor implements ILogLineProcessor {
 					processesData.get(process).addElectricCurrent(value);
 				}
 			}
-		}	
-		
+		}
 	}
 	
-	public Object[] getResult() {
-		
+	public Object[] getResult() {		
 		// copy to array and merge sort
-		
-		/*int i = -1;
-		for (String k : processesData.keySet())
-		{
-			result[++i] = processesData.get(k);
-		}*/
-		
 		ProcessInfo[] result = processesData.values().toArray(new ProcessInfo[processesData.size()]);
-		
-		Arrays.sort(result);
-		
+		Arrays.sort(result);		
 		return result;
-
 	}
 
 }

@@ -628,16 +628,13 @@ public class CurrentWidgetConfigure extends PreferenceActivity implements
 			CurrentWidgetConfigure.p = result;
 			if (!isCancelled()) {
 				dialog.dismiss();
-				if (result == null || result.length == 0) {
-		
+				if (result == null || result.length == 0) {		
 					new AlertDialog.Builder(CurrentWidgetConfigure.this)
 							.setMessage("No log data")
-							.setPositiveButton("OK", null).show();
-		
+							.setPositiveButton("OK", null).show();		
 					return;
 				}
-				Intent i = new Intent(getApplicationContext(),
-						ResultsActivity.class);
+				Intent i = new Intent(getApplicationContext(), ResultsActivity.class);
 				startActivity(i);
 			}
 		}
