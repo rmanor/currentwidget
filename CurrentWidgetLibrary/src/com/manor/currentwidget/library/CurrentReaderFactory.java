@@ -235,6 +235,12 @@ public class CurrentReaderFactory {
 		if (f.exists()) {
 			return OneLineReader.getValue(f, false);
 		}
+		
+		// Nexus 10, 4.4.
+		f = new File("/sys/class/power_supply/ds2784-fuelgauge/current_now");
+		if (f.exists()) {
+			return OneLineReader.getValue(f, true);
+		}
 
 		return null;
 	}

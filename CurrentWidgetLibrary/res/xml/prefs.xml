@@ -12,7 +12,7 @@
         <Preference
             android:key="donate"
             android:summary="Support the development of CurrentWidget"
-            android:title="Donate" />
+            android:title="Donate"/>
 
         <PreferenceScreen
             android:key="prefDisplayOptins"

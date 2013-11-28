@@ -5,7 +5,6 @@ import android.preference.Preference;
 import android.util.AttributeSet;
 import android.view.View;
 
-import com.google.android.gms.plus.PlusClient;
 import com.google.android.gms.plus.PlusOneButton;
 
 public class PlusOnePreference extends Preference { 

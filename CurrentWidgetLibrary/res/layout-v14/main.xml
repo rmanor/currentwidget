@@ -27,7 +27,8 @@
 	    <ImageView android:id="@+id/status_image" 
 	    	android:layout_width="20dp" 
 	    	android:layout_height="12dp"
-	    	android:src="@drawable/drawing"	    	
+	    	android:src="@drawable/drawing"	 
+	    	android:contentDescription="Status"   	
 	    	/>
 	    	
 	    	
@@ -36,7 +37,7 @@
 		    android:layout_width="wrap_content" 
 		    android:layout_height="wrap_content"
 		    android:gravity="bottom|center_horizontal" 
-		    android:text="Last update"
+		    android:text="@string/last_update_text"
 		    android:background="@android:color/transparent"
 		    android:textColor="#3e6eb4"
 		    android:textSize="9sp"

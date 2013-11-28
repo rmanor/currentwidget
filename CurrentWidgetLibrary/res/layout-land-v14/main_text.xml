@@ -29,7 +29,8 @@
             android:id="@+id/status_image"
             android:layout_width="16dp"
             android:layout_height="10dp"
-            android:src="@drawable/drawing" />
+            android:src="@drawable/drawing" 
+            android:contentDescription="Status"/>
 
         <TextView
             android:id="@+id/last_updated_text"

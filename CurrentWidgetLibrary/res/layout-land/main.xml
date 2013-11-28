@@ -36,6 +36,7 @@
 			    	android:layout_width="20dp" 
 			    	android:layout_height="12dp"
 			    	android:src="@drawable/drawing"
+			    	android:contentDescription="Status"
 			    	/>
 
     	    
