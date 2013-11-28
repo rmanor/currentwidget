@@ -559,9 +559,7 @@ public class CurrentWidget extends AppWidgetProvider {
 				if (settings.getBoolean(context.getString(R.string.pref_log_apps_key), false)) {
 					ActivityManager activityManager = (ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE);
 					List<ActivityManager.RunningAppProcessInfo> runningApps = activityManager.getRunningAppProcesses();
-
-					if (runningApps != null)
-					{
+					if (runningApps != null) {
 						str += ",";
 						for (RunningAppProcessInfo processInfo : runningApps) {
 							str += processInfo.processName + ";";
@@ -617,12 +615,13 @@ public class CurrentWidget extends AppWidgetProvider {
 			ex.printStackTrace();
 		}
 		if (secondsInterval > 0) {       	    
-			if (settings.getBoolean(context.getString(R.string.pref_force_sleep_log), false))
+			if (settings.getBoolean(context.getString(R.string.pref_force_sleep_log), false)) {
 				alarms.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + (secondsInterval*1000),
 						secondsInterval * 1000, widgetUpdatePi);       
-			else
+			} else {
 				alarms.setRepeating(AlarmManager.RTC, System.currentTimeMillis() + (secondsInterval*1000),
-						secondsInterval * 1000, widgetUpdatePi);	        
+						secondsInterval * 1000, widgetUpdatePi);
+			}
 		}
 		else {
 			alarms.cancel(widgetUpdatePi);
