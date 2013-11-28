@@ -550,8 +550,9 @@ public class CurrentWidget extends AppWidgetProvider {
 				DataOutputStream logOutput = new DataOutputStream(logFile);
 
 				String str = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.US)).format(new Date()) + ",";
-				if (!isCharging)
+				if (!isCharging) {
 					str += "-";
+				}
 				str += currentText;
 				// add battery level
 				str += "," + batteryLevelText;
