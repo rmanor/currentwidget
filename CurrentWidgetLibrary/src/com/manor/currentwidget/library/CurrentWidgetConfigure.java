@@ -229,6 +229,7 @@ public class CurrentWidgetConfigure extends PreferenceActivity implements
 		bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_log_filename_key)));
 		bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_op_type_key)));
 		bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_op_value_key)));
+		bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_temp_units_key)));
 	}
 	
 	private Intent getUpdateIntent(int appWdgetId) {

@@ -425,7 +425,11 @@ public class CurrentWidget extends AppWidgetProvider {
 				currentVoltage = (float)batteryIntent.getIntExtra("voltage", 0) / 1000;
 				voltageText = Float.toString(currentVoltage) + "V";
 				int temperature = batteryIntent.getIntExtra("temperature", 0);
-				temperatureText = String.format("%.1f", ((float)temperature/10)) + "\u00B0C";				
+				if (settings.getString(context.getString(R.string.pref_temp_units_key), "0").equals("1")) {
+					temperatureText = String.format(Locale.ENGLISH, "%.1f\u00B0F", (((float)temperature/10) * 1.8) + 32);
+				} else {
+					temperatureText = String.format(Locale.ENGLISH, "%.1f\u00B0C", ((float)temperature/10));
+				}
 				isCharging = batteryIntent.getIntExtra("status", 1) == BatteryManager.BATTERY_STATUS_CHARGING;
 			}
 		}

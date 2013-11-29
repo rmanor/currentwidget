@@ -37,7 +37,7 @@
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="@string/pref_view_3_key"
-                    android:title="Temperature (C)" />
+                    android:title="Temperature (C/F)" />
 
                 <Preference
                     android:key=""
@@ -58,7 +58,7 @@
                     android:key="@string/pref_customize_text_showtime"
                     android:summaryOff="Don&apos;t show last update time in text wigdet"
                     android:summaryOn="Show last update time in text widget"
-                    android:title="Show Last Update Time" />
+                    android:title="Show last update time" />
                 <CheckBoxPreference
                     android:defaultValue="true"
                     android:key="@string/pref_customize_text_showupdate"
@@ -95,6 +95,12 @@
                         android:title="Update Now Text Size" />
                 </PreferenceCategory>
             </PreferenceScreen>
+            <ListPreference android:defaultValue="0"
+                android:entries="@array/pref_temp_units_entries"
+                android:entryValues="@array/pref_temp_units_values"
+                android:key="@string/pref_temp_units_key"
+                android:summary="Celsius"
+                android:title="Temperature units"/>
         </PreferenceScreen>
         <PreferenceScreen
             android:key="prefScreenNotifications"

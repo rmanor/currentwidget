@@ -1,79 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-<string name="last_update_text">Last update</string>
-<string-array name="pref_show_notification_state_entries">
-<item>Always</item>
-<item>Charging</item>
-<item>Discharging</item>
-</string-array>
-<string-array name="pref_show_notification_state_key_values">
-<item>0</item>
-<item>1</item>
-<item>2</item>
-</string-array>
-<string name="pref_show_info_notification_state_key">show_info_notification_state_key</string>
+    <string-array name="pref_temp_units_entries">
+        <item>Celsius</item>
+        <item>Fahrenheit</item>
+    </string-array>
+
+    <string-array name="pref_temp_units_values">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
     
-<string name="pref_show_info_notification_key">show_info_notification</string>
-<string name="pref_value_text_size_default">18</string>
-<string name="pref_last_updated_text_size_default">12</string>
-<string name="pref_update_now_text_size_default">10</string>
-<string name="app_name">CurrentWidget</string>
-<string name="widget_text_name">CurrentWidget (Text)</string>
-<string name="update_now_button">Update Now</string>
-<string name="log_checkbox">Write to log file</string>
-<string name="log_filename">/sdcard/currentwidget.log</string>
-<string name="log_apps_checkbox">Log running applications</string>
-<string name="pref_general_category">General</string>
-<string name="pref_log_category">Log File</string>
-<string name="op_text">Operation on value</string>
-<string name="op_prompt">operation</string>
-<string name="zero_ma">0mA</string>
-<string-array name="pref_op_types">
-<item>Multiplication (*)</item>
-<item>Division (/)</item>
-<item>Addition (+)</item>
-<item>Subtraction (-)</item>
-</string-array>
-<string-array name="pref_op_types_values">
-<item>1</item>
-<item>2</item>
-<item>3</item>
-<item>4</item>
-</string-array>
-<string name="pref_value_text_size_key">value_text_size</string>
-<string name="pref_last_updated_text_size_key">last_updated_text_size</string>
-<string name="pref_update_now_text_size_key">update_now_text_size</string>
-<string name="pref_interval_key">interval</string>
-<string name="pref_log_enabled_key">log_enabled</string>
-<string name="pref_log_filename_key">log_filename</string>
-<string name="pref_log_apps_key">log_apps</string>
-<string name="pref_op_enabled_key">op_enabled</string>
-<string name="pref_op_type_key">op_type</string>
-<string name="pref_op_value_key">op_value</string>
-<string name="pref_hide_background_key">hide_background</string>
-<string name="pref_view_0_key">view_0</string>
-<string name="pref_view_1_key">view_1</string>
-<string name="pref_view_2_key">view_2</string>
-<string name="pref_view_3_key">view_3</string>
-<string name="current_widget_text_name">CurrentWidget (Text)</string>
-<string name="pref_force_sleep_log">force_sleep_log</string>
-<string name="pref_analyze_help">- Top Processes - Scans log for current usage of processes and displays them ordered by average usage (only when phone is NOT charging). Requires log file and log applications enabled. </string>
-<string name="pref_no_log_in_charge">no_log_in_charge</string>
-<string name="pref_text_text_color">text_text_color</string>
-<string name="pref_notification_enabled_key">notification_enabled</string>
-<string name="pref_notification_threshold_key">notification_threshold</string>
-<string name="pref_notification_number_of_updates_key">notification_number_of_updates</string>
-<string name="pref_notification_screen_off_key">notification_screen_off</string>
-<string name="pref_notification_sound_key">notification_sound</string>
-<string name="pref_notification_led_key">notification_led</string>
-<string name="pref_notification_vibrate_key">notification_vibrate</string>
-<string name="pref_customize_text_showtime">customize_text_showtime</string>
-<string name="pref_customize_text_showupdate">customize_text_showupdate</string>
-<string name="pref_customize_text_showall">customize_text_showall</string>
-<string name="pref_notification_exclude_incall">notification_exclude_incall</string>
-<string name="pref_notification_exclude_headset">notification_exclude_headset</string>
-<string name="pref_notification_exclude_bluetooth">notification_exclude_bluetooth</string>
-<string name="pref_log_maxsize">log_maxsize</string>
-<string name="pref_log_rotation">log_rotation</string>
+    <string name="last_update_text">Last update</string>
+
+    <string-array name="pref_show_notification_state_entries">
+        <item>Always</item>
+        <item>Charging</item>
+        <item>Discharging</item>
+    </string-array>
+    <string-array name="pref_show_notification_state_key_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+    <string name="pref_show_info_notification_state_key">show_info_notification_state_key</string>
+    <string name="pref_show_info_notification_key">show_info_notification</string>
+    <string name="pref_value_text_size_default">18</string>
+    <string name="pref_last_updated_text_size_default">12</string>
+    <string name="pref_update_now_text_size_default">10</string>
+    <string name="app_name">CurrentWidget</string>
+    <string name="widget_text_name">CurrentWidget (Text)</string>
+    <string name="update_now_button">Update Now</string>
+    <string name="log_checkbox">Write to log file</string>
+    <string name="log_filename">/sdcard/currentwidget.log</string>
+    <string name="log_apps_checkbox">Log running applications</string>
+    <string name="pref_general_category">General</string>
+    <string name="pref_log_category">Log File</string>
+    <string name="op_text">Operation on value</string>
+    <string name="op_prompt">operation</string>
+    <string name="zero_ma">0mA</string>
+
+    <string-array name="pref_op_types">
+        <item>Multiplication (*)</item>
+        <item>Division (/)</item>
+        <item>Addition (+)</item>
+        <item>Subtraction (-)</item>
+    </string-array>
+    <string-array name="pref_op_types_values">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
+
+    <string name="pref_value_text_size_key">value_text_size</string>
+    <string name="pref_last_updated_text_size_key">last_updated_text_size</string>
+    <string name="pref_update_now_text_size_key">update_now_text_size</string>
+    <string name="pref_interval_key">interval</string>
+    <string name="pref_log_enabled_key">log_enabled</string>
+    <string name="pref_log_filename_key">log_filename</string>
+    <string name="pref_log_apps_key">log_apps</string>
+    <string name="pref_op_enabled_key">op_enabled</string>
+    <string name="pref_op_type_key">op_type</string>
+    <string name="pref_op_value_key">op_value</string>
+    <string name="pref_hide_background_key">hide_background</string>
+    <string name="pref_view_0_key">view_0</string>
+    <string name="pref_view_1_key">view_1</string>
+    <string name="pref_view_2_key">view_2</string>
+    <string name="pref_view_3_key">view_3</string>
+    <string name="current_widget_text_name">CurrentWidget (Text)</string>
+    <string name="pref_force_sleep_log">force_sleep_log</string>
+    <string name="pref_analyze_help">- Top Processes - Scans log for current usage of processes and displays them ordered by average usage (only when phone is NOT charging). Requires log file and log applications enabled. </string>
+    <string name="pref_no_log_in_charge">no_log_in_charge</string>
+    <string name="pref_text_text_color">text_text_color</string>
+    <string name="pref_notification_enabled_key">notification_enabled</string>
+    <string name="pref_notification_threshold_key">notification_threshold</string>
+    <string name="pref_notification_number_of_updates_key">notification_number_of_updates</string>
+    <string name="pref_notification_screen_off_key">notification_screen_off</string>
+    <string name="pref_notification_sound_key">notification_sound</string>
+    <string name="pref_notification_led_key">notification_led</string>
+    <string name="pref_notification_vibrate_key">notification_vibrate</string>
+    <string name="pref_customize_text_showtime">customize_text_showtime</string>
+    <string name="pref_customize_text_showupdate">customize_text_showupdate</string>
+    <string name="pref_customize_text_showall">customize_text_showall</string>
+    <string name="pref_notification_exclude_incall">notification_exclude_incall</string>
+    <string name="pref_notification_exclude_headset">notification_exclude_headset</string>
+    <string name="pref_notification_exclude_bluetooth">notification_exclude_bluetooth</string>
+    <string name="pref_log_maxsize">log_maxsize</string>
+    <string name="pref_log_rotation">log_rotation</string>
+    <string name="pref_temp_units_key">temp_units</string>
+
 </resources>
