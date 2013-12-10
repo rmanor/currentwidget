@@ -54,7 +54,7 @@ import android.view.View;
 import android.widget.RemoteViews;
 
 /**
- * @author Ran
+ * @author Ran Manor
  *
  */
 public class CurrentWidget extends AppWidgetProvider {

@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Locale;
 
 import org.achartengine.ChartFactory;
@@ -40,10 +41,11 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.app.backup.BackupManager;
 import android.appwidget.AppWidgetManager;
+import android.appwidget.AppWidgetProviderInfo;
+import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
-import android.content.IntentSender.SendIntentException;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.graphics.Color;
@@ -62,9 +64,6 @@ import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
-import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
 import com.manor.currentwidget.library.analyze.ILogLineProcessor;
 import com.manor.currentwidget.library.analyze.ITwoValuesResult;
 import com.manor.currentwidget.library.analyze.ResultsActivity;
@@ -72,11 +71,10 @@ import com.manor.currentwidget.library.analyze.TopProcessesLineProcessor;
 import com.manor.currentwidget.library.analyze.ValuesCountLineProcessor;
 
 public class CurrentWidgetConfigure extends PreferenceActivity implements
-		OnSharedPreferenceChangeListener, ConnectionCallbacks,
-		OnConnectionFailedListener {
+		OnSharedPreferenceChangeListener {
 
 	public static final String URL = "https://market.android.com/details?id=com.manor.currentwidget";
-	private static final int REQUEST_CODE_RESOLVE_ERR = 9000;
+	
 	// The request code must be 0 or higher.
 	public static final int PLUS_ONE_REQUEST_CODE = 1;
 
@@ -203,24 +201,6 @@ public class CurrentWidgetConfigure extends PreferenceActivity implements
 		mRenderer.setLabelsTextSize(20);
 	}
 
-	@Override
-	public void onConnectionFailed(ConnectionResult result) {
-		if (result.hasResolution()) {
-			try {
-				result.startResolutionForResult(this, REQUEST_CODE_RESOLVE_ERR);
-			} catch (SendIntentException e) {
-			}
-		}
-	}
-
-	@Override
-	public void onConnected(Bundle connectionHint) {
-	}
-
-	@Override
-	public void onDisconnected() {
-	}
-
 	@SuppressWarnings("deprecation")
 	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {
@@ -248,24 +228,16 @@ public class CurrentWidgetConfigure extends PreferenceActivity implements
 			if (mAppWidgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
 				sendBroadcast(getUpdateIntent(mAppWidgetId));
 			} else {
-				//ComponentName name = new ComponentName(getApplicationContext(), com.manor.currentwidget.library.CurrentWidget.class);
-				/*mClass	"com.manor.currentwidget.library.CurrentWidget" (id=830034730760)	
-				mPackage	"com.manor.currentwidget" (id=830034730656)*/	
-
-				/*ComponentName name = new ComponentName("com.manor.currentwidget", "com.manor.currentwidget.library.CurrentWidget");
 				AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
-				int[] ids = appWidgetManager.getAppWidgetIds(name);
-				List<AppWidgetProviderInfo> l = appWidgetManager.getInstalledProviders();
-				for (AppWidgetProviderInfo p : l) {
-					Log.e("CurrentWidget", p.provider.toString());
-					if (p.provider.getClassName().equals("com.manor.currentwidget.library.CurrentWidget")) {
-						ids = appWidgetManager.getAppWidgetIds(p.provider);
+				ComponentName[] widgets = 
+					{new ComponentName("com.manor.currentwidget", "com.manor.currentwidget.library.CurrentWidget"),
+						new ComponentName("com.manor.currentwidget", "com.manor.currentwidget.library.CurrentWidgetText")};
+				for (ComponentName widget : widgets) {
+					int[] ids = appWidgetManager.getAppWidgetIds(widget);
+					if (ids != null && ids.length > 0) {
+						CurrentWidget.updateAppWidget(getApplicationContext(), appWidgetManager, ids[0], false);
 					}
 				}
-				if (ids != null && ids.length > 0) {
-					getApplicationContext().sendBroadcast(getUpdateIntent(ids[0]));
-					CurrentWidget.updateAppWidget(getApplicationContext(), appWidgetManager, ids[0], false);
-				}*/
 			}
 		}
 		return super.onKeyDown(keyCode, event);
