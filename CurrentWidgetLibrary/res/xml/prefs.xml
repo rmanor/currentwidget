@@ -278,10 +278,10 @@
         <PreferenceScreen
             android:key="prefLogOptions"
             android:summary="Advanced Options"
-            android:title="Log Options" >
+            android:title="Log Options" 
+            android:dependency="log_enabled">
             <EditTextPreference
-                android:defaultValue="/sdcard/currentwidget.log"
-                android:dependency="log_enabled"
+                android:defaultValue="/sdcard/currentwidget.log"                
                 android:key="@string/pref_log_filename_key"
                 android:summary="Where to save the log file"
                 android:title="Log filename" />
@@ -300,7 +300,6 @@
                 android:title="Rotate Log File" />
             <CheckBoxPreference
                 android:defaultValue="false"
-                android:dependency="log_enabled"
                 android:key="@string/pref_log_apps_key"
                 android:summaryOff="Don&apos;t log running applications"
                 android:summaryOn="Log running applications to logfile"

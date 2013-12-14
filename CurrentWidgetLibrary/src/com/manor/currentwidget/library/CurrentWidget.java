@@ -26,11 +26,13 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.AlarmManager;
+import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -528,12 +530,13 @@ public class CurrentWidget extends AppWidgetProvider {
 		// && Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)
 		// @@@@@@@@@@
 		if (settings.getBoolean(context.getString(R.string.pref_log_enabled_key), false) && doLogFile) {
+			
 			final String defaultLogfile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/currentwidget.log";			
 			try {				
 				long logMaxSize = Long.parseLong(settings.getString(context.getString(R.string.pref_log_maxsize), "500000"));				 
 				if (logMaxSize > 0) {
 					File f = new File(settings.getString(context.getString(R.string.pref_log_filename_key),							
-							defaultLogfile));
+							defaultLogfile));					
 					if (f.length() >= logMaxSize) {
 						if (settings.getBoolean(context.getString(R.string.pref_log_rotation), false)) {
 							String filename = defaultLogfile; //settings.getString(context.getString(R.string.pref_log_filename_key), "/sdcard/currentwidget.log");
