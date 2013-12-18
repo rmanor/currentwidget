@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/linear_layout"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/widget1land"
+    android:gravity="top|center_horizontal" >
+
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="9dp"
+        android:layout_marginTop="6dp"
+        android:background="@android:color/transparent"
+        android:gravity="center"
+        android:text="@string/zero_ma"
+        android:textColor="#757876"
+        android:textColorHighlight="#ff0000"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+
+    <ImageView
+        android:id="@+id/status_image"
+        android:layout_width="12dp"
+        android:layout_height="9dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="12dp"
+        android:contentDescription="Status"
+        android:src="@drawable/drawing" />
+
+    <TextView
+        android:id="@+id/last_update_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/text"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="5dp"
+        android:background="@android:color/transparent"
+        android:gravity="center_horizontal"
+        android:text="Last update"
+        android:textColor="#3e6eb4"
+        android:textSize="8sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/last_updated_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/last_update_title"
+        android:layout_centerHorizontal="true"
+        android:background="@android:color/transparent"
+        android:gravity="center_vertical"
+        android:layout_marginTop="-3dp"
+        android:text=""
+        android:textColor="#3e6eb4"
+        android:textSize="10sp"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/update_now_button"
+        android:layout_width="65dp"
+        android:layout_height="12dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="6dp"
+        android:background="@drawable/update_button"
+        android:gravity="center_horizontal"
+        android:shadowColor="#000000"
+        android:shadowDy="1"
+        android:shadowRadius="0.5"
+        android:text="Update Now"
+        android:textColor="#ffffff"
+        android:textSize="8sp"
+        android:textStyle="bold" />
+
+</RelativeLayout>

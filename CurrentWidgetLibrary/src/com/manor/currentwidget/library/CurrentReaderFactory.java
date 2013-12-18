@@ -34,6 +34,13 @@ public class CurrentReaderFactory {
 
 		File f = null;
 
+		if (CurrentReaderFactory.BUILD_MODEL.contains("nexus 7")) {
+			f = new File("/sys/class/power_supply/battery/current_now");
+			if (f.exists()) {
+				return OneLineReader.getValue(f, false);
+			}			
+		}
+		
 		if (CurrentReaderFactory.BUILD_MODEL.contains("sl930")) {
 			f = new File("/sys/class/power_supply/da9052-bat/current_avg");
 			if (f.exists()) {

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.manor.currentwidget.library"
-    android:versionCode="40"
-    android:versionName="0.39b">
+    android:versionCode="41"
+    android:versionName="0.39c">
 
     <uses-sdk
         android:minSdkVersion="4"
