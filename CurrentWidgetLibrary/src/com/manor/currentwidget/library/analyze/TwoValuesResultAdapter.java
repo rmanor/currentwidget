@@ -11,8 +11,7 @@ import com.manor.currentwidget.library.R;
 
 public class TwoValuesResultAdapter extends ArrayAdapter<ITwoValuesResult> {
 
-	public TwoValuesResultAdapter(Context context, int textViewReousrceId, ITwoValuesResult[] items)
-	{
+	public TwoValuesResultAdapter(Context context, int textViewReousrceId, ITwoValuesResult[] items) {
 		super(context, textViewReousrceId, items);
 	}
 	
@@ -29,7 +28,7 @@ public class TwoValuesResultAdapter extends ArrayAdapter<ITwoValuesResult> {
                  TextView bt = (TextView) v.findViewById(R.id.meanCurrent);
                  if (tt != null) {
                        tt.setText(p.getValue1());             
-                       }
+                 }
                  if(bt != null){
                        bt.setText(p.getValue2());
                  }

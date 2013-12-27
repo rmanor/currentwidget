@@ -22,17 +22,22 @@ package com.manor.currentwidget.library.analyze;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+
 public class TopProcessesLineProcessor implements ILogLineProcessor {
 
 	private long value = 0;
 	private HashMap<String, ProcessInfo> processesData = new HashMap<String, ProcessInfo>();
 	
-	public void process(String line) {		
+	public void process(String line, Context context) {		
 		// 0 is date/time , 1 is value, 2 battery level, 3 running processes separated by semicolons, 4 all the rest
-		String[] tokens = line.split(",", 5);
+		String[] tokens = line.split(",", 6);
 		
-		// if there is apps info
-		if (tokens.length < 4) {
+		// If apps logging is disabled.
+		if (tokens.length < 6) {
 			return;	
 		}
 		
@@ -48,10 +53,18 @@ public class TopProcessesLineProcessor implements ILogLineProcessor {
 		if (value  < 0) {
 			value = Math.abs(value);
 			String[] processes = tokens[3].split(";");
+			PackageManager pm = context.getPackageManager();
+			String packageName = "";
 			for (String process : processes) {
 				process = process.trim();
+				try {
+					ApplicationInfo i = pm.getApplicationInfo(process, 0);
+					packageName = pm.getApplicationLabel(i).toString();
+				} catch (NameNotFoundException e) {
+					packageName = "";
+				}
 				if (!processesData.containsKey(process)) {
-					processesData.put(process, new ProcessInfo(process, value));
+					processesData.put(process, new ProcessInfo(process, packageName, value));
 				}
 				else {
 					processesData.get(process).addElectricCurrent(value);

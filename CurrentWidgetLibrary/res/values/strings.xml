@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string name="extension_description">Displays the amount of electric current (mA) the device is using or getting from the battery.</string>
     <string-array name="pref_temp_units_entries">
         <item>Celsius</item>
         <item>Fahrenheit</item>

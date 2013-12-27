@@ -6,11 +6,13 @@ public class ProcessInfo implements Comparable<ProcessInfo>, ITwoValuesResult  {
 	private int numberOfTimes;
 	private long electricCurrentSum;
 	public String processName;
+	public String packageName;
 	
-	public ProcessInfo(String name, long electricCurrent) {
+	public ProcessInfo(String name, String packageName, long electricCurrent) {
 		numberOfTimes = 1;
 		electricCurrentSum = electricCurrent;
-		processName = name;
+		processName = name;		
+		this.packageName = packageName;
 	}	
 
 	@Override
@@ -27,8 +29,7 @@ public class ProcessInfo implements Comparable<ProcessInfo>, ITwoValuesResult  {
 		++numberOfTimes;
 	}
 
-	public int compareTo(ProcessInfo another) {
-		
+	public int compareTo(ProcessInfo another) {		
 		float thisMean = getMean();
 		float anotherMean = another.getMean();
 		
@@ -48,6 +49,9 @@ public class ProcessInfo implements Comparable<ProcessInfo>, ITwoValuesResult  {
 	}
 
 	public String getValue1() {
+		if (packageName != null && packageName.length() > 0) {
+			return packageName;
+		}
 		return processName;
 	}
 

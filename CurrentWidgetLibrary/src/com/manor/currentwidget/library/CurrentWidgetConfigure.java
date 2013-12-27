@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2010-2013 Ran Manor
+ *  Copyright (c) 2010-2014 Ran Manor
  *  
  *  This file is part of CurrentWidget.
  *    
@@ -549,7 +549,6 @@ public class CurrentWidgetConfigure extends PreferenceActivity implements
 		
 		@Override
 		protected ITwoValuesResult[] doInBackground(ILogLineProcessor... params) {
-
 			SharedPreferences settings = getApplicationContext()
 					.getSharedPreferences(
 							CurrentWidgetConfigure.SHARED_PREFS_NAME, 0);
@@ -573,7 +572,7 @@ public class CurrentWidgetConfigure extends PreferenceActivity implements
 				while ((line = ds.readLine()) != null && !isCancelled()) {
 					bytesRead += line.length();
 					publishProgress(fileSize, bytesRead);
-					logLineProcessor.process(line);
+					logLineProcessor.process(line, getApplicationContext());
 				}
 				ds.close();
 				logFile.close();

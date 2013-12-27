@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2010-2013 Ran Manor
+ *  Copyright (c) 2010-2014 Ran Manor
  *  
  *  This file is part of CurrentWidget.
  *    
@@ -32,7 +32,6 @@ import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.AlarmManager;
-import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
