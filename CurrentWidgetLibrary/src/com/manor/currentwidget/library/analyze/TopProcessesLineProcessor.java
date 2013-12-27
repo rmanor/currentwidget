@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2010-2013 Ran Manor
+ *  Copyright (c) 2010-2014 Ran Manor
  *  
  *  This file is part of CurrentWidget.
  *    
