@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <PreferenceCategory android:title="General" >
+    <PreferenceCategory android:title="General">
         <EditTextPreference
             android:defaultValue="60"
             android:inputType="number"
             android:key="@string/pref_interval_key"
             android:summary="Number of seconds between widget updates (0 = no auto update)"
-            android:title="Update Interval" />
+            android:title="Update interval" />
 
         <Preference
             android:key="donate"
@@ -17,7 +17,7 @@
         <PreferenceScreen
             android:key="prefDisplayOptins"
             android:summary="Data views, Customizations"
-            android:title="Display Options" >
+            android:title="Display options" >
             <PreferenceScreen
                 android:key="prefViews"
                 android:summary="Select which data to display on the widget"
@@ -50,27 +50,21 @@
                 android:title="Customize" >
                 <Preference
                     android:key="text_textColor"
-                    android:summary="Change text color in text widget"
-                    android:title="Text Color" />
+                    android:title="Text color" />
 
                 <CheckBoxPreference
                     android:defaultValue="true"
                     android:key="@string/pref_customize_text_showtime"
-                    android:summaryOff="Don&apos;t show last update time in text wigdet"
-                    android:summaryOn="Show last update time in text widget"
                     android:title="Show last update time" />
                 <CheckBoxPreference
                     android:defaultValue="true"
                     android:key="@string/pref_customize_text_showupdate"
-                    android:summaryOff="Don&apos;t show update now in text widget"
-                    android:summaryOn="Show update now button in text widget"
-                    android:title="Show Update Now Button" />
+                    android:title="Show Update Now button" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="@string/pref_customize_text_showall"
-                    android:summaryOff="Show one view and switch on touch"
-                    android:summaryOn="Show all selected views on widget"
-                    android:title="Show All Selected Views" />
+                    android:title="Show all selected views"
+                    android:summary="Display all views instead of touch to switch" />
 
                 <PreferenceCategory
                     android:key=""
@@ -79,20 +73,19 @@
                         android:defaultValue="@string/pref_value_text_size_default"
                         android:inputType="number"
                         android:key="@string/pref_value_text_size_key"
-                        android:summary="Set text size of values in widget"
-                        android:title="Value Text Size" />
+                        android:title="Value text size" />
+                    
                     <EditTextPreference
                         android:defaultValue="@string/pref_last_updated_text_size_default"
                         android:inputType="number"
                         android:key="@string/pref_last_updated_text_size_key"
-                        android:summary="Set text size of last updated time in widget"
-                        android:title="Last Updated Text Size" />
+                        android:title="Last Updated text size" />
+                    
                     <EditTextPreference
                         android:defaultValue="@string/pref_update_now_text_size_default"
                         android:inputType="number"
                         android:key="@string/pref_update_now_text_size_key"
-                        android:summary="Set text size of update now button in widget"
-                        android:title="Update Now Text Size" />
+                        android:title="Update Now text size" />
                 </PreferenceCategory>
             </PreferenceScreen>
             <ListPreference android:defaultValue="0"
@@ -197,12 +190,11 @@
         <PreferenceScreen
             android:key="perfCustomOperation"
             android:summary="Define an artihmetic operation to be performed on the current value"
-            android:title="Normalize Current Value" >
+            android:title="Normalize current value" >
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="@string/pref_op_enabled_key"
-                android:summaryOff="Display original value"
-                android:summaryOn="Perform an arithmetic operation on current value before display"
+                android:summary="Perform an arithmetic operation on current value before display"
                 android:title="Operation on Value" />
 
             <ListPreference
@@ -212,7 +204,7 @@
                 android:entryValues="@array/pref_op_types_values"
                 android:key="@string/pref_op_type_key"
                 android:summary="Operation type"
-                android:title="Operation Type" />
+                android:title="Operation type" />
 
             <EditTextPreference
                 android:defaultValue="1"
@@ -220,7 +212,7 @@
                 android:inputType="numberDecimal|numberSigned"
                 android:key="@string/pref_op_value_key"
                 android:summary="Operation value"
-                android:title="Operation Value" />
+                android:title="Operation value" />
         </PreferenceScreen>
     </PreferenceCategory>
     <PreferenceCategory android:title="About" >
@@ -239,18 +231,16 @@
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/pref_log_enabled_key"
-            android:summaryOff="Don&apos;t log values to file"
-            android:summaryOn="Log values to file"
-            android:title="Log file" />
+            android:title="Log values to file"
+            />
 
         <PreferenceScreen
             android:key="prefLogActions"
             android:summary="View, Analyze, Clear log actions"
-            android:title="Log Actions" >
+            android:title="Log actions" >
             <Preference
                 android:key="view_log"
-                android:summary="Open log file"
-                android:title="View Log" />
+                android:title="View log file" />
 
             <PreferenceScreen
                 android:key="prefAnalyze"
@@ -258,7 +248,7 @@
                 android:title="Analyze Log" >
                 <Preference
                     android:key="analyze_top_processes"
-                    android:summary="List all processes ordered by their average current usage"
+                    android:summary="List all processes ordered by their average current usage. Requires 'Log running applications' to be on."
                     android:title="Top Processes" />
                 <Preference
                     android:key="analyze_values_count"
@@ -268,17 +258,14 @@
 
             <Preference
                 android:key="view_graph"
-                android:summary="Show logged values as graph"
-                android:title="View Log as Graph" />
+                android:title="View log as graph" />
             <Preference
                 android:key="clear_log"
-                android:summary="Delete log file"
-                android:title="Clear Log" />
+                android:title="Delete log file" />
         </PreferenceScreen>
         <PreferenceScreen
             android:key="prefLogOptions"
-            android:summary="Advanced Options"
-            android:title="Log Options" 
+            android:title="Log options" 
             android:dependency="log_enabled">
             <EditTextPreference
                 android:defaultValue="/sdcard/currentwidget.log"                
@@ -290,30 +277,26 @@
                 android:inputType="number"
                 android:key="@string/pref_log_maxsize"
                 android:summary="Maximum size (bytes) for log file (0 = no maximum)"
-                android:title="Log File Maximum Size" />
+                android:title="Maximum size" />
 
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="@string/pref_log_rotation"
                 android:summaryOff="Delete log file on maximum file size"
                 android:summaryOn="Save old log file using a different filename"
-                android:title="Rotate Log File" />
+                android:title="Rotate log file" />
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="@string/pref_log_apps_key"
-                android:summaryOff="Don&apos;t log running applications"
-                android:summaryOn="Log running applications to logfile"
-                android:title="Log Applications" />
+                android:title="Log running applications" />
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="@string/pref_force_sleep_log"
-                android:summary="Force log when device is sleeping"
-                android:title="Force Log In Sleep Mode" />
+                android:title="Force log in sleep mode" />
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="@string/pref_no_log_in_charge"
-                android:summary="Prevents logs when phone is connected to power"
-                android:title="No Log in Charge" />
+                android:title="Prevent log when charging" />
         </PreferenceScreen>
     </PreferenceCategory>
 
