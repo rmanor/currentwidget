@@ -7,4 +7,5 @@
     android:layout_gravity="center_vertical"
     android:focusable="false"
     android:descendantFocusability="blocksDescendants"
-    plus:size="standard" />
+    plus:size="standard" 
+    plus:annotation="inline"/>

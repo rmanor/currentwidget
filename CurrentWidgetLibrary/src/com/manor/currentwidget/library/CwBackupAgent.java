@@ -13,8 +13,7 @@ public class CwBackupAgent extends BackupAgentHelper {
 		SharedPreferencesBackupHelper helper = 
 			new SharedPreferencesBackupHelper(this, CurrentWidgetConfigure.SHARED_PREFS_NAME);
 		
-		addHelper(CurrentWidgetConfigure.SHARED_PREFS_NAME, helper);
-		
+		addHelper(CurrentWidgetConfigure.SHARED_PREFS_NAME, helper);		
 	}
 
 }

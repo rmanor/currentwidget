@@ -251,7 +251,7 @@ public class CurrentWidgetConfigure extends PreferenceActivity implements
 		super.onPause();
 		getPreferenceScreen().getSharedPreferences()
 				.unregisterOnSharedPreferenceChangeListener(this);
-		if (Build.VERSION.SDK_INT >= 8) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
 			// @@@ Test backup
 			 BackupManager backupManager = new BackupManager(this);
 			 backupManager.dataChanged();
