@@ -27,6 +27,11 @@ import com.google.android.apps.dashclock.api.ExtensionData;
 public class CurrentWidgetExtension extends DashClockExtension {
 
 	@Override
+	protected void onInitialize(boolean isReconnect) {
+		setUpdateWhenScreenOn(true);
+		super.onInitialize(isReconnect);
+	}
+	@Override
 	protected void onUpdateData(int reason) {
 		SharedPreferences settings = 
 				getApplicationContext().getSharedPreferences(CurrentWidgetConfigure.SHARED_PREFS_NAME, 0);
