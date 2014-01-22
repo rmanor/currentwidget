@@ -8,4 +8,4 @@
     android:focusable="false"
     android:descendantFocusability="blocksDescendants"
     plus:size="standard" 
-    plus:annotation="inline"/>
+    plus:annotation="bubble"/>

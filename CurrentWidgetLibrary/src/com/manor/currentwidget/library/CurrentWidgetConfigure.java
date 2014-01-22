@@ -185,6 +185,8 @@ public class CurrentWidgetConfigure extends PreferenceActivity implements
 		mRenderer.setZoomEnabled(true, true);
 		mRenderer.setPanEnabled(true);
 		mRenderer.setPanEnabled(true, true);
+		mRenderer.setShowGridX(true);
+		mRenderer.setShowGridY(true);
 		XYSeriesRenderer r = new XYSeriesRenderer();
 		r.setColor(Color.WHITE);
 		r.setFillPoints(true);
