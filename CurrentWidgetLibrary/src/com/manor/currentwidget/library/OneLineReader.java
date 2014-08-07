@@ -50,29 +50,24 @@ public class OneLineReader {
 			br.close();
 			sr.close();
 			fs.close();				
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			Log.e("CurrentWidget", ex.getMessage());
 			ex.printStackTrace();
 		}
 		
 		Long value = null;
 		
-		if (text != null)
-		{
-			try
-			{
+		if (text != null) {
+			try	{
 				value = Long.parseLong(text);
-			}
-			catch (NumberFormatException nfe)
-			{
+			} catch (NumberFormatException nfe) 	{
 				Log.e("CurrentWidget", nfe.getMessage());
 				value = null;
 			}
 			
-			if (_convertToMillis && value != null)
+			if (_convertToMillis && value != null) {
 				value = value / 1000; // convert to milliampere
-
+			}
 		}
 		
 		return value;

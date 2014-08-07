@@ -94,6 +94,10 @@
                 android:key="@string/pref_temp_units_key"
                 android:summary="Celsius"
                 android:title="Temperature units"/>
+            <CheckBoxPreference 
+                android:key="@string/pref_show_sign"
+                android:title="Show minus (-) sign when discharging"
+                android:defaultValue="false"/>
         </PreferenceScreen>
         <PreferenceScreen
             android:key="prefScreenNotifications"

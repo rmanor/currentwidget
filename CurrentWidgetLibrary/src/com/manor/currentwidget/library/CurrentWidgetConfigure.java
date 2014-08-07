@@ -40,7 +40,6 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.app.backup.BackupManager;
 import android.appwidget.AppWidgetManager;
-import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
@@ -93,6 +92,10 @@ public class CurrentWidgetConfigure extends PreferenceActivity implements
 		super.onResume();
 		getPreferenceScreen().getSharedPreferences()
 				.registerOnSharedPreferenceChangeListener(this);
+		PlusOnePreference p = ((PlusOnePreference)findPreference("rate"));
+		if (p != null) {
+			p.Initialize();
+		}
 	}
 
 	@SuppressWarnings("deprecation")
@@ -199,6 +202,13 @@ public class CurrentWidgetConfigure extends PreferenceActivity implements
 		mRenderer.setLabelsColor(Color.WHITE);
 		mRenderer.setAxisTitleTextSize(14);
 		mRenderer.setLabelsTextSize(20);
+		
+		if (mAppWidgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
+			SharedPreferences settings = getSharedPreferences(SHARED_PREFS_NAME, 0);
+			if (settings.getInt("first_time", -1) == -1) {
+				Toast.makeText(this, "Press the back button to save widget on home screen", Toast.LENGTH_LONG).show();
+			}
+		}
 	}
 
 	@SuppressWarnings("deprecation")
@@ -216,12 +226,13 @@ public class CurrentWidgetConfigure extends PreferenceActivity implements
 	}
 	
 	private Intent getUpdateIntent(int appWdgetId) {
-		Intent updateIntent = new Intent(getApplicationContext(), CurrentWidget.class);
-		updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWdgetId);
-		updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS,	new int[] { appWdgetId });
-		updateIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-		updateIntent.setData(Uri.withAppendedPath(
-				Uri.parse("droidrm://widget/id/"), String.valueOf(appWdgetId)));
+		Intent updateIntent = new Intent(this, Updater.class);
+		/*updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWdgetId);
+		updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS,	new int[] { appWdgetId });*/
+		//updateIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+		updateIntent.setAction("com.manor.currentwidget.UPDATE");
+		/*updateIntent.setData(Uri.withAppendedPath(
+				Uri.parse("droidrm://widget/id/"), String.valueOf(appWdgetId)));*/
 		return updateIntent;
 	}
 
@@ -230,8 +241,14 @@ public class CurrentWidgetConfigure extends PreferenceActivity implements
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			if (mAppWidgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
 				sendBroadcast(getUpdateIntent(mAppWidgetId));
+				SharedPreferences settings = getSharedPreferences(SHARED_PREFS_NAME, 0);
+				if (settings.getInt("first_time", -1) == -1) {
+					SharedPreferences.Editor editor = settings.edit();
+					editor.putInt("first_time", 1);
+					editor.commit();
+				}
 			} else {
-				AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
+				/*AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
 				ComponentName[] widgets = 
 					{new ComponentName("com.manor.currentwidget", "com.manor.currentwidget.library.CurrentWidget"),
 						new ComponentName("com.manor.currentwidget", "com.manor.currentwidget.library.CurrentWidgetText")};
@@ -240,7 +257,8 @@ public class CurrentWidgetConfigure extends PreferenceActivity implements
 					if (ids != null && ids.length > 0) {
 						CurrentWidget.updateAppWidget(getApplicationContext(), appWidgetManager, ids[0], false);
 					}
-				}
+				}*/
+				sendBroadcast(getUpdateIntent(mAppWidgetId));
 			}
 		}
 		return super.onKeyDown(keyCode, event);
@@ -378,10 +396,10 @@ public class CurrentWidgetConfigure extends PreferenceActivity implements
 					+ settings.getString("2_text", "no data")
 					+ " - "
 					+ settings.getString("3_text", "no data");
-			CurrentWidget.updateInfoNotification(getApplicationContext(),
+			Updater.updateInfoNotification(getApplicationContext(),
 					notification_text);
 		} else {
-			CurrentWidget.clearInfoNotification(getApplicationContext());
+			Updater.clearInfoNotification(getApplicationContext());
 		}
 	}
 	

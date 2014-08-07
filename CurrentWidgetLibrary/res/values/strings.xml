@@ -25,6 +25,7 @@
         <item>2</item>
     </string-array>
 
+    <string name="pref_show_sign">show_sign</string>
     <string name="pref_show_info_notification_state_key">show_info_notification_state_key</string>
     <string name="pref_show_info_notification_key">show_info_notification</string>
     <string name="pref_value_text_size_default">18</string>

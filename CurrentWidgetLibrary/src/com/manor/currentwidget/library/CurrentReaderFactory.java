@@ -31,10 +31,43 @@ public class CurrentReaderFactory {
 
 	@TargetApi(4)
 	static public Long getValue() {
-
 		File f = null;
+		
+		// Galaxy S3
+		if (CurrentReaderFactory.BUILD_MODEL.contains("gt-i9300")
+				|| CurrentReaderFactory.BUILD_MODEL.contains("gt-i9300T")
+				|| CurrentReaderFactory.BUILD_MODEL.contains("gt-i9305")
+				|| CurrentReaderFactory.BUILD_MODEL.contains("gt-i9305N")
+				|| CurrentReaderFactory.BUILD_MODEL.contains("gt-i9305T")
+				|| CurrentReaderFactory.BUILD_MODEL.contains("shv-e210k")
+				|| CurrentReaderFactory.BUILD_MODEL.contains("shv-e210l")
+				|| CurrentReaderFactory.BUILD_MODEL.contains("shv-e210s")
+				|| CurrentReaderFactory.BUILD_MODEL.contains("sgh-t999")
+				|| CurrentReaderFactory.BUILD_MODEL.contains("sgh-t999l")
+				|| CurrentReaderFactory.BUILD_MODEL.contains("sgh-t999v")
+				|| CurrentReaderFactory.BUILD_MODEL.contains("sgh-i747")
+				|| CurrentReaderFactory.BUILD_MODEL.contains("sgh-i747m")
+				|| CurrentReaderFactory.BUILD_MODEL.contains("sgh-n064")
+				|| CurrentReaderFactory.BUILD_MODEL.contains("sc-06d")
+				|| CurrentReaderFactory.BUILD_MODEL.contains("sgh-n035")
+				|| CurrentReaderFactory.BUILD_MODEL.contains("sc-03e")
+				|| CurrentReaderFactory.BUILD_MODEL.contains("SCH-j021")
+				|| CurrentReaderFactory.BUILD_MODEL.contains("scl21")
+				|| CurrentReaderFactory.BUILD_MODEL.contains("sch-r530")
+				|| CurrentReaderFactory.BUILD_MODEL.contains("sch-i535")
+				|| CurrentReaderFactory.BUILD_MODEL.contains("sch-S960l")
+				|| CurrentReaderFactory.BUILD_MODEL.contains("gt-i9308")
+				|| CurrentReaderFactory.BUILD_MODEL.contains("sch-i939")
+				|| CurrentReaderFactory.BUILD_MODEL.contains("sch-s968c")) {
+			f = new File("/sys/class/power_supply/battery/current_max");
+			if (f.exists()) {
+				return OneLineReader.getValue(f, false);
+			}
+		}
 
-		if (CurrentReaderFactory.BUILD_MODEL.contains("nexus 7")) {
+		if (CurrentReaderFactory.BUILD_MODEL.contains("nexus 7")
+				|| CurrentReaderFactory.BUILD_MODEL.contains("one")
+				|| CurrentReaderFactory.BUILD_MODEL.contains("lg-d851")) {
 			f = new File("/sys/class/power_supply/battery/current_now");
 			if (f.exists()) {
 				return OneLineReader.getValue(f, false);
@@ -118,6 +151,7 @@ public class CurrentReaderFactory {
 		if (CurrentReaderFactory.BUILD_MODEL.contains("triumph")
 				|| CurrentReaderFactory.BUILD_MODEL.contains("ls670")
 				|| CurrentReaderFactory.BUILD_MODEL.contains("gt-i9300")
+				|| CurrentReaderFactory.BUILD_MODEL.contains("sm-n9005")
 				|| CurrentReaderFactory.BUILD_MODEL.contains("gt-n7100")
 				|| CurrentReaderFactory.BUILD_MODEL.contains("sgh-i317")) {
 			f = new File("/sys/class/power_supply/battery/current_now");
@@ -176,16 +210,19 @@ public class CurrentReaderFactory {
 			if (value != null)
 				return value;
 		}
-
+		
 		// some htc devices
 		f = new File("/sys/class/power_supply/battery/batt_current");
-		if (f.exists())
+		if (f.exists()) {
 			return OneLineReader.getValue(f, false);
+		}
 
-		// nexus one
+		// Nexus One.
+		// TODO: Make this not default but specific for N1 because of the normalization.
 		f = new File("/sys/class/power_supply/battery/current_now");
-		if (f.exists())
+		if (f.exists()) {
 			return OneLineReader.getValue(f, true);
+		}
 
 		// samsung galaxy vibrant
 		f = new File("/sys/class/power_supply/battery/batt_chg_current");

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.manor.currentwidget.library"
-    android:versionCode="42"
-    android:versionName="0.4">
+    android:versionCode="46"
+    android:versionName="0.4a">
 
     <uses-sdk
         android:minSdkVersion="4"
@@ -14,7 +14,8 @@
 
         <!-- broadcast receiver that will process widget updates -->
         <receiver android:name="com.manor.currentwidget.library.CurrentWidget" />
-    
+        
+        <receiver android:name="com.manor.currentwidget.library.Updater" />  
         
         <!-- <receiver android:name="com.manor.currentwidget.library.CurrentWidget2by2" >
             <intent-filter>
